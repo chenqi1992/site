@@ -3,7 +3,7 @@
         <div class="detail-tabs">
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="个人主页" name="first">
-                <div></div>
+                    <div></div>
                     <div class="project-header">
                         <div class="project-key">姓名：</div>
                         <div class="project-value"><el-input size="medium" class="name_input" placeholder="邓蒋文"></el-input></div>
@@ -25,36 +25,36 @@
                         <div class="project-value"><el-input size="medium" class="name_input" placeholder="15959256421"></el-input></div>
                     </div>
                     <div class =“personal-border”>
-                    <div class="project-header">
-                        <div class="project-key">紧急联系人：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="杨火群"></el-input></div>
-                    </div>
-                    <div class="project-header">
-                        <div class="project-key">联系人关系：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="配偶"></el-input></div>
-                    </div>
-                    <div class="project-header">
-                        <div class="project-key">联系人电话：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="13774899930"></el-input></div>
-                    </div>
+                        <div class="project-header">
+                            <div class="project-key">紧急联系人：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="杨火群"></el-input></div>
+                        </div>
+                        <div class="project-header">
+                            <div class="project-key">联系人关系：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="配偶"></el-input></div>
+                        </div>
+                        <div class="project-header">
+                            <div class="project-key">联系人电话：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="13774899930"></el-input></div>
+                        </div>
                     </div>    
                     <div class =“personal-border”>
-                    <div class="project-header">
-                        <div class="project-key">职位：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="项目经理"></el-input></div>
-                    </div>
-                    <div class="project-header">
-                        <div class="project-key">岗位：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="项目工程部"></el-input></div>
-                    </div>
-                    <div class="project-header">
-                        <div class="project-key">文化程度：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="大专"></el-input></div>
-                    </div>
-                    <div class="project-header">
-                        <div class="project-key">籍贯：</div>
-                        <div class="project-value"><el-input size="medium" class="name_input" placeholder="福建"></el-input></div>
-                    </div>
+                        <div class="project-header">
+                            <div class="project-key">职位：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="项目经理"></el-input></div>
+                        </div>
+                        <div class="project-header">
+                            <div class="project-key">岗位：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="项目工程部"></el-input></div>
+                        </div>
+                        <div class="project-header">
+                            <div class="project-key">文化程度：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="大专"></el-input></div>
+                        </div>
+                        <div class="project-header">
+                            <div class="project-key">籍贯：</div>
+                            <div class="project-value"><el-input size="medium" class="name_input" placeholder="福建"></el-input></div>
+                        </div>
                     </div>
                     <div class="project-header">
                         <div class="project-key">评价信息：</div>
@@ -62,45 +62,45 @@
                     </div>
                     <div class="business-add">
                     <el-button size="medium" type="primary" >添加评价</el-button>
-                    <el-table
-                        ref="multipleTable"
-                        :data="tableData"
-                        :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-                        tooltip-effect="dark"
-                        style="width: 100%"
-                        @selection-change="handleSelectionChange">
-                        <el-table-column
-                        width="5">
-                        </el-table-column>
-                        <el-table-column
-                        label="序号"
-                        width="120">
-                        <template slot-scope="scope">{{ scope.row.date }}</template>
-                        </el-table-column>
-                        <el-table-column
-                        prop="projectTime"
-                        label="项目时间"
-                        width="120">
-                        </el-table-column>
-                        <el-table-column
-                        prop="content"
-                        label="评价内容"
-                         width="120">
-                        </el-table-column>
-                        <el-table-column
-                        prop="attachPic"
-                        label="附件图片">
-                        </el-table-column>
-                        <el-table-column
-                        prop="commitLevel"
-                        label="评价级别"
-                        >
-                        </el-table-column>
-                    
+                        <el-table
+                            ref="multipleTable"
+                            :data="tableData"
+                            :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
+                            tooltip-effect="dark"
+                            style="width: 100%"
+                            @selection-change="handleSelectionChange">
+                            <el-table-column
+                            width="5">
+                            </el-table-column>
+                            <el-table-column
+                            label="序号"
+                            width="120">
+                            <template slot-scope="scope">{{ scope.row.date }}</template>
+                            </el-table-column>
+                            <el-table-column
+                            prop="projectTime"
+                            label="项目时间"
+                            width="120">
+                            </el-table-column>
+                            <el-table-column
+                            prop="content"
+                            label="评价内容"
+                            width="120">
+                            </el-table-column>
+                            <el-table-column
+                            prop="attachPic"
+                            label="附件图片">
+                            </el-table-column>
+                            <el-table-column
+                            prop="commitLevel"
+                            label="评价级别"
+                            >
+                            </el-table-column>
                         
-                        </el-table-column>
-                    </el-table>
-                </div>
+                            
+                            </el-table-column>
+                        </el-table>
+                    </div>
                 </el-tab-pane>
                 <el-tab-pane label="项目信息" name="second">
                     <div class="project-header">

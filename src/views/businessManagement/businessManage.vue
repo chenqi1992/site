@@ -121,6 +121,8 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
+import { getOrganizationList } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
         elPages
@@ -174,12 +176,20 @@ export default {
         }
     },
     created() {
-
+        this.ApigetOrganizationList()
     },
     mounted() {
 
     },
     methods: {
+        ApigetOrganizationList() {
+            //企业列表
+            getPublicKey().then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    
+                }
+            })
+        },
         toggleSelection(rows) {
             if (rows) {
             rows.forEach(row => {

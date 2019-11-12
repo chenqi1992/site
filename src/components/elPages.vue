@@ -6,6 +6,7 @@
             layout="prev, pager, next"
             :total="pagebox.totalrows"
             :current-page.sync="pagebox.currentpage"
+            :page-size="pagebox.pageSize"
             @current-change="handleChangepage"
             >
         </el-pagination>
@@ -29,19 +30,21 @@ export default {
 
     },
     props: {
-
+        pagebox: {
+            type: Object
+        }
     },
     data() {
         return {
-            pagebox: {
-                totalrows: 10,
-                currentpage: 1,
-                pageSize: 10
-            }
+            // pagebox: {
+            //     totalrows: 10,
+            //     currentpage: 1,
+            //     pageSize: 10
+            // }
         }
     },
     created() {
-
+        console.log(this.pagebox);
     },
     mounted() {
 

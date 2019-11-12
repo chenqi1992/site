@@ -26,13 +26,14 @@ axios.interceptors.request.use(config => {
     //在请求发送之前做一些事
     let deviceID = getStore('deviceId')
         // 认证令牌
-    if (getStoreSession('haslogin') == 'yes') {
-        const authToken = getStore('authToken');
-        config.headers.JWTToken = authToken;
-    }
+    // if (getStoreSession('haslogin') == 'yes') {
+    //     const authToken = getStore('authToken');
+    //     config.headers.JWTToken = authToken;
+    // }
+    config.headers.JWTToken = 'eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6WyJPUkdfTUFOQUdFIl0sImF0dHJpYnV0ZXMiOnsidXNlclJvbGVPcmciOlt7InJvbGVOYW1lIjoi5py65p6E566h55CG5ZGYIiwicm9sZUNvZGUiOiJPUkdfTUFOQUdFIiwicm9sZVR5cGUiOiJPUkdfTUFOQUdFIiwib3JnYW5pemF0aW9uSWQiOjEsIm9yZ2FuaXphdGlvbk5hbWUiOiLmtYvor5XmnLrmnoQiLCJhcmVhQ29kZSI6IiIsImFyZWFGdWxsTmFtZSI6IiJ9XSwiY1R5cGUiOiI0Szg0R0xLWjhLIiwiVE9LRU4iOiJUT0tFTiJ9LCJ1c2VyTmFtZSI6InZkanEiLCJwZXJzb25UeXBlIjoiQ09NUEFOWSIsInVzZXJJZCI6IjEiLCJleHAiOjE1NzM2MzQxOTh9.099LcFpdHoAmeGheBwgGDzFTqyaLYbAt0fFApQbA-KinSDlbE_n66GbmlC3buy7qPx5OBGQm5SmJLGwmImsX7w'
     config.headers.deviceId = deviceID
     config.headers.cType = "PC"
-    config.headers.appName = "peace"
+    config.headers.appName = "haogongdi"
     return config
 }, error => {
     Vue.prototype.$message({

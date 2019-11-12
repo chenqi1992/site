@@ -19,7 +19,17 @@ export default {
         },
         {
             name: '账户管理/角色管理/权限查看',
-            path: '/roleLimits',
+            path: '/roleLimits/:id',
+            component: RoleLimits
+        },
+        {
+            name: '账户管理/角色管理/权限查看',
+            path: '/roleLimits/detail/:id',
+            component: RoleLimits
+        },
+        {
+            name: '账户管理/角色管理/权限查看',
+            path: '/roleLimits/add',
             component: RoleLimits
         },
         {

@@ -1,9 +1,9 @@
 //接口域名地址
-let baseURL, protocol = 'https://',
+let baseURL, protocol = 'http://',
     hostName = '';
 console.log(process.env.NODE_ENV, process.env.VUE_APP_TYPE, process.env.VUE_APP_TITLE)
 if (process.env.NODE_ENV === 'development') {
-    hostName = 'devmicroodr.odrcloud.cn'
+    hostName = '119.3.216.22:18100/'
 } else if (process.env.NODE_ENV === 'production') {
     if (process.env.VUE_APP_TYPE === "test") {
         hostName = 'testmicroodr.odrcloud.cn'
@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'development') {
     } else if (process.env.VUE_APP_TYPE === 'prod') {
         hostName = 'microodr.odrcloud.cn'
     } else {
-        hostName = 'devmicroodr.odrcloud.cn'
+        hostName = '119.3.216.22:18100/'
     }
 }
 baseURL = protocol + hostName

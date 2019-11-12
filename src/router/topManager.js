@@ -36,12 +36,17 @@ export default {
         },
         {
             name: '项目管理',
-            path: '/projectIndex', //
+            path: '/projectIndex', //项目管理
             component: ProjectIndex
         },
         {
             name: '项目管理',
-            path: '/projectIndexOr', 
+            path: '/projectIndexOr/:id', 
+            component: ProjectIndexOr
+        },
+        {
+            name: '项目管理',
+            path: '/projectIndexOr/detail/:id',
             component: ProjectIndexOr
         },
         {
@@ -55,12 +60,12 @@ export default {
             component: Attendance
         },
         {
-            name: '项目管理/项目详情/员工详情',
+            name: '项目管理/项目详情/员工详情', //评价页
             path: '/employeeDetail',
             component: EmployeeDetail
         },
         {
-            name: '项目管理/项目详情/访客信息',
+            name: '项目管理/项目详情/访客信息', 
             path: '/visitorInfo',
             component: VisitorInfo
         },

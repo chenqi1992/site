@@ -2,25 +2,27 @@
     <div class="role-limits">
         <div class="role-header">
             <div>权限基本信息</div>
-            <el-button size="medium" type="primary">编辑</el-button>
-            <div>
-                <el-button size="medium" plain>取消</el-button>
-                <el-button size="medium" type="primary">保存</el-button>
+            <template v-if="!btnShow">
+                <el-button size="medium" @click="btnShow = true" type="primary">编辑</el-button>
+            </template>
+            <div v-if="btnShow">
+                <el-button size="medium" @click="btnShow = false" plain>取消</el-button>
+                <el-button size="medium" type="primary" @click="handleSub">保存</el-button>
             </div>    
         </div>
         <div class="role-form">
-            <el-form :model="smsForm" status-icon :rules="rules" ref="smsForm" label-width="100px">
-                <el-form-item :prop="smsForm.a" label="角色名称：">
-                    <el-input size="medium" v-model="smsForm.a"></el-input>
+            <el-form :model="smsForm" status-icon :rules="rules" ref="smsForm" :disabled="!btnShow" label-width="100px">
+                <el-form-item :prop="smsForm.roleName" label="角色名称：">
+                    <el-input size="medium" v-model="smsForm.roleName" placeholder="请输入角色名称"></el-input>
                 </el-form-item>
-                <el-form-item :prop="smsForm.a" label="角色代码：">
-                    <el-input size="medium" v-model="smsForm.a"></el-input>
+                <el-form-item :prop="smsForm.roleCode" label="角色代码：">
+                    <el-input size="medium" v-model="smsForm.roleCode" placeholder="请输入角色代码"></el-input>
                 </el-form-item>
-                <el-form-item :prop="smsForm.a" label="角色类型：">
-                    <el-input size="medium" v-model="smsForm.a"></el-input>
+                <el-form-item :prop="smsForm.roleType" label="角色类型：">
+                    <el-input size="medium" v-model="smsForm.roleType" placeholder="请输入角色类型"></el-input>
                 </el-form-item>
-                <el-form-item :prop="smsForm.a" label="备注信息：">
-                    <el-input size="medium" v-model="smsForm.a"></el-input>
+                <el-form-item label="备注信息：">
+                    <el-input size="medium" v-model="smsForm.remark" placeholder="请输入备注信息"></el-input>
                 </el-form-item>
                 <el-form-item label="">
                     <div>
@@ -90,6 +92,8 @@
 </template>
 
 <script>
+import { searchRole, addRole, updateRole } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
 
@@ -99,11 +103,30 @@ export default {
     },
     data() {
         return {
+            btnShow: false,
+            type: '',
+            searchRoleParams: {
+                roleCode: "INDUSTRY_MEDIATOR",
+                roleTypeEnum: "MEDIATOR"
+            },
+            searchRoleData: {},
             smsForm: {
-                a: ''
+                roleName: '',
+                roleCode: '',
+                roleType: '',
+                remark: '',
+                roleAuth: ''
             },
             rules: {
-
+                roleName: [
+                    { required: true, message: '请输入角色名称', trigger: 'blur' }
+                ],
+                roleCode: [
+                    { required: true, message: '请输入角色代码', trigger: 'blur' }
+                ],
+                roleType: [
+                    { required: true, message: '请输入角色类型', trigger: 'blur' }
+                ],
             },
             ruleForm: {
                 type: ''
@@ -111,13 +134,55 @@ export default {
         }
     },
     created() {
-
+        if(this.$route.path.indexOf('detail') > 0) {
+            this.btnShow = false
+            this.type = 'detail'
+            this.ApiSearchRole()
+        } else if(this.$route.path.indexOf('add') > 0){
+            this.btnShow = true
+            this.type = 'add'
+        } else {
+            this.btnShow = true
+        }
     },
     mounted() {
-
+        
     },
     methods: {
-
+        ApiSearchRole() {
+            //查询角色信息
+            searchRole(this.searchRoleParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.searchRoleData = res.data.data
+                    let data = res.data.data
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            const element = data[key]
+                            if(this.smsForm[key] !== undefined) {
+                                this.smsForm[key] = element
+                            }
+                        }
+                    }
+                }
+            })
+        },
+        ApiAddRole() {
+            addRole(this.smsForm).then((res) =>{
+                
+            })
+        },
+        ApiUpdateRole() {
+            updateRole(this.smsForm).then((res) =>{
+                
+            })
+        },
+        handleSub() {
+            if(this.type === 'add') {
+                this.ApiAddRole()
+            } else if(this.type === 'detail') {
+                this.ApiUpdateRole()
+            }
+        }
     }
 }
 </script>

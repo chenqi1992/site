@@ -47,14 +47,41 @@
                 </div>
             </div>
             <div>
-                <el-button size="medium" type="primary">按钮</el-button>
+                <el-button size="medium" type="primary" @click="handleBtn">按钮</el-button>
             </div>
         </div>
-        <div>
-            
-        </div>
+        <el-dialog
+            title="分配设备"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+            <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
+                <el-form-item label="公司名称">
+                    <el-input v-model="sizeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="企业ID">
+                    <el-input v-model="sizeForm.name"></el-input>
+                </el-form-item>
+            </el-form>
+            <div>
+                <el-button size="medium" @click="handleClose">取消</el-button>
+                <el-button size="medium" type="primary" @click="handleBtn">提交</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog
+            :title="openequipTitle"
+            :visible.sync="dialogVisibleEquip"
+            width="30%"
+            :before-close="handleClose">
+            <div>关闭设备，系统将不在读取该机器的数据。</div>
+            <div>启用设备，系统将根据设备归属，重新配置设备预留用户信息，并定期获取设备上的数据。</div>
+            <div>
+                <el-button size="medium" @click="handleCloseEquip">取消</el-button>
+                <el-button size="medium" type="primary" @click="handleBtn">确定</el-button>
+            </div>
+        </el-dialog>
         <div class="business-add">
-            <el-button size="medium" type="primary" icon="el-icon-plus">添加企业</el-button>
+            <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleDistribution">归属分配</el-button>
             <div class="all-data">共搜索到 922 条数据</div>
         </div>
         <div class="business-table">   
@@ -69,15 +96,18 @@
              <el-table
                 ref="multipleTable"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-                :data="tableData"
+                :data="selDevicePageListData"
                 tooltip-effect="dark"
                 style="width: 100%"
                 @selection-change="handleSelectionChange">
                 <el-table-column
+                align="center"
                 type="selection"
                 width="55">
                 </el-table-column>
                 <el-table-column
+                align="center"
+                prop="id"
                 label="设备ID"
                 width="120">
                 <template slot-scope="scope">{{ scope.row.date }}</template>
@@ -85,34 +115,41 @@
                 <el-table-column
                 prop="name"
                 label="设备名称"
-                width="120">
+                width="120"
+                align="center">
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="code"
                 label="关键唯一标识"
+                align="center"
                 show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
                 prop="address"
                 label="归属公司"
+                align="center"
                 show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="companyId"
                 label="归属状态"
+                align="center"
                 show-overflow-tooltip
                 >
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="deviceStatus"
                 label="功能状态"
+                align="center"
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="bindTime"
                 label="企业加入时间"
+                :formatter="formatime"
+                align="center"
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
@@ -127,10 +164,6 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <!-- <div style="margin-top: 20px">
-                <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
-                <el-button @click="toggleSelection()">取消选择</el-button>
-            </div> -->
         </div>
         <elPages></elPages>
     </div>
@@ -138,6 +171,9 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
+import { selDevicePageList } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
+import {dateformat} from '@/utils/utils.js'
 export default {
     components: {
         elPages
@@ -147,6 +183,24 @@ export default {
     },
     data() {
         return {
+            selDevicePageListParams:{
+                projectId: null,
+                companyId: null,
+                pageIndex: 1,
+                pageSize: 10,
+            },
+            selDevicePageListData: [],
+            dialogVisible: false,
+            sizeForm: {
+                name: '',
+            },
+            rules: {
+                name: [
+                    { required: true, message: '请输入活动名称', trigger: 'blur' },
+                ]
+            },
+            openequipTitle: '关闭设备提醒',
+            dialogVisibleEquip: false,
             businessValue: '',
             businessStatus: '',
             businessTime: '',
@@ -158,35 +212,6 @@ export default {
                 label: '底部导航栏'
             }],
             addtime: '',
-            tableData: [{
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-08',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-06',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-07',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }],
             multipleSelection: [],
             pagebox: {
                 totalrows: 10,
@@ -196,20 +221,46 @@ export default {
         }
     },
     created() {
-
+        this.ApiSearchWorkUserRole()
     },
     mounted() {
 
     },
     methods: {
-        handleView() {
-            this.$router.push({path: './equipmentManage'})
+        ApiSearchWorkUserRole() {
+            //查询设备列表
+            selDevicePageList(this.selDevicePageListParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.selDevicePageListData = res.data.data.list
+                }
+            })
+        },
+        handleBtn() {
+            this.ApiSearchWorkUserRole()
+        },
+        handleClose() {
+            this.dialogVisible = false
+        },
+        handleDistribution() {
+            this.dialogVisible = true
+        },
+        handleView(row) {
+            this.$router.push({path: `./equipmentDetail/${row.id}`})
         },
         handleModify(row) {
             this.$router.push({path: `./equipmentDetail/${row.id}`})
         },
         handleSwitch() {
-
+            this.dialogVisibleEquip = true
+        },
+        handleCloseEquip() {
+            this.dialogVisibleEquip = false
+        },
+        formatime(row, column, cellValue, index) {
+            let date = new Date(cellValue);
+            let getTimeResult
+            cellValue == '--' ? getTimeResult = '--' : getTimeResult = dateformat(date, 'yyyy-MM-dd hh:mm:ss')
+            return getTimeResult;
         },
         toggleSelection(rows) {
             if (rows) {

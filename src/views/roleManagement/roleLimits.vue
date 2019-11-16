@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { searchRole, addRole, updateRole } from "@/api/common.js";
+import { searchRole, addRole, updateRole, listMenuInfoToRole } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -144,6 +144,7 @@ export default {
         } else {
             this.btnShow = true
         }
+        this.ApiListMenuInfoToRole()
     },
     mounted() {
         
@@ -173,6 +174,11 @@ export default {
         },
         ApiUpdateRole() {
             updateRole(this.smsForm).then((res) =>{
+                
+            })
+        },
+        ApiListMenuInfoToRole() {
+            listMenuInfoToRole().then((res) =>{
                 
             })
         },

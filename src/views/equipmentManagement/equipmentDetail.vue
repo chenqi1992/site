@@ -2,44 +2,46 @@
     <div class="equipment-detail">
         <div class="detail-header">
             <span>设备基本信息</span>
-            <el-button size="medium" type="primary">编辑</el-button>
-            <div>
-                <el-button size="medium" plain>取消</el-button>
-                <el-button size="medium" type="primary">保存</el-button>
+            <div v-if="editORview">
+                <el-button v-show="!btnshow" size="medium" type="primary" @click="btnshow = true">编辑</el-button>
+                <div v-show="btnshow">
+                    <el-button size="medium" plain @click="btnshow = false">取消</el-button>
+                    <el-button size="medium" type="primary" @click="handleSubSave('ruleForm')">保存</el-button>
+                </div>
             </div>
         </div>
         <div class="detail-form">
-            <el-form :model="smsForm" status-icon :rules="rules" ref="smsForm" label-width="150px" class="smsConfig-ruleForm">
+            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="150px" class="smsConfig-ruleForm">
                 <div class="form">
-                    <el-form-item :prop="a" label="设备ID：">
-                        <el-input size="medium" v-model="a"></el-input>
+                    <el-form-item :prop="id" label="设备ID：">
+                        <el-input size="medium" v-model="ruleForm.id" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item :prop="b" label="设备唯一标识码：">
-                        <el-input size="medium" v-model="b"></el-input>
+                    <el-form-item :prop="code" label="设备唯一标识码：">
+                        <el-input size="medium" v-model="ruleForm.code" :disabled="true"></el-input>
                     </el-form-item>
                 </div>
                 <div class="form">
-                    <el-form-item :prop="c" label="设备别名：">
-                        <el-input size="medium" v-model="c"></el-input>
+                    <el-form-item :prop="name" label="设备别名：" :disabled="btnshow">
+                        <el-input size="medium" v-model="ruleForm.name" ></el-input>
                     </el-form-item>
-                    <el-form-item :prop="d" label="设备归属公司：">
-                        <el-input size="medium" v-model="d"></el-input>
-                    </el-form-item>
-                </div>
-                <div class="form">
-                    <el-form-item :prop="e" label="识别度：">
-                        <el-input size="medium" v-model="e"></el-input>
-                    </el-form-item>
-                    <el-form-item :prop="f" label="设备归属项目：">
-                        <el-input size="medium" v-model="f"></el-input>
+                    <el-form-item :prop="companyName" label="设备归属公司：" :disabled="btnshow">
+                        <el-input size="medium" v-model="ruleForm.companyName"></el-input>
                     </el-form-item>
                 </div>
                 <div class="form">
-                    <el-form-item :prop="g" label="设备型号：">
-                        <el-input  size="medium" v-model="g"></el-input>
+                    <el-form-item :prop="deviceStatus" label="识别度：" :disabled="true">
+                        <el-input size="medium" v-model="ruleForm.deviceStatus"></el-input>
                     </el-form-item>
-                    <el-form-item :prop="h" label="设备接入时间：">
-                        <el-input size="medium" v-model="h"></el-input>
+                    <el-form-item :prop="projectName" label="设备归属项目：" :disabled="btnshow">
+                        <el-input size="medium" v-model="ruleForm.projectName"></el-input>
+                    </el-form-item>
+                </div>
+                <div class="form">
+                    <el-form-item :prop="model" label="设备型号：" :disabled="true">
+                        <el-input  size="medium" v-model="ruleForm.model"></el-input>
+                    </el-form-item>
+                    <el-form-item :prop="bindTime" label="设备接入时间：" :disabled="true">
+                        <el-input size="medium" v-model="ruleForm.bindTime"></el-input>
                     </el-form-item>
                 </div>
             </el-form>
@@ -89,6 +91,8 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
+import { selectOneDevice, editDevice } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
         elPages
@@ -98,16 +102,45 @@ export default {
     },
     data() {
         return {
-            smsForm: {},
-            rules: {},
-            a: '',
-            b: '',
-            c: '',
-            d: '',
-            e: '',
-            f: '',
-            g: '',
-            h: '',
+            editORview: true,
+            btnshow: false,
+            selectOneDeviceData: {},
+            ruleForm: {
+                id: this.$route.params.id,
+                code: '',
+                name: '',
+                companyName: '',
+                deviceStatus: '',
+                projectName: '',
+                model: '',
+                bindTime: '',
+            },
+            rules: {
+                id: [
+                    { required: true, message: '请填写设备ID', trigger: 'blur' },
+                ],
+                code: [
+                    { required: true, message: '请填写设备唯一标识码', trigger: 'blur' },
+                ],
+                name: [
+                    { required: true, message: '请填写设备别名', trigger: 'blur' },
+                ],
+                companyName: [
+                    { required: true, message: '请填写设备归属公司', trigger: 'blur' },
+                ],
+                deviceStatus: [
+                    { required: true, message: '请填写公司名称', trigger: 'blur' },
+                ],
+                projectName: [
+                    { required: true, message: '请填写设备归属项目', trigger: 'blur' },
+                ],
+                model: [
+                    { required: true, message: '请填写设备型号', trigger: 'blur' },
+                ],
+                bindTime: [
+                    { required: true, message: '请选择设备接入时间', trigger: 'blur' },
+                ],
+            },
             activeName: 'first',
             tableData: [{
             date: '2016-05-03',
@@ -141,12 +174,53 @@ export default {
         }
     },
     created() {
-
+        if(this.$route.path.indexOf('detail') > 0) {
+            this.editORview = true
+        } else {
+            this.editORview = false
+        } 
     },
     mounted() {
 
     },
     methods: {
+        ApiSelectOneDevice() {
+            //设备详情
+            selectOneDevice({id: this.$router.params.id}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.selectOneDeviceData = res.data.data
+                    let data = res.data.data
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            const element = data[key]
+                            if(this.ruleForm[key] !== undefined) {
+                                this.ruleForm[key] = element
+                            }
+                        }
+                    }
+                    
+                }
+            })
+        },
+        handleSubSave(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    editDevice(this.ruleForm).then((res) =>{
+                        if (res.data.code === ERR_OK) {
+                            this.$message({
+                                message: '保存成功',
+                                type: 'success'
+                            });
+                            this.ApiSelectOneDevice()
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+                    })
+                } else {
+                    return false;
+                }
+            });
+        },
         handleClick(tab, event) {
             console.log(tab, event);
         }
@@ -156,7 +230,7 @@ export default {
 
 <style lang="scss">
     .equipment-detail {
-        padding: 20px;
+        padding: 0 20px 20px;
         background-color: #ffffff;
         .detail-header {
             display: flex;

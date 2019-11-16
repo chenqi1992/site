@@ -33,104 +33,100 @@
             </div>
             <el-button size="medium" type="primary">搜 索</el-button>
         </div>
-    <div class="title"> 
-        <div class="editTitle">
-            <div>
-                <div class="project-header">
-                <div class="toEdit">编辑试题</div>
-                <div class="deleteIcon">删除图标</div>
-                </div>
-                <div class="type"> 试题类型  
-                    <el-radio  class = "singleClick" v-model="radio" label="1">单选题</el-radio>
-                    <el-radio v-model="radio" label="2">多选题</el-radio>
-                </div>
-                <div class="content">问题内容
-                    <div>
-                        <el-input
-                            class="search-input"
-                            v-model="businessValue"
-                            placeholder=""
-                            clearable>
-                        </el-input>
-                    </div>
-                </div>
-                <div class="analysis">问题解析
-                    <div>
-                        <el-input
-                            class="search-input"
-                            v-model="businessValue"
-                            placeholder=""
-                            clearable>
-                        </el-input>
-                <div class="project-header">
-                    <div>选项1</div>
-                    <template>
-                    <el-radio-group v-model="radio">
-                        <el-radio :label="1">正确答案</el-radio>
+        <div class="edit-exam"> 
+            <div class="editTitle">编辑试题</div>
+            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm">
+                <el-form-item label="试题类型" prop="region">
+                    <el-radio-group v-model="ruleForm.resource">
+                        <el-radio label="线上品牌商赞助"></el-radio>
+                        <el-radio label="线下场地免费"></el-radio>
                     </el-radio-group>
-                    </template>
-                    <div class="delete_icon">删除图标</div>
-                    </div>
-                    <div>
-                        <el-input
-                            class="search-input"
-                            v-model="businessValue"
-                            placeholder=""
-                            clearable>
-                        </el-input>
-                    </div>       
-                
-                <div class="project-header">
-                    <div>选项2</div>
-                    <template>
-                    <el-radio-group v-model="radio">
-                        <el-radio :label="2">正确答案</el-radio>
+                </el-form-item>
+                <el-form-item label="问题内容" prop="desc">
+                    <el-input :rows="4" type="textarea" v-model="ruleForm.desc"></el-input>
+                </el-form-item>
+                <el-form-item label="问题解析" prop="desc">
+                    <el-input :rows="4" type="textarea" v-model="ruleForm.desc"></el-input>
+                </el-form-item>
+                <div>
+                    <el-radio-group v-model="ruleForm.resource">
+                        <el-radio label="线上品牌商赞助">
+                            <el-input>111</el-input>
+                            <div>删除</div>
+                        </el-radio>
+                        <el-radio label="线上品牌商赞助">
+                            <el-input>111</el-input>
+                            <div>删除</div>
+                        </el-radio>
                     </el-radio-group>
-                    </template>
-                    <div class="delete_icon">删除图标</div>
-                    </div>
-                    <div>
-                        <el-input
-                            class="search-input"
-                            v-model="businessValue"
-                            placeholder=""
-                            clearable>
-                        </el-input>
-                    </div>       
-                
-                <div class="project-header">
-                    <div>选项3</div>
-                    <template>
-                    <el-radio-group v-model="radio">
-                        <el-radio :label="3">正确答案</el-radio>
-                    </el-radio-group>
-                    </template>
-                    <div class="delete_icon">删除图标</div>
-                    </div>
-                    <div>
-                        <el-input
-                            class="search-input"
-                            v-model="businessValue"
-                            placeholder=""
-                            clearable>
-                        </el-input>
-                    </div>       
-                
-                <div class="project-header">
-                     <el-button type="primary" icon="el-icon-plus"></el-button>
-                    <div>添加选项</div>
                 </div>
-                    </div>
-                </div>
-            </div>
-        </div>      
+            </el-form>
+        </div>
         <div class ="saveButton">
-            <el-button size="medium" type="primary">保存试题</el-button></div>
+            <el-button size="medium" type="primary" @click="handleSaveQuestions">保存试题</el-button>
         </div>
     </div>
 </template>
 
 <script>
+import elPages from "@/components/elPages.vue";
+import { selDevicePageListexam, addQuestion } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
+export default {
+    components: {
+
+    },
+    props: {
+
+    },
+    data() {
+        return {
+            ruleForm: {
+                name: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                desc: ''
+            },
+            rules: {
+                name: [
+                    { required: true, message: '请输入活动名称', trigger: 'blur' },
+                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+                ]
+            }
+        }
+    },
+    created() {
+
+    },
+    mounted() {
+
+    },
+    methods: {
+        handleSaveQuestions() {
+            addQuestion(this.selDevicePageListexamParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.selDevicePageListexamData = res.data.data.list
+                }
+            })
+        },
+        handleAddExam() {
+            this.$router.push({path: `/examManageToEdit/add`})
+        },
+        handleAddStudy() {
+            this.$router.push({path: `/attendance`})
+        },
+        handleView(row) {
+            this.$router.push({path: `/examManageToEdit/${row.id}`})
+        },
+        handleModify(row) {
+            this.$router.push({path: `/examManageToEdit/detail/${row.id}`})
+        }
+    }
+}
 </script>
 
 <style lang="scss">
@@ -145,68 +141,18 @@
                 }
             }
         }
-        .business-add {
-            display: flex;
-            padding: 20px 0;
-        }
-        .business-table {
-            .table-title {
-                display: flex;
-                align-items: center;
-                height: 40px;
-                padding: 0 16px;
-                background:rgba(230,247,255,1);
-                border-radius:4px;
-                border:1px solid rgba(186,231,255,1);
-            }
-        }
-        .title {
+        .edit-exam {
+            width: 40%;
+            margin-top: 20px;
+            border:1px solid rgba(0,0,0,0.07);
             .editTitle {
-                display: flex;
-                width:  490px;
-                height: 712px;
-                border:1px solid rgba(0,0,0,0.77);
+                height: 42px;
+                line-height: 42px;
+                padding: 0 20px;
+                background: #f7f7f7;
             }
-        }
-        .toEdit {
-            .toEdit {
-                align-items: center;
-                display: flex;
-                width:64px;
-                height:22px;
-                font-size:16px;
-                font-family:PingFangSC-Semibold,PingFang SC;
-                font-weight:600;
-                color:rgba(0,0,0,0.65);
-                line-height:22px;
-            }
-        }
-        .deleteIcon {
-            .deleteIcon {
-                width:15px;
-                height:15px;
-            }
-        }
-        .type {
-            .type {
-                width:64px;
-                height:22px;
-                font-size:16px;
-                font-family:PingFang-SC-Medium,PingFang-SC;
-                font-weight:500;
-                color:rgba(0,0,0,0.65);
-                line-height:22px;
-            }
-        }
-        .singleClick {
-            .singleClick {
-                width:96px;
-                height:22px;
-                font-size:14px;
-                font-family:PingFangSC-Regular,PingFang SC;
-                font-weight:400;
-                color:rgba(0,0,0,0.65);
-                line-height:22px;
+            .demo-ruleForm {
+                padding: 10px;
             }
         }
         .saveButton {

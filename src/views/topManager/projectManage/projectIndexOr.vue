@@ -3,8 +3,8 @@
         <div class="project-header">
             <div>项目基本信息</div>
             <div v-if="editORview">
-                <el-button v-if="!btnshow" @click="btnshow = true" size="medium" type="primary">编辑</el-button>
-                <div v-if="btnshow">
+                <el-button v-show="!btnshow" @click="btnshow = true" size="medium" type="primary">编辑</el-button>
+                <div v-show="btnshow">
                     <el-button size="medium" @click="handleCancle">取消</el-button>
                     <el-button size="medium" type="primary" @click="handleSub('ruleForm')">保存</el-button>
                 </div>
@@ -30,10 +30,13 @@
                 </div>
             </el-form>
         </div>
-        <div>
+        <div class="project-yewu">
             <h1>业务信息</h1>
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="员工信息" name="first">
+                    <div class="btn">
+                        <el-button size="medium" type="primary" @click="dialogVisibleStaff = true">新增员工</el-button>
+                    </div>
                     <el-table
                         ref="multipleTable"
                         :data="queryProjectPersonData"
@@ -99,40 +102,49 @@
                     </el-table>
                 </el-tab-pane>
                 <el-tab-pane label="设备管理" name="second">
+                    <div class="btn">
+                        <el-button size="medium" type="primary" @click="handleSub('ruleForm')">添加设备</el-button>
+                    </div>
                     <el-table
                         ref="multipleTable"
-                        :data="tableData"
+                        :data="queryDeviceInfoData"
                         tooltip-effect="dark"
                         style="width: 100%"
                         >
                         <el-table-column
-                        label="员工ID"
+                        prop="id"
+                        label="设备ID"
                         width="120"
                         align="center">
                         </el-table-column>
                         <el-table-column
                         prop="name"
-                        label="姓名"
+                        label="设备名称"
                         width="120"
                         align="center">
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="职位"
+                        prop="deviceStatus"
+                        label="设备状态"
+                        align="center"
+                        sortable
+                        show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.deviceStatus === 'INUSE'">使用中</div>
+                                <div v-if="scope.row.deviceStatus === 'SPARE'">空闲</div>
+                                <div v-if="scope.row.deviceStatus === 'BAD'">故障</div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                        prop="userCount"
+                        label="设备员工数"
                         align="center"
                         sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="身份证号"
-                        align="center"
-                        sortable
-                        show-overflow-tooltip>
-                        </el-table-column>
-                        <el-table-column
-                        prop="address"
-                        label="手机号"
+                        prop="visitCount"
+                        label="设备访客数"
                         align="center"
                         sortable
                         show-overflow-tooltip>
@@ -162,6 +174,9 @@
                     </el-table>
                 </el-tab-pane>
                 <!-- <el-tab-pane label="访客信息" name="third">
+                    <div class="btn">
+                        <el-button size="medium" type="primary" @click="handleSub('ruleForm')">添加访客</el-button>
+                    </div>
                     <el-table
                         ref="multipleTable"
                         :data="tableData"
@@ -220,13 +235,43 @@
                     </el-table>
                 </el-tab-pane> -->
             </el-tabs>
+            <el-dialog
+                class="add-staff"
+                title="添加员工"
+                :visible.sync="dialogVisibleStaff"
+                width="30%"
+                >
+                <div class="title">
+                    <h2>批量添加</h2>
+                    <div class="handle">
+                        <el-button size="medium" type="primary" @click="handleSubExcel('ruleFormStaff')">上传excel文档</el-button>
+                        <div>下载示例文档<i class="el-icon-download"></i></div>
+                    </div>
+                </div>
+                <h2>单个添加</h2>
+                <el-form :model="ruleFormStaff" :rules="rulesStaff" ref="ruleFormStaff" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="员工姓名" prop="userName">
+                        <el-input v-model="ruleFormStaff.userName" placeholder="请填写员工姓名"></el-input>
+                    </el-form-item>
+                    <el-form-item label="员工手机号" prop="phone">
+                        <el-input v-model="ruleFormStaff.phone" placeholder="请填写职位"></el-input>
+                    </el-form-item>
+                    <el-form-item label="职位">
+                        <el-input v-model="ruleFormStaff.userType" placeholder="请选择职位"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="medium" @click="dialogVisibleStaff = false">取 消</el-button>
+                    <el-button size="medium" type="primary" @click="handleSubStaff('ruleFormStaff')">提 交</el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { getProjectInfo, queryProjectPerson, editProjectInfo } from "@/api/common.js";
+import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -239,15 +284,24 @@ export default {
         return {
             editORview: true,
             btnshow: false,
+            dialogVisibleStaff: false,
+
             getProjectInfoData: {},
+           
             ruleForm: {
                 projectName: '',
                 address: '',
                 userName: '',
                 phone: '',
-                id: 0,
+                id: this.$route.params.id,
                 userId: 10086,
                 roleType: "ORG_MANAGE"
+            },
+            ruleFormStaff: {
+                phone: '',
+                projectId: this.$route.params.id,
+                userName: "",
+                userType: "MANAGER(项目负责人),MASTER(项目经理),DEPUTY(项目协管),LEADER(班组组长), WORKER(员工)"
             },
             rules: {
                 projectName: [
@@ -263,12 +317,26 @@ export default {
                     { required: true, message: '请选择所在区域', trigger: 'blur' },
                 ],
             },
+            rulesStaff: {
+                userName: [
+                    { required: true, message: '请填写员工姓名', trigger: 'blur' },
+                ],
+                phone: [
+                    { required: true, message: '请填写职位', trigger: 'blur' },
+                ],
+            },
             queryProjectPersonParams:{
                 pageIndex: 1,
                 pageSize: 10,
-                projectId: this.$route.params.id,
+                projectId: Number(this.$route.params.id),
             },
             queryProjectPersonData: [],
+            queryDeviceInfoParams:{
+                pageIndex: 1,
+                pageSize: 10,
+                projectId: Number(this.$route.params.id),
+            },
+            queryDeviceInfoData: [],
             activeName: 'first',
             tableData: [{
                 date: '2016-05-03',
@@ -308,9 +376,9 @@ export default {
             this.editORview = true
         } 
         this.ApiGetProjectInfo()
-        this.ruleForm.id = this.$route.params.id
 
         this.ApiQueryProjectPerson()
+        this.ApiQueryDeviceInfo()
     },
     mounted() {
 
@@ -321,6 +389,14 @@ export default {
             queryProjectPerson(this.queryProjectPersonParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryProjectPersonData = res.data.data.list
+                }
+            })
+        },
+        ApiQueryDeviceInfo() {
+            //项目设备信息列表
+            queryDeviceInfo(this.queryDeviceInfoParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryDeviceInfoData = res.data.data.list
                 }
             })
         },
@@ -377,7 +453,31 @@ export default {
         },
         handleDelete() {
             this.$router.push({path: `/projectIndexOr/detail/${row.id}`})
-        }
+        },
+        handleSubExcel() {
+
+        },
+        handleSubStaff(formName) {
+            //添加员工
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    addProjectPerson(this.ruleFormStaff).then((res) =>{
+                        if (res.data.code === ERR_OK) {
+                            this.$message({
+                                message: '添加成功',
+                                type: 'success'
+                            });
+                            this.ApiQueryProjectPerson()
+                            this.dialogVisibleStaff = false
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+                    })
+                } else {
+                    return false;
+                }
+            });
+        },
     }
 }
 </script>
@@ -403,6 +503,28 @@ export default {
                         width: 50%;
                     }
                 }
+            }
+        }
+        .project-yewu {
+            .add-staff {
+                .title {
+                    margin-bottom: 20px;
+                    .handle {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        .el-icon-download {
+                            cursor: pointer;
+                        }
+                    }
+                }
+                h2 {
+                    padding: 10px 0;
+                    font-size: 16px;
+                }
+            }
+            .btn {
+                text-align: right;
             }
         }
     }

@@ -50,24 +50,25 @@
             <div><el-button size="medium" type="primary">搜 索</el-button></div>
         </div>
         <div class="business-add">
-            <el-button size="medium" type="primary" icon="el-icon-plus">新增试题</el-button>
-            <el-button size="medium" type="primary" icon="el-icon-plus">新增学习材料</el-button>
+            <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddExam">新增试题</el-button>
+            <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddStudy">新增学习材料</el-button>
         </div>
         <div class="business-table">   
              <el-table
                 ref="multipleTable"
-                :data="tableData"
+                :data="selDevicePageListexamData"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
                 tooltip-effect="dark"
                 style="width: 100%"
-                @selection-change="handleSelectionChange">
+                >
                 <el-table-column
+                prop="id"
                 label="序号"
                 width="58">
                 <template slot-scope="scope">{{ scope.row.date }}</template>
                 </el-table-column>
                 <el-table-column
-                prop="id"
+                prop="questionId"
                 label="题目编号"
                 width="129">
                 </el-table-column>
@@ -77,7 +78,7 @@
                 width="120">
                 </el-table-column>
                 <el-table-column
-                prop="type"
+                prop="questionType"
                 label="试题类型"
                 width="120">
                 </el-table-column>
@@ -91,8 +92,8 @@
                     align="center">
                     <template slot-scope="scope">
                         <div>
-                            <el-button class="btn-action" @click="handleModify(scope.row)" type="text">查看</el-button>
-                            <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">编辑</el-button>
+                            <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
+                            <el-button class="btn-action" @click="handleModify(scope.row)" type="text">编辑</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -102,6 +103,9 @@
 </template>
 
 <script>
+import elPages from "@/components/elPages.vue";
+import { selDevicePageListexam } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
 
@@ -111,6 +115,16 @@ export default {
     },
     data() {
         return {
+            Params: {
+
+            },
+            selDevicePageListexamParams: {
+                companyId: 0,
+                projectId: 4,
+                pageIndex: 1,
+                pageSize: 10,
+            },
+            selDevicePageListexamData: [],
             businessValue: '',
             businessStatus: '',
             businessTime: '',
@@ -174,14 +188,31 @@ export default {
         }
     },
     created() {
-
+        this.ApiSelDevicePageListexam()
     },
     mounted() {
 
     },
     methods: {
-        handleSelectionChange() {
-
+        ApiSelDevicePageListexam() {
+            //题库列表
+            selDevicePageListexam(this.selDevicePageListexamParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.selDevicePageListexamData = res.data.data.list
+                }
+            })
+        },
+        handleAddExam() {
+            this.$router.push({path: `/examManageToEdit/add`})
+        },
+        handleAddStudy() {
+            this.$router.push({path: `/attendance`})
+        },
+        handleView(row) {
+            this.$router.push({path: `/examManageToEdit/${row.id}`})
+        },
+        handleModify(row) {
+            this.$router.push({path: `/examManageToEdit/detail/${row.id}`})
         }
     }
 }

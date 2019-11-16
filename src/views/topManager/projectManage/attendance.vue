@@ -3,60 +3,62 @@
         <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="个人主页" name="first">
                 <div class="per-index">
-                    <div class="personal-border">
-                        <div class="project-header">
-                            <div class="project-key">姓名：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.name" placeholder="邓蒋文"></el-input>
+                    <el-form :model="ruleForm" ref="ruleForm" :disabled="true" label-width="100px" class="demo-ruleForm">
+                        <div class="personal-border">
+                            <div class="project-header">
+                                <div class="project-key">姓名：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.name" placeholder="邓蒋文"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">身份证号：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.idCard" placeholder="3504**********13"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">银行卡号：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.bankCard" placeholder="6225***********6421"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">开户行：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.bankBranch" placeholder="招商银行鹭江支行"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">手机号：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.phone" placeholder="15959256421"></el-input>
+                            </div>
+                        </div>    
+                        <div class="personal-border">
+                            <div class="project-header">
+                                <div class="project-key">紧急联系人：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.iceName" placeholder="杨火群"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">联系人关系：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.iceType" placeholder="配偶"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">联系人电话：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.icePhone" placeholder="13774899930"></el-input>
+                            </div>
+                        </div>    
+                        <div class="personal-border">
+                            <div class="project-header">
+                                <div class="project-key">职位：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.userPost" placeholder="项目经理"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">岗位：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.userType" placeholder="项目工程部"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">文化程度：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.userEducation" placeholder="大专"></el-input>
+                            </div>
+                            <div class="project-header">
+                                <div class="project-key">籍贯：</div>
+                                <el-input size="medium" class="name_input" v-model="ruleForm.userOrigin" placeholder="福建"></el-input>
+                            </div>
                         </div>
-                        <div class="project-header">
-                            <div class="project-key">身份证号：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.idCard" placeholder="3504**********13"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">银行卡号：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.bankCard" placeholder="6225***********6421"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">开户行：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.bankBranch" placeholder="招商银行鹭江支行"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">手机号：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.phone" placeholder="15959256421"></el-input>
-                        </div>
-                    </div>    
-                    <div class="personal-border">
-                        <div class="project-header">
-                            <div class="project-key">紧急联系人：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.iceName" placeholder="杨火群"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">联系人关系：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.iceType" placeholder="配偶"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">联系人电话：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.icePhone" placeholder="13774899930"></el-input>
-                        </div>
-                    </div>    
-                    <div class="personal-border">
-                        <div class="project-header">
-                            <div class="project-key">职位：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.userPost" placeholder="项目经理"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">岗位：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.userType" placeholder="项目工程部"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">文化程度：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.userEducation" placeholder="大专"></el-input>
-                        </div>
-                        <div class="project-header">
-                            <div class="project-key">籍贯：</div>
-                            <el-input size="medium" class="name_input" v-model="ruleForm.userOrigin" placeholder="福建"></el-input>
-                        </div>
-                    </div>
+                    </el-form>
                     <div class="evaluation-title">
                         <div class="project-key">评价信息：</div>
                         <div class="all-datas">获得评价10条（系统自评8条），评价平均得分3.8颗星，低于平台人均（4.5颗星），低于1颗星评价1次</div>

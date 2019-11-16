@@ -17,7 +17,17 @@ export default {
         },
         {
             name: '企业管理/企业详情',
-            path: '/businessDetail',
+            path: '/businessDetail/:id',
+            component: BusinessDetail
+        },
+        {
+            name: '企业管理/企业详情',
+            path: '/businessDetail/add',
+            component: BusinessDetail
+        },
+        {
+            name: '企业管理/企业详情',
+            path: '/businessDetail/detail/:id',
             component: BusinessDetail
         },
     ]

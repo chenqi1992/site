@@ -36,7 +36,7 @@
             <el-button size="medium" type="primary">查询</el-button>
         </div>
         <div class="business-add">
-            <el-button size="medium" type="primary" icon="el-icon-plus">添加企业</el-button>
+            <el-button size="medium" type="primary" @click="handleAddBus" icon="el-icon-plus">添加企业</el-button>
             <div class="all-data">共搜索到 922 条数据</div>
         </div>
         <div class="business-table">   
@@ -52,7 +52,7 @@
                 class="table-site"
                 ref="multipleTable"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-                :data="tableData"
+                :data="getOrganizationListData"
                 tooltip-effect="dark"
                 style="width: 100%"
                 @selection-change="handleSelectionChange">
@@ -61,9 +61,9 @@
                 width="55">
                 </el-table-column>
                 <el-table-column
+                prop="id"
                 label="企业ID"
                 width="120">
-                <template slot-scope="scope">{{ scope.row.date }}</template>
                 </el-table-column>
                 <el-table-column
                 prop="name"
@@ -132,6 +132,14 @@ export default {
     },
     data() {
         return {
+            getOrganizationListParams: {
+                mediateCode: null,
+                orgName: null,
+                pageIndex: 1,
+                pageSize: 10,
+                serviceAreaCode: null,
+            },
+            getOrganizationListData: [],
             businessValue: '',
             businessStatus: '',
             businessTime: '',
@@ -176,17 +184,22 @@ export default {
         }
     },
     created() {
-        this.ApigetOrganizationList()
+        this.ApiGetOrganizationList()
     },
     mounted() {
 
     },
     methods: {
-        ApigetOrganizationList() {
+        ApiGetOrganizationList() {
             //企业列表
-            getPublicKey().then((res) =>{
+            getOrganizationList(this.getOrganizationListParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
-                    
+                    this.getOrganizationListData = res.data.data.list
+                    this.pagebox = {
+                        totalrows: res.data.data.totalRows,
+                        currentpage: 1,
+                        pageSize: 10
+                    }
                 }
             })
         },
@@ -202,11 +215,14 @@ export default {
         handleSelectionChange(val) {
             this.multipleSelection = val;
         },
-        handleView() {
-            this.$router.push({path: './businessDetail'})
+        handleAddBus() {
+            this.$router.push({path: './businessDetail/add'})
+        },
+        handleView(row) {
+            this.$router.push({path: `./businessDetail/${row.id}`})
         },
         handleModify(row) {
-            this.$router.push({path: `./businessDetail/${row.id}`})
+            this.$router.push({path: `./businessDetail/detail/${row.id}`})
         },
         handleSwitch() {
 

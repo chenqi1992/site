@@ -81,8 +81,11 @@
             </div>
         </el-dialog>
         <div class="business-add">
-            <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleDistribution">归属分配</el-button>
             <div class="all-data">共搜索到 922 条数据</div>
+            <div class="business-btn">
+                <el-button size="medium" type="primary" @click="handleDistribution">归属分配</el-button>
+                <el-button size="medium" type="primary" @click="handleUpdate">更新设备</el-button>
+            </div>
         </div>
         <div class="business-table">   
             <div class="table-title">
@@ -184,7 +187,7 @@ export default {
     data() {
         return {
             selDevicePageListParams:{
-                projectId: null,
+                projectId: 4,
                 companyId: null,
                 pageIndex: 1,
                 pageSize: 10,
@@ -242,13 +245,17 @@ export default {
             this.dialogVisible = false
         },
         handleDistribution() {
+            //归属分配
             this.dialogVisible = true
+        },
+        handleUpdate() {
+            //更新设备
         },
         handleView(row) {
             this.$router.push({path: `./equipmentDetail/${row.id}`})
         },
         handleModify(row) {
-            this.$router.push({path: `./equipmentDetail/${row.id}`})
+            this.$router.push({path: `./equipmentDetail/detail/${row.id}`})
         },
         handleSwitch() {
             this.dialogVisibleEquip = true
@@ -301,7 +308,11 @@ export default {
         }
         .business-add {
             display: flex;
+            justify-content: space-between;
             padding: 20px 0;
+            .business-btn {
+
+            }
         }
         .business-table {
             .table-title {

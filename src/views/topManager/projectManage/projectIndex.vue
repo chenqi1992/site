@@ -130,8 +130,8 @@
                     align="center">
                     <template slot-scope="scope">
                         <div>
-                            <el-button class="btn-action" @click="handleModify(scope.row)" type="text">查看</el-button>
-                            <el-button class="btn-action" @click="handleEdit(scope.row)" type="text">编辑</el-button>
+                            <el-button class="btn-action" size="medium" @click="handleModify(scope.row)" type="text">查看</el-button>
+                            <el-button class="btn-action" size="medium" @click="handleEdit(scope.row)" type="text">编辑</el-button>
                             <!-- <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">开启</el-button> -->
                         </div>
                     </template>
@@ -159,8 +159,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="handleSubPro('ruleForm')">确 定</el-button>
+                <el-button size="medium" @click="dialogVisible = false">取 消</el-button>
+                <el-button size="medium" type="primary" @click="handleSubPro('ruleForm')">确 定</el-button>
             </span>
         </el-dialog>
     </div>

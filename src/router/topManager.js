@@ -89,7 +89,15 @@ export default {
             component: ExamManageList
         }, {
             name: '交底考试/编辑试题',
-            path: '/examManageToEdit', //编辑试题
+            path: '/examManageToEdit/add', //编辑试题
+            component: ExamManageToEdit
+        }, {
+            name: '交底考试/编辑试题',
+            path: '/examManageToEdit/:id', //编辑试题
+            component: ExamManageToEdit
+        }, {
+            name: '交底考试/编辑试题',
+            path: '/examManageToEdit/detail/:id', //编辑试题
             component: ExamManageToEdit
         }, {
             name: '试卷列表/试卷习题编辑',

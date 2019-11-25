@@ -5,7 +5,7 @@
             background
             layout="prev, pager, next"
             :total="pagebox.totalrows"
-            :current-page.sync="pagebox.currentpage"
+            :current-page.sync="pagebox.pageIndex"
             :page-size="pagebox.pageSize"
             @current-change="handleChangepage"
             >
@@ -32,6 +32,9 @@ export default {
     props: {
         pagebox: {
             type: Object
+        },
+        Api: {
+            type: Function
         }
     },
     data() {
@@ -50,8 +53,9 @@ export default {
 
     },
     methods: {
-        handleChangepage() {
-
+        handleChangepage(val) {
+            this.$parent.pagebox.pageIndex = val
+            this.Api()
         },
         handleSizeChange() {
 

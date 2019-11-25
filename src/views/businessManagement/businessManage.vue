@@ -6,16 +6,16 @@
                 <el-input
                     size="medium"
                     class="search-input"
-                    v-model="businessValue"
+                    v-model="getOrganizationListParams.orgName"
                     placeholder="请输入"
                     clearable>
                 </el-input>
             </div>
             <div class="bus-header--input">
                 状态：
-                <el-select size="medium" v-model="businessStatus" placeholder="请选择">
+                <el-select size="medium" v-model="getOrganizationListParams.status" placeholder="请选择">
                     <el-option
-                    v-for="item in options"
+                    v-for="item in statusArr"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -28,25 +28,26 @@
                     size="medium"
                     v-model="businessTime"
                     type="daterange"
+                    value-format="yyyy-MM-dd"
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期">
                 </el-date-picker>
             </div>
-            <el-button size="medium" type="primary">查询</el-button>
+            <el-button size="medium" type="primary" @click="handleSeach">查询</el-button>
         </div>
         <div class="business-add">
             <el-button size="medium" type="primary" @click="handleAddBus" icon="el-icon-plus">添加企业</el-button>
-            <div class="all-data">共搜索到 922 条数据</div>
+            <div class="all-data">共搜索到 {{pagebox.totalrows}} 条数据</div>
         </div>
         <div class="business-table">   
             <div class="table-title">
                 <img class="el-icon-info" src="../../assets/businessManage/！@2x.png" alt="">
-                <span>已选择<i>4</i>项</span>
-                <span>总计：100,000,000人</span>
-                <span>设备：20,000,000个</span>
-                <span>项目：20个</span>
-                <div class="clear">清空</div>
+                <span>已选择<i>{{multipleSelection.length}}</i>项</span>
+                <span>总计：{{totalNum.orgPersonNumber}}人</span>
+                <span>设备：{{totalNum.orgDeviceNumber}}个</span>
+                <span>项目：{{totalNum.orgProjectNumber}}个</span>
+                <div class="clear" @click="handleClear">清空</div>
             </div>
             <el-table
                 class="table-site"
@@ -61,41 +62,54 @@
                 width="55">
                 </el-table-column>
                 <el-table-column
-                prop="id"
+                prop="orgId"
                 label="企业ID"
-                width="120">
+                width="120"
+                align="center">
                 </el-table-column>
                 <el-table-column
-                prop="name"
+                prop="orgName"
                 label="公司名称"
-                width="120">
+                width="120"
+                align="center">
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="orgPersonNumber"
                 label="企业规模"
+                align="center"
                 sortable
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="orgDeviceNumber"
                 label="设备数量"
+                align="center"
                 sortable
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="orgProjectNumber"
                 label="项目数量"
+                align="center"
                 sortable
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="status"
                 label="状态"
+                align="center"
                 show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.status === 0">暂停</div>
+                        <div v-if="scope.row.status === 1">完结</div>
+                        <div v-if="scope.row.status === 2">运行</div>
+                    </template>
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="createTime"
                 label="企业加入时间"
+                :formatter="formatime"
+                align="center"
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
@@ -110,17 +124,14 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <!-- <div style="margin-top: 20px">
-                <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
-                <el-button @click="toggleSelection()">取消选择</el-button>
-            </div> -->
         </div>
-        <elPages></elPages>
+        <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiGetOrganizationList"></elPages>
     </div>
 </template>
 
 <script>
 import elPages from "@/components/elPages.vue";
+import {relative, totalNum} from "@/common/js/mixins.js";
 import { getOrganizationList } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -130,99 +141,64 @@ export default {
     props: {
 
     },
+    mixins: [relative, totalNum],
     data() {
         return {
             getOrganizationListParams: {
-                mediateCode: null,
                 orgName: null,
-                pageIndex: 1,
-                pageSize: 10,
-                serviceAreaCode: null,
+                startCreateTime: null,
+                endCreateTime: null,
+                status: ''
             },
             getOrganizationListData: [],
-            businessValue: '',
-            businessStatus: '',
             businessTime: '',
-            options: [{
-                value: 'TOP_NAVIGATION_BAR',
-                label: '顶部导航栏'
+            statusArr: [{
+                value: '',
+                label: '全部'
                 }, {
-                value: 'BOTTOM_NAVIGATION_BAR',
-                label: '底部导航栏'
-            }],
-            addtime: '',
-            tableData: [{
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-08',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-06',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-07',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
+                value: '0',
+                label: '运行中'
+                },
+                {
+                value: '1',
+                label: '停止使用'
             }],
             multipleSelection: [],
+            pagebox: {
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 10
+            },
         }
     },
     created() {
         this.ApiGetOrganizationList()
     },
     mounted() {
-
     },
     methods: {
         ApiGetOrganizationList() {
             //企业列表
-            getOrganizationList(this.getOrganizationListParams).then((res) =>{
+            this.getOrganizationListParams.startCreateTime = this.businessTime ? this.businessTime[0] : ''
+            this.getOrganizationListParams.endCreateTime = this.businessTime ? this.businessTime[1] : ''
+            getOrganizationList(Object.assign(this.getOrganizationListParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.getOrganizationListData = res.data.data.list
-                    this.pagebox = {
-                        totalrows: res.data.data.totalRows,
-                        currentpage: 1,
-                        pageSize: 10
-                    }
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
-        },
-        toggleSelection(rows) {
-            if (rows) {
-            rows.forEach(row => {
-                this.$refs.multipleTable.toggleRowSelection(row);
-            });
-            } else {
-            this.$refs.multipleTable.clearSelection();
-            }
-        },
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
         },
         handleAddBus() {
             this.$router.push({path: './businessDetail/add'})
         },
         handleView(row) {
-            this.$router.push({path: `./businessDetail/${row.id}`})
+            this.$router.push({path: `./businessDetail/${row.orgId}`})
         },
         handleModify(row) {
-            this.$router.push({path: `./businessDetail/detail/${row.id}`})
+            this.$router.push({path: `./businessDetail/detail/${row.orgId}`})
+        },
+        handleSeach() {
+            this.ApiGetOrganizationList()
         },
         handleSwitch() {
 

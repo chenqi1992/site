@@ -39,7 +39,17 @@ export default {
         },
         {
             name: '账户管理/用户管理/查看',
-            path: '/userManagedetail/:id',
+            path: '/userManageDetail/:id',
+            component: UserManagedetail
+        },
+        {
+            name: '账户管理/用户管理/查看',
+            path: '/userManageDetail/detail/:id',
+            component: UserManagedetail
+        },
+        {
+            name: '账户管理/用户管理/查看',
+            path: '/userManageDetail/add',
             component: UserManagedetail
         },
     ]

@@ -9,6 +9,8 @@ const VisitorInfo = () => import('@/views/topManager/projectManage/visitorInfo.v
 const StaffManageIndex = () => import('@/views/topManager/staffManage/index.vue')
 const StaffManageTabs = () => import('@/views/topManager/staffManage/manage.vue')
 const ExamManageIndex = () => import('@/views/topManager/examManage/index.vue')
+const ExamManageTask = () => import('@/views/topManager/examManage/task.vue')
+const taskDetail = () => import('@/views/topManager/examManage/taskDetail.vue')
 const ExamManageList = () => import('@/views/topManager/examManage/examList.vue')
 const ExamManageToEdit = () => import('@/views/topManager/examManage/examToEdit.vue')
 const ExamManageExerEdit = () => import('@/views/topManager/examManage/exerciseEdit.vue')
@@ -66,7 +68,12 @@ export default {
         },
         {
             name: '项目管理/项目详情/访客信息', 
-            path: '/visitorInfo',
+            path: '/visitorInfo/detail/:id',
+            component: VisitorInfo
+        },
+        {
+            name: '项目管理/项目详情/访客信息',
+            path: '/visitorInfo/:id',
             component: VisitorInfo
         },
         {
@@ -89,7 +96,11 @@ export default {
             component: ExamManageList
         }, {
             name: '交底考试/编辑试题',
-            path: '/examManageToEdit/add', //编辑试题
+            path: '/examManageToEdit/addExam', //编辑试题
+            component: ExamManageToEdit
+        }, {
+            name: '交底考试/编辑试题',
+            path: '/examManageToEdit/addStudy', //编辑学习材料
             component: ExamManageToEdit
         }, {
             name: '交底考试/编辑试题',
@@ -101,12 +112,48 @@ export default {
             component: ExamManageToEdit
         }, {
             name: '试卷列表/试卷习题编辑',
-            path: '/exerciseEdit', //试卷习题编辑
+            path: '/exerciseEdit/addExam', //试卷习题编辑
+            component: ExamManageExerEdit
+        }, {
+            name: '试卷列表/试卷习题编辑',
+            path: '/exerciseEdit/addStudy', //试卷习题编辑
+            component: ExamManageExerEdit
+        }, {
+            name: '试卷列表/试卷习题编辑',
+            path: '/exerciseEdit/detail/:id', //试卷习题编辑
+            component: ExamManageExerEdit
+        }, {
+            name: '试卷列表/试卷习题编辑',
+            path: '/exerciseEdit/:id', //试卷习题编辑
             component: ExamManageExerEdit
         }, {
             name: '交底考试/编辑学习材料',
             path: '/learnigEdit', //编辑学习资料
             component: ExamManageLearning
+        }, {
+            name: '任务列表',
+            path: '/examManagetask', //任务列表
+            component: ExamManageTask
+        },
+        {
+            name: '考试任务管理',
+            path: '/taskDetail/addExam', //任务描述
+            component: taskDetail
+        },
+        {
+            name: '学习任务管理',
+            path: '/taskDetail/addStudy', //任务描述
+            component: taskDetail
+        },
+        {
+            name: '任务描述',
+            path: '/taskDetail/:id', //任务描述
+            component: taskDetail
+        },
+        {
+            name: '任务描述',
+            path: '/taskDetail/detail/:id', //任务描述
+            component: taskDetail
         },
         // {
         //     name: '考试列表/学习考试列表',

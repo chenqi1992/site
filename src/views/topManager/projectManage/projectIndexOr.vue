@@ -103,7 +103,7 @@
                 </el-tab-pane>
                 <el-tab-pane label="设备管理" name="second">
                     <div class="btn">
-                        <el-button size="medium" type="primary" @click="handleSub('ruleForm')">添加设备</el-button>
+                        <el-button size="medium" type="primary" @click="dialogVisibleEquip = true">添加设备</el-button>
                     </div>
                     <el-table
                         ref="multipleTable"
@@ -173,67 +173,74 @@
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
-                <!-- <el-tab-pane label="访客信息" name="third">
+                <el-tab-pane label="访客信息" name="third">
                     <div class="btn">
-                        <el-button size="medium" type="primary" @click="handleSub('ruleForm')">添加访客</el-button>
+                        <el-button size="medium" type="primary" @click="dialogVisibleVisit = true">添加访客</el-button>
                     </div>
                     <el-table
                         ref="multipleTable"
-                        :data="tableData"
+                        :data="queryProjectVisitInfoData"
                         tooltip-effect="dark"
                         style="width: 100%"
-                        @selection-change="handleSelectionChange">
+                        >
                         <el-table-column
-                        label="员工ID"
-                        width="120">
-                        <template slot-scope="scope">{{ scope.row.date }}</template>
-                        </el-table-column>
-                        <el-table-column
-                        prop="name"
-                        label="姓名"
+                        prop="id"
+                        label="访客ID"
                         width="120">
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="职位"
-                        sortable
-                        show-overflow-tooltip>
+                        prop="createTime"
+                        label="登记时间"
+                        :formatter="formatime"
+                        width="120">
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="身份证号"
-                        sortable
-                        show-overflow-tooltip>
+                        prop="visitTime"
+                        label="到访时间"
+                        :formatter="formatime"
+                        width="120">
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="手机号"
-                        sortable
-                        show-overflow-tooltip>
+                        prop="visitName"
+                        label="访客名称"
+                        >
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="籍贯"
-                        show-overflow-tooltip>
+                        prop="visitPersonCount"
+                        label="访客人数"
+                        >
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="班组"
-                        show-overflow-tooltip>
+                        prop="imageInfoStatus"
+                        label="是否录入人脸"
+                        >
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.auditStatus === '1'">是</div>
+                                <div v-if="scope.row.auditStatus === '0'">否</div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                        prop="auditStatus"
+                        label="审核"
+                        >
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.auditStatus === 'PASS'">已通过</div>
+                                <div v-if="scope.row.auditStatus === 'FAIL'">未通过</div>
+                                <div v-if="scope.row.auditStatus === 'WAIT'">待审核</div>
+                            </template>
                         </el-table-column>
                         <el-table-column
                             label="操作"
                             align="center">
                             <template slot-scope="scope">
                                 <div>
-                                    <el-button class="btn-action" @click="handleModify(scope.row)" type="text">查看</el-button>
-                                    <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">编辑</el-button>
-                                    <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">开启</el-button>
+                                    <el-button class="btn-action" @click="handleViewVisit(scope.row)" type="text">查看</el-button>
+                                    <el-button class="btn-action" @click="handleModifyVisit(scope.row)" type="text">编辑</el-button>
                                 </div>
                             </template>
                         </el-table-column>
                     </el-table>
-                </el-tab-pane> -->
+                </el-tab-pane>
             </el-tabs>
             <el-dialog
                 class="add-staff"
@@ -265,13 +272,68 @@
                     <el-button size="medium" type="primary" @click="handleSubStaff('ruleFormStaff')">提 交</el-button>
                 </span>
             </el-dialog>
+            <el-dialog
+                class="add-staff"
+                title="添加设备"
+                :visible.sync="dialogVisibleEquip"
+                width="30%"
+                >
+                <el-form :model="ruleFormEquip" :rules="rulesEquip" ref="ruleFormEquip" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="选择设备">
+                        <el-input v-model="ruleFormEquip.userName" placeholder="请选择设备"></el-input>
+                    </el-form-item>
+                    <el-form-item label="公司名称" prop="phone">
+                        <el-input v-model="ruleFormEquip.phone" placeholder="请填写公司名称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="设备名称">
+                        <el-input v-model="ruleFormEquip.userType" placeholder="请填写设备名称"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="medium" @click="dialogVisibleEquip = false">取 消</el-button>
+                    <el-button size="medium" type="primary" @click="handleSubEquip('ruleFormEquip')">提 交</el-button>
+                </span>
+            </el-dialog>
+            <el-dialog
+                class="add-staff"
+                title="添加访客"
+                :visible.sync="dialogVisibleVisit"
+                width="35%"
+                >
+                <el-form :model="ruleFormVisit" :rules="rulesVisit" ref="ruleFormVisit" label-width="140px" class="demo-ruleForm">
+                    <el-form-item label="访客名称">
+                        <el-input v-model="ruleFormVisit.visitName" placeholder="请选择设备"></el-input>
+                    </el-form-item>
+                    <el-form-item label="到访时间" required>
+                        <el-date-picker
+                            v-model="ruleFormVisit.visitTime"
+                            type="date"
+                            placeholder="选择日期">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="成员数量（人）">
+                        <el-input v-model="ruleFormVisit.visitPersonCount" placeholder="请填写成员数量"></el-input>
+                    </el-form-item>
+                    <el-form-item label="审核状态">
+                        <el-select v-model="ruleForm.auditStatus" placeholder="请选择活动区域">
+                            <el-option label="已通过" value="PASS"></el-option>
+                            <el-option label="未通过" value="FAIL"></el-option>
+                            <el-option label="待审核" value="WAIT"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="medium" @click="dialogVisibleVisit = false">取 消</el-button>
+                    <el-button size="medium" type="primary" @click="handleSubVisit('ruleFormVisit')">提 交</el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo } from "@/api/common.js";
+import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -285,7 +347,8 @@ export default {
             editORview: true,
             btnshow: false,
             dialogVisibleStaff: false,
-
+            dialogVisibleEquip: false,
+            dialogVisibleVisit: false,
             getProjectInfoData: {},
            
             ruleForm: {
@@ -296,12 +359,6 @@ export default {
                 id: this.$route.params.id,
                 userId: 10086,
                 roleType: "ORG_MANAGE"
-            },
-            ruleFormStaff: {
-                phone: '',
-                projectId: this.$route.params.id,
-                userName: "",
-                userType: "MANAGER(项目负责人),MASTER(项目经理),DEPUTY(项目协管),LEADER(班组组长), WORKER(员工)"
             },
             rules: {
                 projectName: [
@@ -317,7 +374,42 @@ export default {
                     { required: true, message: '请选择所在区域', trigger: 'blur' },
                 ],
             },
+            ruleFormStaff: {
+                phone: '',
+                projectId: this.$route.params.id,
+                userName: "",
+                userType: "MANAGER(项目负责人),MASTER(项目经理),DEPUTY(项目协管),LEADER(班组组长), WORKER(员工)"
+            },
             rulesStaff: {
+                userName: [
+                    { required: true, message: '请填写员工姓名', trigger: 'blur' },
+                ],
+                phone: [
+                    { required: true, message: '请填写职位', trigger: 'blur' },
+                ],
+            },
+            ruleFormEquip: {
+                phone: '',
+                projectId: this.$route.params.id,
+                userName: "",
+                userType: "MANAGER(项目负责人),MASTER(项目经理),DEPUTY(项目协管),LEADER(班组组长), WORKER(员工)"
+            },
+            rulesEquip: {
+                userName: [
+                    { required: true, message: '请填写员工姓名', trigger: 'blur' },
+                ],
+                phone: [
+                    { required: true, message: '请填写职位', trigger: 'blur' },
+                ],
+            },
+            ruleFormVisit: {
+                auditStatus: 'WAIT',
+                projectId: Number(this.$route.params.id),
+                visitName: null,
+                visitPersonCount: null,
+                visitTime: null
+            },
+            rulesVisit: {
                 userName: [
                     { required: true, message: '请填写员工姓名', trigger: 'blur' },
                 ],
@@ -338,35 +430,12 @@ export default {
             },
             queryDeviceInfoData: [],
             activeName: 'first',
-            tableData: [{
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-08',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-06',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-07',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }],
+            queryProjectVisitInfoParams: {
+                pageIndex: 1,
+                pageSize: 10,
+                projectId: Number(this.$route.params.id),
+            },
+            queryProjectVisitInfoData: [],
         }
     },
     created() {
@@ -379,6 +448,7 @@ export default {
 
         this.ApiQueryProjectPerson()
         this.ApiQueryDeviceInfo()
+        this.ApiQueryProjectVisitInfo()
     },
     mounted() {
 
@@ -414,6 +484,14 @@ export default {
                             }
                         }
                     }
+                }
+            })
+        },
+        ApiQueryProjectVisitInfo() {
+            //项目访客人员列表
+            queryProjectVisitInfo(this.queryProjectVisitInfoParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryProjectVisitInfoData = res.data.data.list
                 }
             })
         },
@@ -477,6 +555,31 @@ export default {
                     return false;
                 }
             });
+        },
+        handleSubVisit(formName) {
+            //新增访客
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    addProjectVisitInfo(this.ruleFormVisit).then((res) =>{
+                        if (res.data.code === ERR_OK) {
+                            this.$message({
+                                message: '添加成功',
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+                    })
+                } else {
+                    return false;
+                }
+            });
+        },
+        handleViewVisit(row) {
+            this.$router.push({path: `/visitorInfo/${row.id}`})
+        },
+        handleModifyVisit() {
+            this.$router.push({path: `/visitorInfo/detail/${row.id}`})
         },
     }
 }

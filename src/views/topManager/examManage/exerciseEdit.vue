@@ -1,197 +1,136 @@
 <template>
     <div class="exercise-edit">
         <div class="project-header header-bg">
-            <div class="bus-header--input">
-                试卷名称：
-                <el-input
-                    size="medium"
-                    class="search-input"
-                    v-model="businessValue"
-                    placeholder="请输入"
-                    clearable>
-                </el-input>
+            <div class="left">
+                <div class="bus-header--input">
+                    试卷名称：
+                    <el-input
+                        size="medium"
+                        class="search-input"
+                        v-model="selectOneExamData.examName"
+                        placeholder="请输入"
+                        clearable>
+                    </el-input>
+                </div>
+                <div class="bus-header--input">
+                    试卷编号：
+                    <el-input
+                        size="medium"
+                        class="search-input"
+                        v-model="selectOneExamData.id"
+                        placeholder="请输入"
+                        clearable>
+                    </el-input>
+                </div>
+                <div class="bus-header--input">
+                    通过分数：
+                    <el-input
+                        size="medium"
+                        class="search-input short"
+                        v-model="selectOneExamData.passAnExamSorce"
+                        placeholder="请输入"
+                        clearable>
+                    </el-input>
+                </div>
+                <div class="short">100分制</div>
+                <div class="bus-header--input" v-if="addType === 2">
+                    学习时长：
+                    <el-input
+                        size="medium"
+                        class="search-input short"
+                        v-model="selectOneExamData.answerTime"
+                        placeholder="请输入"
+                        clearable>
+                    </el-input>
+                </div>
+                <div class="short" v-if="addType === 2">累计学习时长</div>
             </div>
-            <div class="bus-header--input">
-                试卷编号：
-                <el-input
-                    size="medium"
-                    class="search-input"
-                    v-model="businessValue"
-                    placeholder="请输入"
-                    clearable>
-                </el-input>
-                <!-- <el-select v-model="businessStatus" placeholder="请选择">
-                    <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                    </el-option>
-                </el-select> -->
+            <div>
+                <el-button size="medium" type="primary" @click="handleSave">保存</el-button>
             </div>
-            <div class="bus-header--input">
-                通过分数：
-                <el-input
-                    size="medium"
-                    class="search-input"
-                    v-model="businessValue"
-                    placeholder="请输入"
-                    clearable>
-                </el-input>
-                <!-- <el-select v-model="businessStatus" placeholder="请选择">
-                    <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                    </el-option>
-                </el-select> -->
-            </div>
-            <div>100分制</div>
         </div>
         <div class="business-add">
-            <el-button size="medium" type="primary">关联试题</el-button>
+            <el-button size="medium" type="primary" @click="handleRelevance">关联试题</el-button>
         </div>
         <div class="business-table">   
              <el-table
                 ref="multipleTable"
-                :data="tableData"
+                :data="selectOneExamData.questions"
                 tooltip-effect="dark"
                 style="width: 100%"
-                @selection-change="handleSelectionChange">
-                <!-- <el-table-column
-                type="selection"
-                width="55">
-                </el-table-column> -->
+                >
                 <el-table-column
                 label="序号"
-                width="58">
-                <template slot-scope="scope">{{ scope.row.date }}</template>
+                >
+                    <template slot-scope="scope">
+                        <span>{{scope.$index+(currentpage - 1) * pageSize + 1}} </span>
+                    </template>
                 </el-table-column>
                 <el-table-column
-                prop="id"
+                prop="examQuestionBankId"
                 label="题目编号"
-                width="129">
+                >
                 </el-table-column>
                 <el-table-column
-                prop="name"
+                prop="questionName"
                 label="题目名称"
-                width="120">
-                <!-- sortable
-                show-overflow-tooltip> -->
+                show-overflow-tooltip
+                >
                 </el-table-column>
                 <el-table-column
-                prop="type"
+                prop="questionType"
                 label="试题类型"
-                width="120">
-                <!-- sortable
-                show-overflow-tooltip> -->
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.questionType === '0'">单选</div>
+                        <div v-if="scope.row.questionType === '1'">多选</div>
+                        <div v-if="scope.row.questionType === '2'">学习资料</div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                 prop="remark"
                 label="备注（题干或材料简述）"
+                show-overflow-tooltip
                 width="180">
-                <!-- sortable
-                show-overflow-tooltip> -->
                 </el-table-column>
                 <el-table-column
-                prop="percent"
+                prop="score"
                 label="分值占比"
                 width="180">
-                <!-- sortable
-                show-overflow-tooltip> -->
                 </el-table-column>
                 <el-table-column
                     label="操作"
                     align="center">
                     <template slot-scope="scope">
                         <div>
-                            <el-button class="btn-action" @click="handleModify(scope.row)" type="text">查看</el-button>
-                            <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">删除关联</el-button>
+                            <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
+                            <el-button class="btn-action" @click="handleModify(scope.row)" type="text">删除关联</el-button>
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <div class="project-header">
-            <el-button size="medium" type="primary"> 保 存</el-button>
-            <el-button size="medium" type="primary_cancel">取  消</el-button>
-        </div>
-        </div>
+    </div>
 </template>
 
 <script>
+import elPages from "@/components/elPages.vue";
+import { selectOneExam, editExam, addExam } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
-
+        elPages
     },
     props: {
 
     },
     data() {
         return {
-            businessValue: '',
-            businessStatus: '',
-            businessTime: '',
-            options: [{
-                value: 'TOP_NAVIGATION_BAR',
-                label: '顶部导航栏'
-                }, {
-                value: 'BOTTOM_NAVIGATION_BAR',
-                label: '底部导航栏'
-            }],
-            addtime: '',
-            tableData: [{
-                date: '01',
-                id: '2899',
-                name: '外墙安全手册',
-                type: '单选题 ',
-                remark:'安全类',
-                percent:'10%'
-                }, {
-                date: '02',
-                id: '2900',
-                name: '建筑风力学',
-                type: '单选题 ',
-                remark: '安全类',
-                percent:'10%'
-                }, {
-                date: '03',
-                id: '2901',
-                name: '砌墙守则安全',
-                type: '单选题 ',
-                remark: '安全类',
-                percent:'10%'
-                }, {
-                date: '04',
-                id: '2902',
-                name: '花岗岩选材指南',
-                type: '单选题 ',
-                remark: '安全类',
-                percent:'10%'
-                }, {
-                date: '05',
-                id: '2903',
-                name: '水泥倒水评估',
-                type: '单选题 ',
-                remark: '安全类',
-                percent:'10%'
-                }, {
-                date: '06',
-                id: '2904',
-                name: '人工心肺复苏',
-                type: '单选题 ',
-                remark: '医护类',
-                percent:'10%'
-                }, {
-                date: '07',
-                id: '2905',
-                name: '封顶风险手册',
-                type: '单选题 ',
-                remark: '安全类',
-                percent:'10%'
-            }],
-            multipleSelection: [],
+            addType: '',
+            selectOneExamParams: {
+                id: 0
+            },
+            selectOneExamData: {},
             pagebox: {
                 totalrows: 10,
                 currentpage: 1,
@@ -200,14 +139,70 @@ export default {
         }
     },
     created() {
-
+        if(this.$route.path.indexOf('addExam') > 0) {
+            this.addType = 0
+        } else if (this.$route.path.indexOf('addStudy') > 0) {
+            this.addType = 1
+        } else if (this.$route.path.indexOf('detail') > 0) {
+            this.addType = 2
+        } else {
+            this.addType = 3
+        }
+        this.ApiSelectOneExam()
     },
     mounted() {
 
     },
     methods: {
-        handleSelectionChange() {
-
+        ApiSelectOneExam() {
+            //查询单个试卷信息
+            selectOneExam(this.selectOneExamParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.selectOneExamData = res.data
+                }
+            })
+        },
+        handleSave() {
+            if(this.addType === 2) {
+                editExam({
+                    answerTime: selectOneExamData.answerTime,
+                    companyId: 0,
+                    examName: selectOneExamData.examName,
+                    examType: this.addType === 0 ? 'EXAM':'STUDY',
+                    id: 0,
+                    passAnExamSorce: selectOneExamData.passAnExamSorce
+                }).then((res) =>{
+                    if (res.data.code === ERR_OK) {
+                        this.$message({
+                            message: '保存成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            } else if(this.addType === 0 || this.addType === 1){
+                addExam({
+                    companyId: 0,
+                    examName: selectOneExamData.examName,
+                    examType: this.addType === 0 ? 'EXAM':'STUDY',
+                    passAnExamSorce: selectOneExamData.passAnExamSorce
+                }).then((res) =>{
+                    if (res.data.code === ERR_OK) {
+                        this.$message({
+                            message: '添加成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            }
+        },
+        handleView(row) {
+            this.$router.push({path: `/examManageToEdit/${row.id}`})
+        },
+        handleModify(row) {
+            this.$router.push({path: `/examManageToEdit/detail/${row.id}`})
+        },
+        handleRelevance() {
+            this.$router.push({path: `/examManageIndex?relevance=1`})
         }
     }
 }
@@ -218,10 +213,20 @@ export default {
     .exercise-edit {
         padding: 24px 30px;
         .project-header {
-            .bus-header--input {
-                margin-right: 24px;
-                .el-input {
-                    width: 224px;
+            display: flex;
+            justify-content: space-between;
+            .left {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                .bus-header--input {
+                    margin: 0 10px 15px 0;
+                    .el-input {
+                        width: 224px;
+                    }
+                }
+                .short {
+                    height: 36px;
                 }
             }
         }

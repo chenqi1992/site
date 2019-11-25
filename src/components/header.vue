@@ -14,7 +14,7 @@
 				<img class="tip" src="../assets/question-circle-o@2x.png" alt="">
 			</el-tooltip>
 			<img class="avater" src="../assets/logo.png" alt="">
-			<div class="username">Eleoar</div>
+			<div class="username">{{userName}}</div>
 		</div>
   	</div>
 </template>
@@ -29,7 +29,6 @@ export default {
   },
   methods: {
     logOut() {
-      console.log('hhhh')
       loginOut().then((res) => {
         console.log('退出成功')
         removeStore('authToken');
@@ -48,7 +47,6 @@ export default {
       let loginInfouser = JSON.parse(getStore('loginInfouser'));
       this.userName = loginInfouser.userInfo.userName
 	}
-	console.log(this.$route);
   }
 }
 </script>

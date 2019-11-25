@@ -43,8 +43,14 @@
                 <div>营业执照</div>
                 <div class="detail-upload">
                     <el-upload
-                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :limit='5'
+                        :action="fileUploads.actionUrl"
+                        :data="fileUploads.authToken"
+                        :accept="fileUploads.acceptType"
                         list-type="picture-card"
+                        :on-error="handleUploadError"
+                        :before-upload="(file)=>{ return beforeAvatarUpload('imgUrl', file)}"
+                        :on-success="(response, file, fileList)=>{ return handleAvatarSuccess('imgUrl', response, file, fileList)}"
                         :on-preview="handlePictureCardPreview"
                         :on-remove="handleRemove">
                         <i class="el-icon-plus"></i>
@@ -58,8 +64,14 @@
                 <div>法定代表人证件</div>
                 <div class="detail-upload">
                     <el-upload
-                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :limit='5'
+                        :action="fileUploads.actionUrl"
+                        :data="fileUploads.authToken"
+                        :accept="fileUploads.acceptType"
                         list-type="picture-card"
+                        :on-error="handleUploadError"
+                        :before-upload="(file)=>{ return beforeAvatarUpload('contactImgUr', file)}"
+                        :on-success="(response, file, fileList)=>{ return handleAvatarSuccess('contactImgUr', response, file, fileList)}"
                         :on-preview="handlePictureCardPreview"
                         :on-remove="handleRemove">
                         <i class="el-icon-plus"></i>
@@ -139,6 +151,7 @@
 import elPages from "@/components/elPages.vue";
 import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
+import {setStore, getStore} from '@/utils/utils.js'
 export default {
     components: {
         elPages
@@ -147,6 +160,38 @@ export default {
 
     },
     data() {
+        var validatePhone = (rule, value, callback) => {
+            var myreg = /^1[3-9]\d{9}$/;
+            if (!value) {
+                callback(new Error('请输入手机号'));
+            } else if(!myreg.test(value)) {
+                callback(new Error('手机号格式不正确'));
+            } else {
+                callback();
+            }
+        };
+        let checkorgcode = (rule, value, callback) => {
+            console.log(value);
+            if (!/(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/.test(value)) {
+                callback(new Error('信用代码格式错误'));
+            } else if(!value) {
+                callback();
+            } else {
+                callback();
+            }
+        };
+        var validateId = (rule, value, callback) => {
+            var myreg = /^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/;
+            if (value) {
+                if (!myreg.test(value)) {
+                    callback(new Error('身份证格式不正确'));
+                } else {
+                    callback();
+                }
+            } else {
+                callback();
+            }
+        };
         return {
             editORview: true,
             btnshow: false,
@@ -154,24 +199,36 @@ export default {
             searchBackstageOrganizationParams: {},
             searchBackstageOrganizationData:{}, 
             ruleForm: {
-                name: '',
-                code: '',
-                contactName: '',
-                contactPhone: ''
+                name: null,
+                socialCreditCode: null,
+                contactName: null,
+                contactPhone: null,
+                legalPersonName: null,
+                legalPersonIdCard: null,
+                contactImgUr: [],
+                imgUrl: []
             },
             rules: {
                 name: [
                     { required: true, message: '请输入公司名称', trigger: 'blur' },
                 ],
-                code: [
-                    { required: true, message: '请输入社会统一信用编码', trigger: 'blur' },
+                socialCreditCode: [
+                    { required: true, validator: checkorgcode, trigger: 'blur' },
                 ],
                 contactName: [
                     { required: true, message: '请输入联系人姓名', trigger: 'blur' },
                 ],
                 contactPhone: [
-                    { required: true, message: '请输入联系人手机', trigger: 'blur' },
+                    { required: true, validator: validatePhone, trigger: 'blur' },
                 ],
+                legalPersonIdCard: [
+                    { required: true, validator: validateId, trigger: 'blur' },
+                ]
+            },
+            fileUploads: {
+                actionUrl: 'https://upload-z2.qiniup.com/',
+                acceptType: '.pdf,.doc,.docx,.png,.jpg,.jpeg, .txt',
+                authToken: { token: getStore('qiniuauthToken'), key: ''},
             },
             dialogImageUrl: '',
             dialogVisible: false,
@@ -220,6 +277,7 @@ export default {
             this.editORview = false
             this.ApiSearchBackstageOrganization()
         }
+        this.ApiGeneralToken()
     },
     mounted() {
 
@@ -242,7 +300,16 @@ export default {
                 }
             })
         },
+        ApiGeneralToken() {
+            //七牛上传
+            generalToken().then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    setStore('qiniuauthToken', res.data.data);
+                }
+            })
+        },
         handleSubBusiness(formName) {
+            console.log(this.ruleForm);
             if(!this.btnshowcancle) {
                 //新增企业
                 this.$refs[formName].validate((valid) => {
@@ -253,6 +320,7 @@ export default {
                                     message: '添加成功',
                                     type: 'success'
                                 });
+                                this.$router.push({path: '../businessManage'})
                             } else {
                                 this.$message.error(res.data.message);
                             }
@@ -282,11 +350,47 @@ export default {
             }
         },
         handleRemove(file, fileList) {
+            //移除
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
+            console.log(file);
+            //预览
             this.dialogImageUrl = file.url;
             this.dialogVisible = true;
+        },
+        beforeAvatarUpload(type, file) {
+            //上传前操作参数
+            if(type === 'contactImgUr') {
+                this.fileUploads.authToken.key = `fddbrzj${new Date().getTime()}_${file.name}`;
+            } else {
+                this.fileUploads.authToken.key = `yingyezhizhao${new Date().getTime()}_${file.name}`;
+            }
+            console.log(file);
+        },
+        handleUploadError(err, file, fileList) {
+            //出错提示
+            this.$message({
+                message: "上传出错，请重试！",
+                type: "error",
+                center: true
+            });
+        },
+        handleAvatarSuccess(type, res, file, fileList) {
+            //上传成功
+            console.log(res, file, fileList);
+            if(type === 'contactImgUr') {
+                this.ruleForm.contactImgUr = []
+                fileList.map(item=>{
+                    this.ruleForm.contactImgUr.push(`devhaogongdi.shilongmaoyi.com/${item.response.key}`)
+                })
+            } else {
+                this.ruleForm.imgUrl = []
+                fileList.map(item=>{
+                    this.ruleForm.imgUrl.push(`devhaogongdi.shilongmaoyi.com/${item.response.key}`)
+                })
+            }
+            console.log(fileList);
         },
         handleClick(tab, event) {
             console.log(tab, event);

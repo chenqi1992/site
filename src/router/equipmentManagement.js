@@ -16,6 +16,11 @@ export default {
         },
         {
             name: '设备管理/设备详情',
+            path: '/equipmentDetail/add',
+            component: EquipmentDetail
+        },
+        {
+            name: '设备管理/设备详情',
             path: '/equipmentDetail/:id',
             component: EquipmentDetail
         },

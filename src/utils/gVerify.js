@@ -1,4 +1,4 @@
-// import {getImgCode} from '@/api/common.js'
+import {getImgCode} from '@/api/common.js'
 
 var size = 4;//设置验证码长度
 function GVerify(options) { //创建一个图形验证码对象，接收options对象为参数

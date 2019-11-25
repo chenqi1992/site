@@ -77,7 +77,7 @@ axios.interceptors.response.use(response => {
                     removeStore('authToken');
                     removeStore('refreshToken');
                     removeStore('loginInfouser');
-                    router.push({path: '/login'});
+                    router.push({path: '/home'});
                     return { data: { code: '1001' } }
                 }
             });
@@ -87,7 +87,7 @@ axios.interceptors.response.use(response => {
         removeStore('authToken');
         removeStore('refreshToken');
         removeStore('loginInfouser');
-        router.push({path: '/login'});
+        router.push({path: '/home'});
         return { data: { code: '1001' } }
     } else {
         return response

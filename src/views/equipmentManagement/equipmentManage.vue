@@ -7,16 +7,16 @@
                     <el-input
                         size="medium"
                         class="search-input"
-                        v-model="businessValue"
+                        v-model="selDevicePageListParams.code"
                         placeholder="请输入"
                         clearable>
                     </el-input>
                 </div>
                 <div class="bus-header--input">
                     功能状态：
-                    <el-select size="medium" v-model="businessStatus" placeholder="请选择">
+                    <el-select size="medium" v-model="selDevicePageListParams.deviceStatus" placeholder="请选择">
                         <el-option
-                        v-for="item in options"
+                        v-for="item in statusArr"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
@@ -29,12 +29,13 @@
                         size="medium"
                         v-model="businessTime"
                         type="daterange"
+                        value-format="yyyy-MM-dd"
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期">
                     </el-date-picker>
                 </div>
-                <div class="bus-header--input">
+                <!-- <div class="bus-header--input">
                     归属状态：
                     <el-select size="medium" v-model="businessStatus" placeholder="请选择">
                         <el-option
@@ -44,35 +45,41 @@
                         :value="item.value">
                         </el-option>
                     </el-select>
-                </div>
+                </div> -->
             </div>
             <div>
-                <el-button size="medium" type="primary" @click="handleBtn">按钮</el-button>
+                <el-button size="medium" type="primary" @click="handleBtn">搜索</el-button>
             </div>
         </div>
         <el-dialog
             title="分配设备"
             :visible.sync="dialogVisible"
-            width="30%"
+            width="35%"
             :before-close="handleClose">
-            <el-form ref="form" :model="sizeForm" label-width="80px" size="mini">
-                <el-form-item label="公司名称">
+            <el-form ref="form" :model="sizeForm" :rules="rules" label-width="130px" size="mini">
+                <el-form-item label="设备归属企业ID" prop="companyId">
+                    <el-input v-model="sizeForm.companyId"></el-input>
+                </el-form-item>
+                <el-form-item label="设备别名" prop="name">
                     <el-input v-model="sizeForm.name"></el-input>
                 </el-form-item>
-                <el-form-item label="企业ID">
-                    <el-input v-model="sizeForm.name"></el-input>
+                <el-form-item label="设备唯一标识码" prop="code">
+                    <el-input v-model="sizeForm.code"></el-input>
+                </el-form-item>
+                <el-form-item label="设备型号" prop="model">
+                    <el-input v-model="sizeForm.model"></el-input>
                 </el-form-item>
             </el-form>
             <div>
                 <el-button size="medium" @click="handleClose">取消</el-button>
-                <el-button size="medium" type="primary" @click="handleBtn">提交</el-button>
+                <el-button size="medium" type="primary" @click="handleSub">提交</el-button>
             </div>
         </el-dialog>
         <el-dialog
             :title="openequipTitle"
             :visible.sync="dialogVisibleEquip"
             width="30%"
-            :before-close="handleClose">
+            :before-close="handleCloseEquip">
             <div>关闭设备，系统将不在读取该机器的数据。</div>
             <div>启用设备，系统将根据设备归属，重新配置设备预留用户信息，并定期获取设备上的数据。</div>
             <div>
@@ -90,11 +97,9 @@
         <div class="business-table">   
             <div class="table-title">
                 <img class="el-icon-info" src="../../assets/businessManage/！@2x.png" alt="">
-                <span>已选择<i>4</i>项</span>
-                <span>总计：100,000,000人</span>
-                <span>设备：20,000,000个</span>
-                <span>项目：20个</span>
-                <div class="clear">清空</div>
+                <span>已选择<i>{{multipleSelection.length}}</i>项</span>
+                <span>设备：{{multipleSelection.length}}个</span>
+                <div class="clear" @click="handleClear">清空</div>
             </div>
              <el-table
                 ref="multipleTable"
@@ -113,7 +118,6 @@
                 prop="id"
                 label="设备ID"
                 width="120">
-                <template slot-scope="scope">{{ scope.row.date }}</template>
                 </el-table-column>
                 <el-table-column
                 prop="name"
@@ -129,24 +133,29 @@
                 >
                 </el-table-column>
                 <el-table-column
-                prop="address"
+                prop="companyName"
                 label="归属公司"
                 align="center"
                 show-overflow-tooltip
                 >
                 </el-table-column>
-                <el-table-column
-                prop="companyId"
+                <!-- <el-table-column
+                prop="deviceStatus"
                 label="归属状态"
                 align="center"
                 show-overflow-tooltip
                 >
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column
                 prop="deviceStatus"
                 label="功能状态"
                 align="center"
                 show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.deviceStatus === 'INUSE'">使用中</div>
+                        <div v-if="scope.row.deviceStatus === 'SPARE'">空闲</div>
+                        <div v-if="scope.row.deviceStatus === 'BAD'">故障</div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                 prop="bindTime"
@@ -168,15 +177,15 @@
                 </el-table-column>
             </el-table>
         </div>
-        <elPages></elPages>
+        <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiSearchWorkUserRole"></elPages>
     </div>
 </template>
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { selDevicePageList } from "@/api/common.js";
+import {relative, totalNum} from "@/common/js/mixins.js";
+import { selDevicePageList, addDevice } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
-import {dateformat} from '@/utils/utils.js'
 export default {
     components: {
         elPages
@@ -184,41 +193,57 @@ export default {
     props: {
 
     },
+    mixins: [relative],
     data() {
         return {
             selDevicePageListParams:{
-                projectId: 4,
-                companyId: null,
-                pageIndex: 1,
-                pageSize: 10,
+                code: null,
+                updateDateStart: null,
+                updateDateEnd: null,
+                deviceStatus: null,
+                // projectId: 0,
+                // companyId: 0,
             },
             selDevicePageListData: [],
             dialogVisible: false,
             sizeForm: {
-                name: '',
+                code: null,
+                companyId: 0,
+                model: null,
+                name: null
             },
             rules: {
+                code: [
+                    { required: true, message: '请输入设备唯一标识码', trigger: 'blur' },
+                ],
+                companyId: [
+                    { required: true, message: '请输入设备归属企业ID', trigger: 'blur' },
+                ],
+                model: [
+                    { required: true, message: '请输入设备型号', trigger: 'blur' },
+                ],
                 name: [
-                    { required: true, message: '请输入活动名称', trigger: 'blur' },
+                    { required: true, message: '请输入设备别名', trigger: 'blur' },
                 ]
             },
             openequipTitle: '关闭设备提醒',
             dialogVisibleEquip: false,
-            businessValue: '',
-            businessStatus: '',
             businessTime: '',
-            options: [{
-                value: 'TOP_NAVIGATION_BAR',
-                label: '顶部导航栏'
+            statusArr: [{
+                value: 'INUSE',
+                label: '使用中'
                 }, {
-                value: 'BOTTOM_NAVIGATION_BAR',
-                label: '底部导航栏'
+                value: 'SPARE',
+                label: '空闲'
+                }, {
+                value: 'BAD',
+                label: '故障'
             }],
             addtime: '',
             multipleSelection: [],
             pagebox: {
-                totalrows: 10,
-                currentpage: 1,
+                totalrows: 0,
+                pageIndex: 1,
                 pageSize: 10
             },
         }
@@ -232,9 +257,12 @@ export default {
     methods: {
         ApiSearchWorkUserRole() {
             //查询设备列表
-            selDevicePageList(this.selDevicePageListParams).then((res) =>{
+            this.selDevicePageListParams.updateDateStart = this.businessTime ? this.businessTime[0] : ''
+            this.selDevicePageListParams.updateDateEnd = this.businessTime ? this.businessTime[1] : ''
+            selDevicePageList(Object.assign(this.selDevicePageListParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.selDevicePageListData = res.data.data.list
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },
@@ -263,24 +291,24 @@ export default {
         handleCloseEquip() {
             this.dialogVisibleEquip = false
         },
-        formatime(row, column, cellValue, index) {
-            let date = new Date(cellValue);
-            let getTimeResult
-            cellValue == '--' ? getTimeResult = '--' : getTimeResult = dateformat(date, 'yyyy-MM-dd hh:mm:ss')
-            return getTimeResult;
-        },
-        toggleSelection(rows) {
-            if (rows) {
-            rows.forEach(row => {
-                this.$refs.multipleTable.toggleRowSelection(row);
-            });
-            } else {
-            this.$refs.multipleTable.clearSelection();
-            }
+        handleSub() {
+            addDevice(this.sizeForm).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.$message({
+                        type: 'success',
+                        message: '添加成功'
+                    });
+                    this.ApiSearchWorkUserRole()
+                    this.dialogVisible = false
+                }
+            })
         },
         handleSelectionChange(val) {
-            this.multipleSelection = val;
-        }
+            this.multipleSelection = val
+        },
+        handleClear() {
+            this.$refs.multipleTable.clearSelection();
+        },
     }
 }
 </script>
@@ -292,6 +320,7 @@ export default {
         background-color: #ffffff;
         .business-header {
             display: flex;
+            justify-content: space-between;
             .left {
                 display: flex;
                 flex-wrap: wrap;

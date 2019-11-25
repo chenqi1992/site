@@ -13,25 +13,25 @@
         background: rgba(230, 247, 255, 1);
         border-radius: 4px;
         border: 1px solid rgba(186, 231, 255, 1);
-
         .el-icon-info {
             display: block;
             width: 14px;
             height: 14px;
             margin-right: 8px;
         }
-
+        
         span {
             margin-right: 16px;
-
+            
             i {
                 padding: 0 4px;
                 font-style: normal;
                 color: #1890FF;
             }
         }
-
+        
         .clear {
+            cursor: pointer;
             color: #1890FF;
         }
     }

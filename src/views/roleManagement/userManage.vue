@@ -7,14 +7,14 @@
                     <el-input
                         size="medium"
                         class="search-input"
-                        v-model="businessValue"
+                        v-model="listBackstageUserParams.roleType"
                         placeholder="请输入"
                         clearable>
                     </el-input>
                 </div>
                 <div class="bus-header--input">
                     账户状态：
-                    <el-select size="medium" v-model="businessStatus" placeholder="请选择">
+                    <el-select size="medium" v-model="listBackstageUserParams.status" placeholder="请选择">
                         <el-option
                         v-for="item in options"
                         :key="item.value"
@@ -24,15 +24,14 @@
                     </el-select>
                 </div>
                 <div class="bus-header--input">
-                    加入时间：
-                    <el-date-picker
+                    请输入姓名搜索：
+                    <el-input
                         size="medium"
-                        v-model="businessTime"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
-                    </el-date-picker>
+                        class="search-input"
+                        v-model="listBackstageUserParams.userName"
+                        placeholder="请输入"
+                        clearable>
+                    </el-input>
                 </div>
             </div>
             <div>
@@ -40,43 +39,49 @@
             </div>
         </div>
         <div class="user-btn">
-            <el-button size="medium" type="primary">添加账户</el-button>
-            <el-button size="medium" type="primary">批量删除</el-button>
+            <el-button size="medium" type="primary" @click="handleAddcount">添加账户</el-button>
+            <!-- <el-button size="medium" type="primary">批量删除</el-button> -->
         </div>
         <el-table
             class="table-site"
             ref="multipleTable"
             :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-            :data="tableData"
+            :data="listBackstageUserData"
             tooltip-effect="dark"
             style="width: 100%"
-            @selection-change="handleSelectionChange">
-            <el-table-column
+            >
+            <!-- <el-table-column
             type="selection"
             width="55">
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
+            prop="userName"
             label="姓名"
             width="120">
-            <template slot-scope="scope">{{ scope.row.date }}</template>
             </el-table-column>
             <el-table-column
-            prop="name"
+            prop="orgName"
             label="所属企业"
             width="120">
             </el-table-column>
             <el-table-column
-            prop="address"
+            prop="roleName"
             label="角色名称"
             >
             </el-table-column>
             <el-table-column
-            prop="address"
+            prop="status"
             label="账号状态"
             >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.status === 'PAUSE'">暂停</div>
+                    <div v-if="scope.row.status === 'END'">完结</div>
+                    <div v-if="scope.row.status === 'RUN'">运行</div>
+                </template>
             </el-table-column>
             <el-table-column
-            prop="address"
+            prop="createTime"
+            :formatter="formatime"
             label="创建时间"
             >
             </el-table-column>
@@ -92,12 +97,15 @@
                 </template>
             </el-table-column>
         </el-table>
-        <elPages></elPages>
+        <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiListBackstageUser"></elPages>
     </div>
 </template>
 
 <script>
 import elPages from "@/components/elPages.vue";
+import {relative} from "@/common/js/mixins.js";
+import { listBackstageUser, updateBackstageUserStatus } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
         elPages
@@ -105,8 +113,22 @@ export default {
     props: {
 
     },
+    mixins: [relative],
     data() {
         return {
+            listBackstageUserParams: {
+                pageIndex: 1,
+                pageSize: 10,
+                roleType: null,
+                status: null,
+                userName: null
+            },
+            listBackstageUserData:[],
+            pagebox: {
+                totalrows: 0,
+                currentpage: 1,
+                pageSize: 10
+            },
             tableData: [{
             date: '2016-05-03',
             name: '王小虎',
@@ -145,14 +167,38 @@ export default {
 
     },
     methods: {
-        handleView() {
-            this.$router.push({path: './userManagedetail/add'})
+        ApiListBackstageUser() {
+            //工作人员列表
+            listBackstageUser(this.listBackstageUserParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.listBackstageUserData = res.data.data.list
+                }
+            })
+        },
+        handleAddcount() {
+            this.$router.push({path: './userManageDetail/add'})
+        },
+        handleView(row) {
+            this.$router.push({path: `./userManageDetail/${row.id}`})
         },
         handleEdit(row) {
-            this.$router.push({path: `./userManagedetail/1`})
+            this.$router.push({path: `./userManageDetail/detail/${row.id}`})
         },
-        handleDisable() {
-
+        handleDisable(row) {
+            let open = {
+                status: "0 启用，1 禁用",
+                userId: 0
+            }
+            updateBackstageUserStatus(open).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.$message({
+                        message: '已关闭',
+                        type: 'success'
+                    });
+                } else {
+                    this.$message.error(res.data.message);
+                }
+            })
         }
     }
 }

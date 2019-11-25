@@ -3,20 +3,20 @@
         <div class="role-header">
             <div class="role-header--input">
                 角色类型：
-                <el-select size="medium" v-model="roleValue" placeholder="请选择">
+                <el-select size="medium" v-model="roleTableParams.roleType" placeholder="请选择">
                     <el-option
                     v-for="item in roleArr"
-                    :key="item.roleCode"
-                    :label="item.roleName"
-                    :value="item.roleCode">
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
                     </el-option>
                 </el-select>
             </div>
-            <el-button size="medium" type="primary">查询</el-button>
+            <el-button size="medium" type="primary" @click="handleSearch">查询</el-button>
         </div>
         <div class="user-btn">
             <el-button size="medium" type="primary" @click="handleView('', 'add')">添加角色</el-button>
-            <el-button size="medium" type="plain" @click="handleDelete()">批量删除</el-button>
+            <!-- <el-button size="medium" type="plain" @click="handleDelete()">批量删除</el-button> -->
         </div>
         <el-table
             class="table-site"
@@ -67,13 +67,13 @@
                 </template>
             </el-table-column>
         </el-table>
-        <elPages></elPages>
+        <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiListRole"></elPages>
     </div>
 </template>
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { searchWorkUserRole, listRole, deleteRole } from "@/api/common.js";
+import { searchDictionaryInfo, searchWorkUserRole, listRole, deleteRole } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -93,47 +93,34 @@ export default {
             roleTableParams: {
                 pageIndex: 1,
                 pageSize: 10,
-                roleType: "MEDIATOR",
+                roleType: null,
             },
             roleDeletaParams: [],
-            roleTableData: [{
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-08',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-06',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-07',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }],
+            roleTableData: [],
+            pagebox: {
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 10
+            },
         }
     },
     created() {
-        this.ApiSearchWorkUserRole()
+        this.ApiSearchDictionaryInfo()
+        // this.ApiSearchWorkUserRole()
+        this.ApiListRole()
     },
     mounted() {
         
     },
     methods: {
+        ApiSearchDictionaryInfo() {
+            //查询角色类型
+            searchDictionaryInfo({parentCode: "USER_ROLE_TYPE"}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.roleArr = res.data.data
+                }
+            })
+        },
         ApiSearchWorkUserRole() {
             //查询工作人员角色
             searchWorkUserRole(this.roleArrParams).then((res) =>{
@@ -147,6 +134,7 @@ export default {
             listRole(this.roleTableParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.roleTableData = res.data.data.list
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },
@@ -154,12 +142,11 @@ export default {
             if(type === 'add') {
                 this.$router.push({path: `./roleLimits/add`})
             } else {
-                this.$router.push({path: `./roleLimits/detail/${row.roleCode}`})
+                this.$router.push({path: `./roleLimits/${row.id}`})
             }
         },
         handleModify(row) {
-            console.log(row);
-            this.$router.push({path: `./roleLimits/${row.id}`})
+            this.$router.push({path: `./roleLimits/detail/${row.roleCode}`})
         },
         handleDelete() {
             deleteRole(this.roleDeletaParams).then((res) =>{
@@ -173,6 +160,9 @@ export default {
                     this.$message.error(res.data.message);
                 }
             })
+        },
+        handleSearch() {
+            this.ApiListRole()
         },
         handleSelectionChange(val) {
             this.roleDeletaParams = []

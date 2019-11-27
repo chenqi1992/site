@@ -13,35 +13,35 @@
         <div class="detail-form">
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="150px" class="smsConfig-ruleForm">
                 <div class="form">
-                    <el-form-item :prop="id" label="设备ID：">
+                    <el-form-item prop="id" label="设备ID：">
                         <el-input size="medium" v-model="ruleForm.id" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item :prop="code" label="设备唯一标识码：">
+                    <el-form-item prop="code" label="设备唯一标识码：">
                         <el-input size="medium" v-model="ruleForm.code" :disabled="true"></el-input>
                     </el-form-item>
                 </div>
                 <div class="form">
-                    <el-form-item :prop="name" label="设备别名：" :disabled="btnshow">
-                        <el-input size="medium" v-model="ruleForm.name" ></el-input>
+                    <el-form-item prop="name" label="设备别名：">
+                        <el-input size="medium" v-model="ruleForm.name" :disabled="!btnshow"></el-input>
                     </el-form-item>
-                    <el-form-item :prop="companyName" label="设备归属公司：" :disabled="btnshow">
-                        <el-input size="medium" v-model="ruleForm.companyName"></el-input>
-                    </el-form-item>
-                </div>
-                <div class="form">
-                    <el-form-item :prop="deviceStatus" label="识别度：" :disabled="true">
-                        <el-input size="medium" v-model="ruleForm.deviceStatus"></el-input>
-                    </el-form-item>
-                    <el-form-item :prop="projectName" label="设备归属项目：" :disabled="btnshow">
-                        <el-input size="medium" v-model="ruleForm.projectName"></el-input>
+                    <el-form-item prop="companyName" label="设备归属公司：">
+                        <el-input size="medium" v-model="ruleForm.companyName" :disabled="!btnshow"></el-input>
                     </el-form-item>
                 </div>
                 <div class="form">
-                    <el-form-item :prop="model" label="设备型号：" :disabled="true">
-                        <el-input  size="medium" v-model="ruleForm.model"></el-input>
+                    <el-form-item prop="discern" label="识别度：">
+                        <el-input size="medium" v-model="ruleForm.discern" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item :prop="bindTime" label="设备接入时间：" :disabled="true">
-                        <el-input size="medium" v-model="ruleForm.bindTime"></el-input>
+                    <el-form-item label="设备归属项目：">
+                        <el-input size="medium" v-model="ruleForm.projectName" :disabled="!btnshow"></el-input>
+                    </el-form-item>
+                </div>
+                <div class="form">
+                    <el-form-item prop="model" label="设备型号：">
+                        <el-input  size="medium" v-model="ruleForm.model" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="bindTime" label="设备接入时间：">
+                        <el-input size="medium" v-model="ruleForm.bindTime" :disabled="true"></el-input>
                     </el-form-item>
                 </div>
             </el-form>
@@ -54,32 +54,41 @@
                         class="table-site"
                         ref="multipleTable"
                         :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-                        :data="tableData"
+                        :data="queryDevicePersonData"
                         tooltip-effect="dark"
                         style="width: 100%"
                        >
                         <el-table-column
                         label="预留图片"
-                        width="120">
-                        <template slot-scope="scope">{{ scope.row.date }}</template>
+                        align="center">
+                        <template slot-scope="scope">
+                            <img :src="scope.row.attendanceImg" alt="" width="40" height="40"></template>
+                        </el-table-column>
+                        <el-table-column
+                        prop="id"
+                        label="名单ID"
+                        align="center">
                         </el-table-column>
                         <el-table-column
                         prop="name"
-                        label="名单ID"
-                        width="120">
-                        </el-table-column>
-                        <el-table-column
-                        prop="address"
                         label="姓名"
+                        align="center"
                         >
                         </el-table-column>
                         <el-table-column
-                        prop="address"
+                        prop="idCard"
+                        label="身份证信息"
+                        align="center"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                        prop="remark"
                         label="备注信息"
+                        align="center"
                         >
                         </el-table-column>
                     </el-table>
-                    <elPages></elPages>
+                    <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryDevicePerson"></elPages>
                 </el-tab-pane>
                 <el-tab-pane label="读取数据记录" name="second">
                     <elPages></elPages>
@@ -91,7 +100,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { selectOneDevice, editDevice } from "@/api/common.js";
+import { selectOneDevice, editDevice, queryDevicePerson } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -128,8 +137,8 @@ export default {
                 companyName: [
                     { required: true, message: '请填写设备归属公司', trigger: 'blur' },
                 ],
-                deviceStatus: [
-                    { required: true, message: '请填写公司名称', trigger: 'blur' },
+                discern: [
+                    { required: true, message: '请填识别度', trigger: 'blur' },
                 ],
                 projectName: [
                     { required: true, message: '请填写设备归属项目', trigger: 'blur' },
@@ -142,6 +151,10 @@ export default {
                 ],
             },
             activeName: 'first',
+            queryDevicePersonParams: {
+                deviceId: this.$route.params.id,
+            },
+            queryDevicePersonData: [],
             tableData: [{
             date: '2016-05-03',
             name: '王小虎',
@@ -171,6 +184,11 @@ export default {
             name: '王小虎',
             address: '上海市普陀区金沙江路 1518 弄'
             }],
+            pagebox: {
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 10
+            }
         }
     },
     created() {
@@ -179,6 +197,8 @@ export default {
         } else {
             this.editORview = false
         } 
+        this.ApiSelectOneDevice()
+        this.ApiQueryDevicePerson()
     },
     mounted() {
 
@@ -186,7 +206,7 @@ export default {
     methods: {
         ApiSelectOneDevice() {
             //设备详情
-            selectOneDevice({id: this.$router.params.id}).then((res) =>{
+            selectOneDevice({id: this.$route.params.id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.selectOneDeviceData = res.data.data
                     let data = res.data.data
@@ -199,6 +219,15 @@ export default {
                         }
                     }
                     
+                }
+            })
+        },
+        ApiQueryDevicePerson() {
+            //设备预留名单
+            queryDevicePerson(Object.assign(this.queryDevicePersonParams, this.pagebox)).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryDevicePersonData = res.data.data.list
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },

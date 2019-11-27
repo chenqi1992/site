@@ -88,7 +88,7 @@
             </div>
         </el-dialog>
         <div class="business-add">
-            <div class="all-data">共搜索到 922 条数据</div>
+            <div class="all-data">共搜索到 {{pagebox.totalrows}} 条数据</div>
             <div class="business-btn">
                 <el-button size="medium" type="primary" @click="handleDistribution">归属分配</el-button>
                 <el-button size="medium" type="primary" @click="handleUpdate">更新设备</el-button>
@@ -171,7 +171,7 @@
                         <div>
                             <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
                             <el-button class="btn-action" @click="handleModify(scope.row)" type="text">编辑</el-button>
-                            <el-button class="btn-action" @click="handleSwitch(scope.row)" type="text">开启</el-button>
+                            <!-- <el-button class="btn-action" @click="handleSwitch(scope.row)" type="text">开启</el-button> -->
                         </div>
                     </template>
                 </el-table-column>
@@ -201,14 +201,14 @@ export default {
                 updateDateStart: null,
                 updateDateEnd: null,
                 deviceStatus: null,
-                // projectId: 0,
-                // companyId: 0,
+                projectId: null,
+                companyId: null,
             },
             selDevicePageListData: [],
             dialogVisible: false,
             sizeForm: {
                 code: null,
-                companyId: 0,
+                companyId: '',
                 model: null,
                 name: null
             },

@@ -59,6 +59,9 @@
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
                 </div>
+                <div>
+                    <img src="" alt="">
+                </div>
             </div>
             <div class="item">
                 <div>法定代表人证件</div>
@@ -196,7 +199,9 @@ export default {
             editORview: true,
             btnshow: false,
             btnshowcancle: false,
-            searchBackstageOrganizationParams: {},
+            searchBackstageOrganizationParams: {
+                orgId: this.$route.params.id
+            },
             searchBackstageOrganizationData:{}, 
             ruleForm: {
                 name: null,
@@ -309,7 +314,6 @@ export default {
             })
         },
         handleSubBusiness(formName) {
-            console.log(this.ruleForm);
             if(!this.btnshowcancle) {
                 //新增企业
                 this.$refs[formName].validate((valid) => {
@@ -354,7 +358,6 @@ export default {
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
-            console.log(file);
             //预览
             this.dialogImageUrl = file.url;
             this.dialogVisible = true;
@@ -366,7 +369,6 @@ export default {
             } else {
                 this.fileUploads.authToken.key = `yingyezhizhao${new Date().getTime()}_${file.name}`;
             }
-            console.log(file);
         },
         handleUploadError(err, file, fileList) {
             //出错提示
@@ -378,19 +380,21 @@ export default {
         },
         handleAvatarSuccess(type, res, file, fileList) {
             //上传成功
-            console.log(res, file, fileList);
             if(type === 'contactImgUr') {
                 this.ruleForm.contactImgUr = []
                 fileList.map(item=>{
                     this.ruleForm.contactImgUr.push(`devhaogongdi.shilongmaoyi.com/${item.response.key}`)
                 })
+                // this.ruleForm.contactImgUr = JSON.stringify(this.ruleForm.contactImgUr)
+                this.ruleForm.contactImgUr = String(this.ruleForm.contactImgUr.join(","))
             } else {
                 this.ruleForm.imgUrl = []
                 fileList.map(item=>{
                     this.ruleForm.imgUrl.push(`devhaogongdi.shilongmaoyi.com/${item.response.key}`)
                 })
+                // this.ruleForm.imgUrl = JSON.stringify(this.ruleForm.imgUrl)
+                this.ruleForm.imgUrl = String(this.ruleForm.imgUrl.join(","))
             }
-            console.log(fileList);
         },
         handleClick(tab, event) {
             console.log(tab, event);

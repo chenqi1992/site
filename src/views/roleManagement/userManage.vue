@@ -4,19 +4,20 @@
             <div class="left">
                 <div class="bus-header--input">
                     角色类型：
-                    <el-input
-                        size="medium"
-                        class="search-input"
-                        v-model="listBackstageUserParams.roleType"
-                        placeholder="请输入"
-                        clearable>
-                    </el-input>
+                    <el-select size="medium" v-model="listBackstageUserParams.roleType" placeholder="请选择">
+                        <el-option
+                        v-for="item in roleArr"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                        </el-option>
+                    </el-select>
                 </div>
                 <div class="bus-header--input">
                     账户状态：
                     <el-select size="medium" v-model="listBackstageUserParams.status" placeholder="请选择">
                         <el-option
-                        v-for="item in options"
+                        v-for="item in statusArr"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
@@ -103,7 +104,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import {relative} from "@/common/js/mixins.js";
+import {relative, roleType} from "@/common/js/mixins.js";
 import { listBackstageUser, updateBackstageUserStatus } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -113,7 +114,7 @@ export default {
     props: {
 
     },
-    mixins: [relative],
+    mixins: [relative, roleType],
     data() {
         return {
             listBackstageUserParams: {
@@ -124,6 +125,13 @@ export default {
                 userName: null
             },
             listBackstageUserData:[],
+            statusArr: [{
+                value: '1',
+                label: '停用'
+                }, {
+                value: '0',
+                label: '使用中'
+            }],
             pagebox: {
                 totalrows: 0,
                 currentpage: 1,

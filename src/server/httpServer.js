@@ -17,8 +17,9 @@ const getRefreshToken = () => {
     let data = {
         refreshToken: getStore('refreshToken')
     };
+    console.log(22);
     //qs的使用主要是因为该接口需要表单提交的方式传数据，具体使用方法自行百度
-    return axios.post('/peace/user/refreshToken', data);
+    return axios.post('/haogongdi/user/refreshToken', data);
 }
 
 //添加一个请求拦截器
@@ -46,10 +47,12 @@ axios.interceptors.request.use(config => {
 //添加一个返回拦截器
 axios.interceptors.response.use(response => {
     //对响应数据做些事
+    console.log(response.data.code);
     if (response.data.code === 1002) {
         let config = response.config;
         return getRefreshToken()
             .then(function(res) {
+                console.log(res);
                 let data = res.data;
                 if (data.code === 1000) {
                     setStore('authToken', data.data.authToken);
@@ -90,9 +93,11 @@ axios.interceptors.response.use(response => {
         router.push({path: '/home'});
         return { data: { code: '1001' } }
     } else {
+        console.log(1);
         return response
     }
 }, error => {
+    console.log(error);
     // 下面是接口回调的satus ,因为我做了一些错误页面,所以都会指向对应的报错页面
     if (error.response.status === 403) {
         router.push({

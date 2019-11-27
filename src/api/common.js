@@ -15,6 +15,7 @@ export const generalToken = (data) => {
         method: 'post'
     }, data)
 }
+
 /* 获取图片imgcode */
 export const getImgCode = (data) => {
     return http({
@@ -118,17 +119,25 @@ export const selDevicePageList = (data) => {
 /* 查询单个设备信息 */
 export const selectOneDevice = (data) => {
     return http({
-        url: 'haogongdi/device/selectOneDevice',
+        url: '/haogongdi/device/selectOneDevice',
         method: 'post'
     }, data)
 }
 /* 设备信息编辑 */
 export const editDevice = (data) => {
     return http({
-        url: 'haogongdi/device/editDevice',
+        url: '/haogongdi/device/editDevice',
         method: 'post'
     }, data)
 }
+/* 设备预留名单 */
+export const queryDevicePerson = (data) => {
+    return http({
+        url: '/haogongdi/devicePerson/queryDevicePerson',
+        method: 'post'
+    }, data)
+}
+
 
 
 

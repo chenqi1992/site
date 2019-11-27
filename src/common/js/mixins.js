@@ -1,5 +1,8 @@
 // 时间格式，清空方法
 import { dateformat } from '@/utils/utils.js'
+import { searchDictionaryInfo } from "@/api/common.js";
+import { ERR_OK } from "@/api/reConfig.js";
+
 export const relative = {
     data() {
         return {
@@ -72,6 +75,31 @@ export const totalNum = {
                 orgProjectNumber: 0
             },
             this.$refs.multipleTable.clearSelection();
+        },
+    }
+}
+export const roleType = {
+    data() {
+        return {
+            roleArr: [],
+        }
+    },
+    computed: {},
+    created() {
+        this.ApiSearchDictionaryInfo()
+    },
+    mounted() {},
+    watch: {},
+    methods: {
+        ApiSearchDictionaryInfo() {
+            //查询角色类型
+            searchDictionaryInfo({
+                parentCode: "USER_ROLE_TYPE"
+            }).then((res) => {
+                if (res.data.code === ERR_OK) {
+                    this.roleArr = res.data.data
+                }
+            })
         },
     }
 }

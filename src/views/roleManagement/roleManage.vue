@@ -28,32 +28,39 @@
             @selection-change="handleSelectionChange">
             <el-table-column
             type="selection"
-            width="55">
+            width="55"
+            align="center">
             </el-table-column>
             <el-table-column
             label="角色ID"
             prop="roleCode"
-            width="120">
+            width="120"
+            align="center">
             <template slot-scope="scope">{{ scope.row.date }}</template>
             </el-table-column>
             <el-table-column
             prop="roleName"
             label="角色名称"
-            width="120">
+            width="120"
+            align="center">
             </el-table-column>
             <el-table-column
             prop="createUser"
             label="创建人"
+            align="center"
             >
             </el-table-column>
             <el-table-column
             prop="remark"
             label="备注信息"
+            align="center"
             >
             </el-table-column>
             <el-table-column
             prop="createTime"
             label="创建时间"
+            :formatter="formatime"
+            align="center"
             >
             </el-table-column>
             <el-table-column
@@ -73,6 +80,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
+import {relative, roleType} from "@/common/js/mixins.js";
 import { searchDictionaryInfo, searchWorkUserRole, listRole, deleteRole } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -82,10 +90,10 @@ export default {
     props: {
 
     },
+    mixins: [relative, roleType],
     data() {
         return {
             roleValue: '',
-            roleArr: [],
             roleArrParams: {
                 roleCode: "",
                 roleTypeEnum: "MEDIATOR"
@@ -105,7 +113,6 @@ export default {
         }
     },
     created() {
-        this.ApiSearchDictionaryInfo()
         // this.ApiSearchWorkUserRole()
         this.ApiListRole()
     },
@@ -113,14 +120,6 @@ export default {
         
     },
     methods: {
-        ApiSearchDictionaryInfo() {
-            //查询角色类型
-            searchDictionaryInfo({parentCode: "USER_ROLE_TYPE"}).then((res) =>{
-                if (res.data.code === ERR_OK) {
-                    this.roleArr = res.data.data
-                }
-            })
-        },
         ApiSearchWorkUserRole() {
             //查询工作人员角色
             searchWorkUserRole(this.roleArrParams).then((res) =>{

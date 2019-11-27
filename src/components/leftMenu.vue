@@ -101,7 +101,7 @@ export default {
 					{ id: 12, parentId: 0, menuName: "设备管理", menuUrl: '/equipmentManage' },
 					{ id: 22, parentId: 0, menuName: "账户管理", menuUrl: null },
 					{ id: 23, parentId: 22, menuName: "角色管理", menuUrl: "/roleManage" },
-					{ id: 24, parentId: 22, menuName: "账户管理", menuUrl: "/userManage" },
+					{ id: 24, parentId: 22, menuName: "用户管理", menuUrl: "/userManage" },
 					{ id: 24, parentId: 0, menuName: "平台管理", menuUrl: 'null' },
 				]        }
 				loginInfo = loginInfouser

@@ -5,11 +5,11 @@ if (process.env.NODE_ENV === 'development') {
     hostName = '119.3.216.22:18100/'
 } else if (process.env.NODE_ENV === 'production') {
     if (process.env.VUE_APP_TYPE === "test") {
-        hostName = 'testmicroodr.odrcloud.cn'
+        hostName = '119.3.216.22:18100/'
     } else if (process.env.VUE_APP_TYPE === "dev") {
-        hostName = 'devmicroodr.odrcloud.cn'
+        hostName = '119.3.216.22:18100/'
     } else if (process.env.VUE_APP_TYPE === 'prod') {
-        hostName = 'microodr.odrcloud.cn'
+        hostName = '119.3.216.22:18100/'
     } else {
         hostName = '119.3.216.22:18100/'
     }

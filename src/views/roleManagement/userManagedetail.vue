@@ -16,18 +16,18 @@
                     <h1>基本信息</h1>
                     <div class="detail1">
                         <el-form-item prop="userName" label="姓名：">
-                            <el-input size="medium" v-model="form.userName"></el-input>
+                            <el-input size="medium" v-model="ruleForm.userName"></el-input>
                         </el-form-item>
                         <el-form-item prop="mobilePhone" label="手机号：">
-                            <el-input size="medium" v-model="form.mobilePhone"></el-input>
+                            <el-input size="medium" v-model="ruleForm.mobilePhone"></el-input>
                         </el-form-item>
                     </div>
                     <div class="detail2">
                         <el-form-item label="身份证号：">
-                            <el-input size="medium" v-model="form.idCard"></el-input>
+                            <el-input size="medium" v-model="ruleForm.idCard"></el-input>
                         </el-form-item>
                         <el-form-item label="籍贯：">
-                            <el-input size="medium" v-model="form.native"></el-input>
+                            <el-input size="medium" v-model="ruleForm.native"></el-input>
                         </el-form-item>
                     </div>
                 </div>
@@ -39,57 +39,67 @@
                     <div class="detail1">
                         <!-- <el-form class="clearfix" label-position="left" ref="platform" v-for="(platform, index) in platformdata" :key="index" :rules="platformrules" :model="platform" label-width="80px"> -->
                             <el-form-item label="角色类型：" prop="roletype">
-                                <!-- <el-select v-model="platform.roletype"  @change="changeroletype($event, index)" :disabled="isshowdetail" class="widthauto">
-                                    <el-option v-for="(item, index) in roletypelist" :key="index" :label="item.name" :value="item.code"></el-option>
-                                </el-select> -->
-                                <el-input size="medium" v-model="form.roletype"></el-input>
+                                <el-select size="medium" v-model="ruleForm.roletype" placeholder="请选择">
+                                    <el-option
+                                    v-for="item in roleArr"
+                                    :key="item.code"
+                                    :label="item.name"
+                                    :value="item.code">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                             <el-form-item label="角色名称：" prop="rolename">
                                 <!-- <el-select v-model="platform.rolename" @change="changerolename($event, index)" :disabled="isshowdetail" class="widthauto">
                                     <el-option v-for="(item, rnindex) in platform.rolenamelist" :key="rnindex" :label="item.roleName" :value="item.roleCode"></el-option>
                                 </el-select> -->
-                                <el-input size="medium" v-model="form.rolename"></el-input>
+                                <el-input size="medium" v-model="ruleForm.rolename"></el-input>
                             </el-form-item>
                             <el-form-item label="所属企业：" prop="name">
-                                <el-input size="medium" v-model="form.owned"></el-input>
+                                <el-input size="medium" v-model="ruleForm.owned"></el-input>
                             </el-form-item>
                         <!-- </el-form> -->
                     </div>
                 </div>
             </el-form>
+            <div>从业经历</div>             
             <el-table
-                :data="tableData"
+                :data="listBackstageOrganizationData"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
                 style="width: 100%">
                 <el-table-column
                     prop="date"
                     label="序号"
-                    width="180">
+                    align="center">
                 </el-table-column>
                 <el-table-column
                     prop="name"
                     label="开始时间"
-                    width="180">
+                    align="center">
                 </el-table-column>
                 <el-table-column
                     prop="address"
-                    label="结束时间">
+                    label="结束时间"
+                    align="center">
+                </el-table-column>
+                <el-table-column
+                    prop="name"
+                    label="所属公司"
+                    align="center">
                 </el-table-column>
                 <el-table-column
                     prop="address"
-                    label="所属公司">
+                    label="岗位"
+                    align="center">
+                </el-table-column>
+                <el-table-column
+                    prop="contactPosition"
+                    label="角色"
+                    align="center">
                 </el-table-column>
                 <el-table-column
                     prop="address"
-                    label="岗位">
-                </el-table-column>
-                <el-table-column
-                    prop="address"
-                    label="角色">
-                </el-table-column>
-                <el-table-column
-                    prop="address"
-                    label="日薪">
+                    label="日薪"
+                    align="center">
                 </el-table-column>
             </el-table>
             <!-- <div class="add-table">
@@ -100,7 +110,8 @@
 </template>
 
 <script>
-import { insertBackstageUser, searchBackstageUser, updateBackstageUser } from "@/api/common.js";
+import { insertBackstageUser, searchBackstageUser, updateBackstageUser, listBackstageOrganization } from "@/api/common.js";
+import { roleType } from "@/common/js/mixins.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -109,39 +120,44 @@ export default {
     props: {
 
     },
+    mixins: [roleType],
     data() {
         return {
             editORview: true,
             btnshow: false,
             btnshowcancle: false,
-            searchBackstageUserParams: {},
+            searchBackstageUserParams: {
+                userId: this.$route.params.id
+            },
             searchBackstageUserData: {},
-            form: {
-                name: '',
-                phone: '',
-                IDcard: '',
+            ruleForm: {
+                userName: '测试2',
+                mobilePhone: '18605978075',
+                idCard: '330781198509075398',
                 native: '',
                 roletype: '',
-                rolename: '',
-                owned: ''
+                rolename: '测试22',
+                owned: '万达',
+                userId: this.$route.params.id
             },
-            tableData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1517 弄'
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1519 弄'
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1516 弄'
-            }]
+            rules: {
+                roleName: [
+                    { required: true, message: '请输入角色名称', trigger: 'blur' }
+                ],
+                roleCode: [
+                    { required: true, message: '请输入角色代码', trigger: 'blur' }
+                ],
+                roleType: [
+                    { required: true, message: '请输入角色类型', trigger: 'blur' }
+                ],
+            },
+            listBackstageOrganizationParams: {
+                orgName: "string",
+                pageIndex: 1,
+                pageSize: 10,
+                typeCode: "string"
+            },
+            listBackstageOrganizationData: [],
         }
     },
     created() {
@@ -167,6 +183,18 @@ export default {
             searchBackstageUser(this.searchBackstageUserParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.searchBackstageUserData = res.data.data
+                } else {
+                    this.$message.error(res.data.message);
+                }
+            })
+        },
+        ApiListBackstageOrganization() {
+            //从业经历
+            listBackstageOrganization(this.listBackstageOrganizationParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.listBackstageOrganizationData = res.data.data.list
+                } else {
+                    this.$message.error(res.data.message);
                 }
             })
         },
@@ -185,7 +213,7 @@ export default {
             //     }
             // });
             if (this.btnshowcancle) {
-                updateBackstageUser(this.searchBackstageUserParams).then((res) => {
+                updateBackstageUser(this.ruleForm).then((res) => {
                     if (res.data.code === 1000) {
                         this.$message({
                             type: 'success',
@@ -204,7 +232,7 @@ export default {
 
                 });
             } else {
-                insertBackstageUser(this.searchBackstageUserParams).then((res) => {
+                insertBackstageUser(this.ruleForm).then((res) => {
                     if (res.data.code === 1000) {
                         this.$message({
                             type: 'success',

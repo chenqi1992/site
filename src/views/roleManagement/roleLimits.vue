@@ -18,76 +18,21 @@
                     <el-input size="medium" v-model="roleForm.roleName" placeholder="请输入角色名称"></el-input>
                 </el-form-item>
                 <el-form-item prop="roleCode" label="角色代码：">
-                    <el-input size="medium" v-model="roleForm.roleCode" placeholder="请输入角色代码"></el-input>
+                    <el-input size="medium" v-model="roleForm.roleCode" placeholder="请输入角色代码" :disabled="type === 'detail'"></el-input>
                 </el-form-item>
                 <el-form-item prop="roleType" label="角色类型：">
-                    <el-input size="medium" v-model="roleForm.roleType" placeholder="请输入角色类型"></el-input>
+                    <el-select size="medium" v-model="roleForm.roleType" placeholder="请输入角色类型">
+                        <el-option
+                            v-for="item in roleArr"
+                            :key="item.code"
+                            :label="item.name"
+                            :value="item.code">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="备注信息：">
                     <el-input size="medium" v-model="roleForm.remark" placeholder="请输入备注信息"></el-input>
                 </el-form-item>
-                <!-- <el-form-item label="">
-                    <div>
-                        <div>账户首页</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="公司首页" name="type"></el-checkbox>
-                            <el-checkbox label="项目首页" name="type"></el-checkbox>
-                            <el-checkbox label="专管员工首页" name="type"></el-checkbox>
-                            <el-checkbox label="普通员工首页" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                    <div>
-                        <div>项目管理</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="项目列表" name="type"></el-checkbox>
-                            <el-checkbox label="班组管理" name="type"></el-checkbox>
-                            <el-checkbox label="项目信息管理" name="type"></el-checkbox>
-                            <el-checkbox label="访客管理" name="type"></el-checkbox>
-                            <el-checkbox label="项目安全管理" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                    <div>
-                        <div>班组管理</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="班组列表" name="type"></el-checkbox>
-                            <el-checkbox label="班组信息管理" name="type"></el-checkbox>
-                            <el-checkbox label="班组人员管理" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                    <div>
-                        <div>合同管理</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="合同列表" name="type"></el-checkbox>
-                            <el-checkbox label="发起签署" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                    <div>
-                        <div>考勤管理</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="工作日管理" name="type"></el-checkbox>
-                            <el-checkbox label="请假申请" name="type"></el-checkbox>
-                            <el-checkbox label="考勤审批" name="type"></el-checkbox>
-                            <el-checkbox label="考勤数据统计" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                    <div>
-                        <div>交底考试管理</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="试题管理" name="type"></el-checkbox>
-                            <el-checkbox label="试卷管理" name="type"></el-checkbox>
-                            <el-checkbox label="考试管理" name="type"></el-checkbox>
-                            <el-checkbox label="用户考试" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                    <div>
-                        <div>资资管理</div>
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="考勤核对" name="type"></el-checkbox>
-                            <el-checkbox label="工资核对" name="type"></el-checkbox>
-                            <el-checkbox label="工资管理" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </div>
-                </el-form-item> -->
                 <el-form-item class="rolemenu-box is-required" label="角色权限：">
                     <div class="rolemenu" v-for="(item, index) in rolemenu" :key="index">
                         <div class="parent-name">{{item.parent.menuName}}</div>
@@ -108,6 +53,7 @@
 </template>
 
 <script>
+import {roleType} from "@/common/js/mixins.js";
 import { searchRole, addRole, updateRole, listMenuInfoToRole } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -117,6 +63,7 @@ export default {
     props: {
 
     },
+    mixins: [roleType],
     data() {
         return {
             btnShow: false,
@@ -129,8 +76,8 @@ export default {
             rolecheck: [],
             parentcheck: [],
             searchRoleParams: {
-                roleCode: "INDUSTRY_MEDIATOR",
-                roleTypeEnum: "MEDIATOR"
+                roleCode: this.$route.params.id,
+                // roleTypeEnum: ""
             },
             searchRoleData: {},
             roleForm: {
@@ -198,12 +145,14 @@ export default {
                         let arrauth = roleauth.split(',');
                         console.log(this.rolemenu);
                         for (let j = 0, jl = this.rolemenu.length; j < jl; j++) {
+                            console.log(this.rolemenu[j].child.length);
                             for (let c = 0, cl = this.rolemenu[j].child.length; c < cl; c++) {
                                 for (let i = 0, l = arrauth.length; i < l; i++) {
                                     if (this.rolemenu[j].child[c].id === parseInt(arrauth[i])) {
                                         this.roleForm.roleAuth[j].push(parseInt(arrauth[i]));
                                         if (!~this.parentcheck.indexOf(this.rolemenu[j].parent.id)) {
                                             this.parentcheck.push(this.rolemenu[j].parent.id);
+                                            console.log(this.parentcheck);
                                         }
                                     }
                                 }

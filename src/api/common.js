@@ -100,6 +100,27 @@ export const updateBackstageOrganization = (data) => {
         method: 'post'
     }, data)
 }
+/* 停止企业 */
+export const closeOrg = (data) => {
+    return http({
+        url: '/haogongdi/backstageOrganization/closeOrg',
+        method: 'post'
+    }, data)
+}
+/* 开启企业 */
+export const openOrg = (data) => {
+    return http({
+        url: '/haogongdi/backstageOrganization/openOrg',
+        method: 'post'
+    }, data)
+}
+/* 查询机构信息列表 */
+export const listBackstageOrganization = (data) => {
+    return http({
+        url: '/haogongdi/backstageOrganization/listBackstageOrganization',
+        method: 'post'
+    }, data)
+}
 
 
 /* 新增设备信息 */

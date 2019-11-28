@@ -26,11 +26,11 @@
             tooltip-effect="dark"
             style="width: 100%"
             @selection-change="handleSelectionChange">
-            <el-table-column
+            <!-- <el-table-column
             type="selection"
             width="55"
             align="center">
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
             label="角色ID"
             prop="roleCode"
@@ -141,7 +141,7 @@ export default {
             if(type === 'add') {
                 this.$router.push({path: `./roleLimits/add`})
             } else {
-                this.$router.push({path: `./roleLimits/${row.id}`})
+                this.$router.push({path: `./roleLimits/${row.roleCode}`})
             }
         },
         handleModify(row) {

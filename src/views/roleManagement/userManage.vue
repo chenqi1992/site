@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div>
-                <el-button size="medium" type="primary">查询</el-button>
+                <el-button size="medium" type="primary" @click="handleSearch">查询</el-button>
             </div>
         </div>
         <div class="user-btn">
@@ -58,32 +58,34 @@
             <el-table-column
             prop="userName"
             label="姓名"
-            width="120">
+            align="center">
             </el-table-column>
             <el-table-column
             prop="orgName"
             label="所属企业"
-            width="120">
+            align="center">
             </el-table-column>
             <el-table-column
             prop="roleName"
             label="角色名称"
+            align="center"
             >
             </el-table-column>
             <el-table-column
             prop="status"
             label="账号状态"
+            align="center"
             >
                 <template slot-scope="scope">
-                    <div v-if="scope.row.status === 'PAUSE'">暂停</div>
-                    <div v-if="scope.row.status === 'END'">完结</div>
-                    <div v-if="scope.row.status === 'RUN'">运行</div>
+                    <div v-if="scope.row.status === '0'">使用中</div>
+                    <div v-if="scope.row.status === '1'">已停用</div>
                 </template>
             </el-table-column>
             <el-table-column
             prop="createTime"
             :formatter="formatime"
             label="创建时间"
+            align="center"
             >
             </el-table-column>
             <el-table-column
@@ -93,7 +95,8 @@
                     <div>
                         <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
                         <el-button class="btn-action" @click="handleEdit(scope.row)" type="text">编辑</el-button>
-                        <el-button class="btn-action" @click="handleDisable(scope.row)" type="text">停用</el-button>
+                        <el-button class="btn-action" @click="handleDisable(scope.row, 0)" type="text" v-if="scope.row.status === '1'">启用</el-button>
+                        <el-button class="btn-action" @click="handleDisable(scope.row, 1)" type="text" v-if="scope.row.status === '0'">停用</el-button>
                     </div>
                 </template>
             </el-table-column>
@@ -127,7 +130,7 @@ export default {
             listBackstageUserData:[],
             statusArr: [{
                 value: '1',
-                label: '停用'
+                label: '已停用'
                 }, {
                 value: '0',
                 label: '使用中'
@@ -172,7 +175,7 @@ export default {
 
     },
     mounted() {
-
+        this.ApiListBackstageUser()
     },
     methods: {
         ApiListBackstageUser() {
@@ -180,6 +183,8 @@ export default {
             listBackstageUser(this.listBackstageUserParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.listBackstageUserData = res.data.data.list
+                } else {
+                    this.$message.error(res.data.message);
                 }
             })
         },
@@ -187,20 +192,24 @@ export default {
             this.$router.push({path: './userManageDetail/add'})
         },
         handleView(row) {
-            this.$router.push({path: `./userManageDetail/${row.id}`})
+            this.$router.push({path: `./userManageDetail/${row.userId}`})
         },
         handleEdit(row) {
-            this.$router.push({path: `./userManageDetail/detail/${row.id}`})
+            this.$router.push({path: `./userManageDetail/detail/${row.userId}`})
         },
-        handleDisable(row) {
+        handleSearch() {
+            this.ApiListBackstageUser()
+        },
+        handleDisable(row, type) {
             let open = {
-                status: "0 启用，1 禁用",
-                userId: 0
+                status: type,
+                userId: row.userId
             }
             updateBackstageUserStatus(open).then((res) =>{
                 if (res.data.code === ERR_OK) {
+                    this.ApiListBackstageUser()
                     this.$message({
-                        message: '已关闭',
+                        message: type=='1' ? '已关闭': '已开启',
                         type: 'success'
                     });
                 } else {

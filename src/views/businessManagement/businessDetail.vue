@@ -204,6 +204,7 @@ export default {
             },
             searchBackstageOrganizationData:{}, 
             ruleForm: {
+                orgId: this.$route.params.id,
                 name: null,
                 socialCreditCode: null,
                 contactName: null,
@@ -270,6 +271,7 @@ export default {
         }
     },
     created() {
+        console.log(this.$route.params.id);
         if(this.$route.path.indexOf('detail') > 0) {
             this.editORview = true
             this.btnshowcancle = true
@@ -343,6 +345,7 @@ export default {
                                     message: '保存成功',
                                     type: 'success'
                                 });
+                                this.btnshow = false
                             } else {
                                 this.$message.error(res.data.message);
                             }

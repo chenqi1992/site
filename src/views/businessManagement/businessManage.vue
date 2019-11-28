@@ -119,7 +119,8 @@
                         <div>
                             <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
                             <el-button class="btn-action" @click="handleModify(scope.row)" type="text">编辑</el-button>
-                            <el-button class="btn-action" @click="handleSwitch(scope.row)" type="text">开启</el-button>
+                            <el-button class="btn-action" v-if="scope.row.status === 0" @click="handleSwitchOpen(scope.row)" type="text">开启</el-button>
+                            <el-button class="btn-action" v-if="scope.row.status === 1" @click="handleSwitchStop(scope.row)" type="text">停用</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -132,7 +133,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative, totalNum} from "@/common/js/mixins.js";
-import { getOrganizationList } from "@/api/common.js";
+import { getOrganizationList, closeOrg, openOrg } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -146,8 +147,8 @@ export default {
         return {
             getOrganizationListParams: {
                 orgName: null,
-                startCreateTime: null,
-                endCreateTime: null,
+                startDate: null,
+                endDate: null,
                 status: ''
             },
             getOrganizationListData: [],
@@ -179,8 +180,8 @@ export default {
     methods: {
         ApiGetOrganizationList() {
             //企业列表
-            this.getOrganizationListParams.startCreateTime = this.businessTime ? this.businessTime[0] : ''
-            this.getOrganizationListParams.endCreateTime = this.businessTime ? this.businessTime[1] : ''
+            this.getOrganizationListParams.startDate = this.businessTime ? this.businessTime[0] : ''
+            this.getOrganizationListParams.endDate = this.businessTime ? this.businessTime[1] : ''
             getOrganizationList(Object.assign(this.getOrganizationListParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.getOrganizationListData = res.data.data.list
@@ -200,8 +201,19 @@ export default {
         handleSeach() {
             this.ApiGetOrganizationList()
         },
-        handleSwitch() {
-
+        handleSwitchOpen(row) {
+            closeOrg({orgId: row.orgId}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.ApiGetOrganizationList()
+                }
+            })
+        },
+        handleSwitchStop(row) {
+            openOrg({orgId: row.orgId}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.ApiGetOrganizationList()
+                }
+            })
         }
     }
 }

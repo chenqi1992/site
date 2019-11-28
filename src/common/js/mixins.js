@@ -47,6 +47,7 @@ export const totalNum = {
 
         },
         handleSelectionChange(val) {
+            console.log(val);
             this.multipleSelection = val
             if (val.length > 0) {
                 let orgPersonNumber = [],

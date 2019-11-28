@@ -7,14 +7,14 @@
                     <el-input
                         size="medium"
                         class="search-input"
-                        v-model="formval.projectName"
+                        v-model="queryProjectInfoParams.projectName"
                         placeholder="请输入"
                         clearable>
                     </el-input>
                 </div>
                 <div class="bus-header--input">
                     项目状态：
-                    <el-select size="medium" v-model="formval.projectStatus" placeholder="请选择">
+                    <el-select size="medium" v-model="queryProjectInfoParams.projectStatus" placeholder="请选择">
                         <el-option
                         v-for="item in projectStatusArr"
                         :key="item.value"
@@ -27,16 +27,16 @@
                     开始时间：
                     <el-date-picker
                         size="medium"
-                        v-model="formval.startTime"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
+                        v-model="queryProjectInfoParams.startTime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择日期"
+                    >
                     </el-date-picker>
                 </div>
                 <div class="bus-header--input">
                     管理状态：
-                    <el-select size="medium" v-model="formval.manageStatus" placeholder="请选择">
+                    <el-select size="medium" v-model="queryProjectInfoParams.manageStatus" placeholder="请选择">
                         <el-option
                         v-for="item in manageStatusArr"
                         :key="item.value"
@@ -47,21 +47,21 @@
                 </div>
             </div>
             <div>
-                <el-button size="medium" type="primary" @click="handleBtn">按钮</el-button>
+                <el-button size="medium" type="primary" @click="handleBtn">搜索</el-button>
             </div>
         </div>
         <div class="business-add">
             <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddPro">添加项目</el-button>
-            <div class="all-data">共搜索到 922 条数据</div>
+            <div class="all-data">共搜索到 {{pagebox.totalrows}} 条数据</div>
         </div>
         <div class="business-table">   
             <div class="table-title">
                 <img class="el-icon-info" src="../../../assets/businessManage/！@2x.png" alt="">
-                <span>已选择<i>4</i>项</span>
-                <span>总计：100,000,000人</span>
-                <span>设备：20,000,000个</span>
-                <span>项目：20个</span>
-                <div class="clear">清空</div>
+                <span>已选择<i>{{multipleSelection.length}}</i>项</span>
+                <span>总计：{{totalNum.orgPersonNumber}}人</span>
+                <span>设备：{{totalNum.orgDeviceNumber}}个</span>
+                <span>项目：{{totalNum.orgProjectNumber}}个</span>
+                <div class="clear" @click="handleClear">清空</div>
             </div>
              <el-table
                 ref="multipleTable"
@@ -132,12 +132,11 @@
                         <div>
                             <el-button class="btn-action" size="medium" @click="handleModify(scope.row)" type="text">查看</el-button>
                             <el-button class="btn-action" size="medium" @click="handleEdit(scope.row)" type="text">编辑</el-button>
-                            <!-- <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">开启</el-button> -->
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
-            <elPages :pagebox="pagebox"></elPages>
+            <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
         </div>
         <el-dialog
             title="添加项目"
@@ -168,7 +167,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import {relative} from "@/common/js/mixins.js";
+import {relative, totalNum} from "@/common/js/mixins.js";
 import { queryProjectInfo, addProjectInfo } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -178,7 +177,7 @@ export default {
     props: {
 
     },
-    mixins: [relative],
+    mixins: [relative, totalNum],
     data() {
         return {
             dialogVisible: false,
@@ -189,14 +188,6 @@ export default {
                 projectName: "",
                 projectStatus: "",
                 startTime: null,
-                pageIndex: 1,
-                pageSize: 10
-            },
-            formval: {
-                manageStatus: '',
-                projectName: '',
-                projectStatus: '',
-                startTime: '',
             },
             ruleForm: {
                 projectName: '',
@@ -239,8 +230,8 @@ export default {
             queryProjectInfoData: [],
             multipleSelection: [],
             pagebox: {
-                totalrows: 10,
-                currentpage: 1,
+                totalrows: 0,
+                pageIndex: 1,
                 pageSize: 10
             },
         }
@@ -254,14 +245,10 @@ export default {
     methods: {
         ApiQueryProjectInfo() {
             //项目列表
-            queryProjectInfo(this.queryProjectInfoParams).then((res) =>{
+            queryProjectInfo(Object.assign(this.queryProjectInfoParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryProjectInfoData = res.data.data.list
-                    this.pagebox = {
-                        totalrows: res.data.data.totalRows,
-                        currentpage: 1,
-                        pageSize: 10
-                    }
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },
@@ -272,14 +259,6 @@ export default {
             })
         },
         handleBtn() {
-            for (const key in this.formval) {
-                if (this.formval.hasOwnProperty(key)) {
-                    const element = this.formval[key]
-                    if(this.queryProjectInfoParams[key] !== undefined) {
-                        this.queryProjectInfoParams[key] = element
-                    }
-                }
-            }
             this.ApiQueryProjectInfo()
         },
         handleAddPro() {
@@ -326,7 +305,7 @@ export default {
                 .bus-header--input {
                     margin: 0 24px 20px 0;
                     .el-input {
-                        width: 200px;
+                        width: 240px;
                     }
                 }
             }

@@ -38,12 +38,12 @@ const menuico = { 10199: require('../assets/leftmenu/平台管理@2x.png'),
 				10000: require('../assets/leftmenu/账户管理@2x.png'), 
 				10196: require('../assets/leftmenu/设备管理@2x.png'), 
 				10195: require('../assets/leftmenu/企业管理@2x.png'), 
-				24: require('../assets/leftmenu/交底考试@2x.png'), 
+				10214: require('../assets/leftmenu/交底考试@2x.png'), 
 				10202: require('../assets/leftmenu/员工管理@2x.png'),
 				10206:require('../assets/leftmenu/考勤管理@2x.png'),
-				31:require('../assets/leftmenu/账户中心@2x.png'),
+				10201:require('../assets/leftmenu/账户中心@2x.png'),
 				10200: require('../assets/leftmenu/账户首页-选中@2x.png'),
-				42:require('../assets/leftmenu/pay-circle-o@2x.png')}
+				10213:require('../assets/leftmenu/pay-circle-o@2x.png')}
 export default {
 	data() {
 		return {

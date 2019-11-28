@@ -59,21 +59,18 @@
                         prop="userType"
                         label="职位"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="idCard"
                         label="身份证号"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="phone"
                         label="手机号"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
@@ -127,7 +124,6 @@
                         prop="deviceStatus"
                         label="设备状态"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
                             <template slot-scope="scope">
                                 <div v-if="scope.row.deviceStatus === 'INUSE'">使用中</div>
@@ -139,14 +135,12 @@
                         prop="userCount"
                         label="设备员工数"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="visitCount"
                         label="设备访客数"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
@@ -333,6 +327,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
+import {relative} from "@/common/js/mixins.js";
 import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -342,6 +337,7 @@ export default {
     props: {
 
     },
+    mixins: [relative],
     data() {
         return {
             editORview: true,
@@ -523,11 +519,11 @@ export default {
         handleSelectionChange() {
 
         },
-        handleView() {
-            this.$router.push({path: `/attendance`})
+        handleView(row) {
+            this.$router.push({path: `/attendance/${row.id}`})
         },
-        handleModify() {
-            this.$router.push({path: `/projectIndexOr/detail/${row.id}`})
+        handleModify(row) {
+            this.$router.push({path: `/attendance/detail/${row.id}`})
         },
         handleDelete() {
             this.$router.push({path: `/projectIndexOr/detail/${row.id}`})

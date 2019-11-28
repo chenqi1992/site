@@ -57,12 +57,17 @@ export default {
             component: ProjectDetail
         },
         {
-            name: '项目管理/项目详情/考勤数据',
-            path: '/attendance',
+            name: '项目管理/项目详情/员工详情',
+            path: '/attendance/:id',
             component: Attendance
         },
         {
-            name: '项目管理/项目详情/员工详情', //评价页
+            name: '项目管理/项目详情/员工详情',
+            path: '/attendance/detail/:id',
+            component: Attendance
+        },
+        {
+            name: '项目管理/项目详情/员工评价', //评价页
             path: '/employeeDetail',
             component: EmployeeDetail
         },

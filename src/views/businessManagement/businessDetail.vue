@@ -93,54 +93,45 @@
                         class="table-site"
                         ref="multipleTable"
                         :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-                        :data="tableData"
+                        :data="queryProjectInfoData"
                         tooltip-effect="dark"
                         style="width: 100%">
                         <el-table-column
+                        prop="id"
                         label="项目ID"
-                        width="120">
-                        <template slot-scope="scope">{{ scope.row.date }}</template>
+                        >
                         </el-table-column>
                         <el-table-column
-                        prop="name"
+                        prop="projectName"
                         label="项目名称"
                         width="120">
                         </el-table-column>
                         <el-table-column
-                        prop="address"
                         label="负责人"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="address"
                         label="项目地址"
-                        sortable
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="设备数"
-                        sortable
+                        prop="deviceCount"
+                        label="设备数量"
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
-                        prop="address"
+                        prop="userCount"
                         label="项目员工数"
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
-                        prop="address"
-                        label="开始打卡时间"
-                        show-overflow-tooltip>
-                        </el-table-column>
-                        <el-table-column
-                        prop="address"
-                        label="最后打卡时间"
+                        prop="startTime"
+                        label="项目开始时间"
                         show-overflow-tooltip>
                         </el-table-column>
                     </el-table>
-                    <elPages></elPages>
+                    <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
                 </el-tab-pane>
                 <el-tab-pane label="员工信息" name="second">
                     <elPages></elPages>
@@ -152,7 +143,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken } from "@/api/common.js";
+import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken, queryProjectInfo } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 import {setStore, getStore} from '@/utils/utils.js'
 export default {
@@ -239,6 +230,19 @@ export default {
             dialogImageUrl: '',
             dialogVisible: false,
             activeName: 'first',
+            queryProjectInfoParams: {
+                manageStatus: null,
+                roleType: "ORG_MANAGE",
+                oderBy: null,
+                projectName: "",
+                projectStatus: "",
+                startTime: null,
+            },
+            pagebox: {
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 10
+            },
             tableData: [{
             date: '2016-05-03',
             name: '王小虎',
@@ -271,7 +275,6 @@ export default {
         }
     },
     created() {
-        console.log(this.$route.params.id);
         if(this.$route.path.indexOf('detail') > 0) {
             this.editORview = true
             this.btnshowcancle = true
@@ -312,6 +315,15 @@ export default {
             generalToken().then((res) =>{
                 if (res.data.code === ERR_OK) {
                     setStore('qiniuauthToken', res.data.data);
+                }
+            })
+        },
+        ApiQueryProjectInfo() {
+            //项目列表
+            queryProjectInfo(Object.assign(this.queryProjectInfoParams, this.pagebox)).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryProjectInfoData = res.data.data.list
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },

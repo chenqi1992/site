@@ -63,7 +63,7 @@
                 label="序号"
                 >
                     <template slot-scope="scope">
-                        <span>{{scope.$index+(currentpage - 1) * pageSize + 1}} </span>
+                        <span>{{scope.$index+(pageIndex - 1) * pageSize + 1}} </span>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -115,7 +115,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { selectOneExam, editExam, addExam } from "@/api/common.js";
+import { selectOneExam, editExam, addExam, selExamQuestionPageList } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -128,12 +128,21 @@ export default {
         return {
             addType: '',
             selectOneExamParams: {
-                id: 0
+                id: this.$route.params.id
             },
             selectOneExamData: {},
+            selExamQuestionPageListParams: {
+                companyId: 0,
+                examInfoId: 0,
+                pageIndex: 0,
+                pageSize: 0,
+                questionId: 0,
+                questionName: "string",
+            },
+            selExamQuestionPageListData: [],
             pagebox: {
                 totalrows: 10,
-                currentpage: 1,
+                pageIndex: 1,
                 pageSize: 10
             },
         }
@@ -149,6 +158,7 @@ export default {
             this.addType = 3
         }
         this.ApiSelectOneExam()
+        this.ApiSelExamQuestionPageList()
     },
     mounted() {
 
@@ -162,15 +172,23 @@ export default {
                 }
             })
         },
+        ApiSelExamQuestionPageList() {
+            //查询单个试卷信息
+            selExamQuestionPageList(this.selExamQuestionPageListParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.selExamQuestionPageListData = res.data.data.list
+                }
+            })
+        },
         handleSave() {
             if(this.addType === 2) {
                 editExam({
-                    answerTime: selectOneExamData.answerTime,
+                    answerTime: this.selectOneExamData.answerTime,
                     companyId: 0,
-                    examName: selectOneExamData.examName,
+                    examName: this.selectOneExamData.examName,
                     examType: this.addType === 0 ? 'EXAM':'STUDY',
                     id: 0,
-                    passAnExamSorce: selectOneExamData.passAnExamSorce
+                    passAnExamSorce: this.selectOneExamData.passAnExamSorce
                 }).then((res) =>{
                     if (res.data.code === ERR_OK) {
                         this.$message({
@@ -182,9 +200,10 @@ export default {
             } else if(this.addType === 0 || this.addType === 1){
                 addExam({
                     companyId: 0,
-                    examName: selectOneExamData.examName,
+                    examName: this.selectOneExamData.examName,
                     examType: this.addType === 0 ? 'EXAM':'STUDY',
-                    passAnExamSorce: selectOneExamData.passAnExamSorce
+                    passAnExamSorce: this.selectOneExamData.passAnExamSorce,
+                    sorce: 100
                 }).then((res) =>{
                     if (res.data.code === ERR_OK) {
                         this.$message({
@@ -202,7 +221,7 @@ export default {
             this.$router.push({path: `/examManageToEdit/detail/${row.id}`})
         },
         handleRelevance() {
-            this.$router.push({path: `/examManageIndex?relevance=1`})
+            this.$router.push({path: `/examManageIndex?relevance=${this.$route.params.id}`})
         }
     }
 }

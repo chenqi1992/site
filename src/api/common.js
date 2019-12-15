@@ -423,6 +423,20 @@ export const addExam = (data) => {
         method: 'post'
     }, data)
 }
+/* 试卷绑定题目时分页查询考题信息 */
+export const selExamQuestionPageList = (data) => {
+    return http({
+        url: '/haogongdi/exam/selExamQuestionPageList',
+        method: 'post'
+    }, data)
+}
+/* 关联绑定题目到试卷 */
+export const examBindQuestions = (data) => {
+    return http({
+        url: '/haogongdi/exam/examBindQuestions',
+        method: 'post'
+    }, data)
+}
 
 
 /* 新增考题 */
@@ -453,8 +467,13 @@ export const editQuestion = (data) => {
         method: 'post'
     }, data)
 }
-
-
+/* 删除题目选项 */
+export const delQuestionOption = (data) => {
+    return http({
+        url: '/haogongdi/exam/delQuestionOption',
+        method: 'post'
+    }, data)
+}
 
 
 /* 分页查询任务信息 */

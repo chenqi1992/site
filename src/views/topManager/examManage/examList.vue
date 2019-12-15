@@ -6,29 +6,29 @@
                 <el-input
                     size="medium"
                     class="search-input"
-                    v-model="businessValue"
+                    v-model="selExamPageListParams.name"
                     placeholder="请输入"
                     clearable>
                 </el-input>
             </div>
-            <div class="bus-header--input">
+            <!-- <div class="bus-header--input">
                 试卷编号：
                 <el-input
                     size="medium"
                     class="search-input"
-                    v-model="businessValue"
+                    v-model="selExamPageListParams.companyId"
                     placeholder="请输入"
                     clearable>
                 </el-input>
-            </div>
-            <el-button size="medium" type="primary">搜 索</el-button>
+            </div> -->
+            <el-button size="medium" type="primary" @click="handleSearch">搜 索</el-button>
         </div>
         <div class="business-add">
             <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddexam">新增试卷</el-button>
             <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleStudy">新增学习材料</el-button>
         </div>
         <div class="business-table">   
-             <el-table
+            <el-table
                 ref="multipleTable"
                 :data="selExamPageListData"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
@@ -40,7 +40,7 @@
                 width="120"
                 align="center">
                     <template slot-scope="scope">
-                        <span>{{scope.$index+(currentpage - 1) * pageSize + 1}} </span>
+                        <span>{{scope.$index+(pagebox.pageIndex - 1) * pagebox.pageSize + 1}} </span>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -72,6 +72,7 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiSelExamPageList"></elPages>
         </div>
     </div>
 </template>
@@ -82,7 +83,7 @@ import { selExamPageList } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
-
+        elPages
     },
     props: {
 
@@ -93,61 +94,12 @@ export default {
                 companyId: 0,
                 pageIndex: 1,
                 pageSize: 10,
-                name: 0,
+                name: '',
             },
-
             selExamPageListData: [],
-            businessValue: '',
-            businessStatus: '',
-            businessTime: '',
-            options: [{
-                value: 'TOP_NAVIGATION_BAR',
-                label: '顶部导航栏'
-                }, {
-                value: 'BOTTOM_NAVIGATION_BAR',
-                label: '底部导航栏'
-            }],
-            addtime: '',
-            tableData: [{
-                date: '1',
-                id: '2899',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-                }, {
-                date: '2',
-                id: '2900',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-                }, {
-                date: '3',
-                id: '2901',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-                }, {
-                date: '4',
-                id: '3901',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-                }, {
-                date: '5',
-                id: '4901',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-                }, {
-                date: '6',
-                id: '5901',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-                }, {
-                date: '7',
-                id: '6901',
-                name: 'xx 工地进场考试',
-                remark:'安全类'
-            }],
-            multipleSelection: [],
             pagebox: {
-                totalrows: 10,
-                currentpage: 1,
+                totalrows: 0,
+                pageIndex: 1,
                 pageSize: 10
             },
         }
@@ -163,10 +115,13 @@ export default {
             //试题列表
             selExamPageList(this.selExamPageListParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
-                    this.selExamPageListData = res.data
-                    this.ruleForm = res.data
+                    this.selExamPageListData = res.data.data.list
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
+        },
+        handleSearch() {
+            this.ApiSelExamPageList()
         },
         handleAddexam() {
             this.$router.push({path: './exerciseEdit/addExam'})

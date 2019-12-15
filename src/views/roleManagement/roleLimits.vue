@@ -81,9 +81,9 @@ export default {
             },
             searchRoleData: {},
             roleForm: {
-                roleName: '测试1',
-                roleCode: 'test',
-                roleType: 'test',
+                roleName: '',
+                roleCode: '',
+                roleType: '',
                 remark: '',
                 roleAuth: []
             },

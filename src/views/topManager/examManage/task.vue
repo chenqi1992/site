@@ -6,7 +6,7 @@
                 <el-input
                     size="medium"
                     class="search-input"
-                    v-model="businessValue"
+                    v-model="selTaskPageListParams.taskName"
                     placeholder="请输入"
                     clearable>
                 </el-input>
@@ -16,7 +16,7 @@
                 <el-input
                     size="medium"
                     class="search-input"
-                    v-model="businessValue"
+                    v-model="selTaskPageListParams.taskName"
                     placeholder="请输入"
                     clearable>
                 </el-input>
@@ -30,31 +30,33 @@
         <div class="business-table">   
             <el-table
                 ref="multipleTable"
-                :data="selDevicePageListexamData"
+                :data="selTaskPageListData"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
                 tooltip-effect="dark"
                 style="width: 100%"
                 >
                 <el-table-column
-                prop="id"
                 label="序号"
-                width="58">
-                <template slot-scope="scope">{{ scope.row.date }}</template>
+                align="center"
+                >
+                    <template slot-scope="scope">
+                        <span>{{scope.$index+(pageIndex - 1) * pageSize + 1}} </span>
+                    </template>
                 </el-table-column>
                 <el-table-column
                 prop="questionId"
                 label="考试编号"
-                width="129">
+                align="center">
                 </el-table-column>
                 <el-table-column
                 prop="name"
                 label="试卷名称"
-                width="120">
+                align="center">
                 </el-table-column>
                 <el-table-column
                 prop="questionType"
                 label="考生范围"
-                width="120">
+                align="center">
                 </el-table-column>
                 <el-table-column
                     label="操作"
@@ -67,7 +69,7 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiGetOrganizationList"></elPages>
+            <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiSelTaskPageList"></elPages>
         </div>
     </div>
 </template>
@@ -78,7 +80,7 @@ import { selTaskPageList } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
-
+        elPages
     },
     props: {
 
@@ -88,13 +90,15 @@ export default {
             Params: {
 
             },
-            selDevicePageListexamParams: {
-                companyId: 0,
+            selTaskPageListParams: {
+                id: 0,
+                taskName: '',
+                taskType: '',
                 projectId: 4,
                 pageIndex: 1,
                 pageSize: 10,
             },
-            selDevicePageListexamData: [],
+            selTaskPageListData: [],
             businessValue: '',
             businessStatus: '',
             businessTime: '',
@@ -152,31 +156,32 @@ export default {
             multipleSelection: [],
             pagebox: {
                 totalrows: 10,
-                currentpage: 1,
+                pageIndex: 1,
                 pageSize: 10
             },
         }
     },
     created() {
-        // this.ApiSelDevicePageListexam()
+        this.ApiSelTaskPageList()
     },
     mounted() {
 
     },
     methods: {
-        ApiSelDevicePageListexam() {
-            //题库列表
-            selDevicePageListexam(this.selDevicePageListexamParams).then((res) =>{
+        ApiSelTaskPageList() {
+            //任务列表
+            selTaskPageList(this.selTaskPageListParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
-                    this.selDevicePageListexamData = res.data.data.list
+                    this.selTaskPageListData = res.data.data.list
+                    this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },
         handleAddExam() {
-            this.$router.push({path: `/examManageToEdit/add`})
+            this.$router.push({path: `/taskDetail/addExam`})
         },
         handleAddStudy() {
-            this.$router.push({path: `/attendance`})
+            this.$router.push({path: `/taskDetail/addStudy`})
         },
         handleView(row) {
             this.$router.push({path: `/examManageToEdit/${row.id}`})

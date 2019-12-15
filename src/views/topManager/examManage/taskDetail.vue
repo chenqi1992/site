@@ -27,7 +27,7 @@
                     <el-button v-show="!btnshow" @click="btnshow = true" size="medium" type="primary">编辑</el-button>
                     <div v-show="btnshow">
                         <el-button size="medium" v-show="btnshowcancle" @click="btnshow = false">取消</el-button>
-                        <el-button size="medium" type="primary" @click="handleSub('ruleForm')">保存</el-button>
+                        <el-button size="medium" type="primary" @click="handleSub()">保存</el-button>
                     </div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
         </div>
         <div class="task-bottom">
             <div class="title">参与人员</div>
-            <div class="task-index">
+            <div class="task-index business-table">
                 <div class="project-header header-bg">
                     <div class="bus-header--input">
                         姓名：
@@ -160,7 +160,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { taskBindPersonPageList } from "@/api/common.js";
+import { taskBindPersonPageList, addTask } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -206,8 +206,8 @@ export default {
                 }
             ],
             pagebox: {
-                totalrows: 10,
-                currentpage: 1,
+                totalrows: 0,
+                pageIndex: 1,
                 pageSize: 10
             },
         }
@@ -230,14 +230,24 @@ export default {
 
     },
     methods: {
+        AddTask() {
+            addTask(this.taskBindPersonPageListParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+
+                }
+            })
+        },
         ApiTaskBindPersonPageList() {
-            //题库列表
+            //任务列表
             taskBindPersonPageList(this.taskBindPersonPageListParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.taskBindPersonPageListData = res.data.data.list
                 }
             })
         },
+        handleSub() {
+
+        }
     }
 }
 </script>

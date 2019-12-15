@@ -109,11 +109,11 @@ export default {
             component: ExamManageToEdit
         }, {
             name: '交底考试/编辑试题',
-            path: '/examManageToEdit/:id', //编辑试题
+            path: '/examManageToEdit/:edit/:id', //查看试题
             component: ExamManageToEdit
         }, {
             name: '交底考试/编辑试题',
-            path: '/examManageToEdit/detail/:id', //编辑试题
+            path: '/examManageToEdit/detail/:edit/:id', //编辑试题
             component: ExamManageToEdit
         }, {
             name: '试卷列表/试卷习题编辑',
@@ -125,11 +125,11 @@ export default {
             component: ExamManageExerEdit
         }, {
             name: '试卷列表/试卷习题编辑',
-            path: '/exerciseEdit/detail/:id', //试卷习题编辑
+            path: '/exerciseEdit/detail/edit/:id', //试卷习题编辑
             component: ExamManageExerEdit
         }, {
             name: '试卷列表/试卷习题编辑',
-            path: '/exerciseEdit/:id', //试卷习题编辑
+            path: '/exerciseEdit/:edit/:id', //试卷习题编辑
             component: ExamManageExerEdit
         }, {
             name: '交底考试/编辑学习材料',

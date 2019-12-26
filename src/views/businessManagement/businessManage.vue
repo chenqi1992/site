@@ -229,7 +229,7 @@ export default {
             .bus-header--input {
                 margin-right: 24px;
                 .el-input {
-                    width: 224px;
+                    width: 200px;
                 }
                 .el-date-picker {
                     width: 240px;

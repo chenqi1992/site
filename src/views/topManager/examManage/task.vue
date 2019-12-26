@@ -2,17 +2,7 @@
     <div class="exam-index">
         <div class="project-header header-bg">
             <div class="bus-header--input">
-                考试任务：
-                <el-input
-                    size="medium"
-                    class="search-input"
-                    v-model="selTaskPageListParams.taskName"
-                    placeholder="请输入"
-                    clearable>
-                </el-input>
-            </div>
-            <div class="bus-header--input">
-                试卷名称：
+                任务名称：
                 <el-input
                     size="medium"
                     class="search-input"
@@ -40,22 +30,27 @@
                 align="center"
                 >
                     <template slot-scope="scope">
-                        <span>{{scope.$index+(pageIndex - 1) * pageSize + 1}} </span>
+                        <span>{{scope.$index+(pagebox.pageIndex - 1) * pagebox.pageSize + 1}} </span>
                     </template>
                 </el-table-column>
                 <el-table-column
-                prop="questionId"
-                label="考试编号"
+                prop="taskName"
+                label="任务名称"
                 align="center">
                 </el-table-column>
                 <el-table-column
-                prop="name"
-                label="试卷名称"
+                prop="releaseStatus"
+                label="是否发布"
                 align="center">
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.releaseStatus === '0'">未发布</div>
+                        <div v-if="scope.row.releaseStatus === '1'">已发布</div>
+                    </template>
                 </el-table-column>
                 <el-table-column
-                prop="questionType"
-                label="考生范围"
+                prop="createTime"
+                :formatter="formatime"
+                label="发布时间"
                 align="center">
                 </el-table-column>
                 <el-table-column
@@ -63,8 +58,11 @@
                     align="center">
                     <template slot-scope="scope">
                         <div>
+                            <el-button class="btn-action" v-if="scope.row.releaseStatus === '0'" @click="handleReleaseStatus(scope.row)" type="text">发布</el-button>
+                            <el-button class="btn-action" v-if="scope.row.releaseStatus === '1'" type="text">已发布</el-button>
+                            <el-button class="btn-action" @click="handleEdit(scope.row)" type="text">编辑</el-button>
+                            <el-button class="btn-action" v-if="scope.row.releaseStatus === '1'" @click="handleCompletion(scope.row)" type="text">完成情况</el-button>
                             <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
-                            <el-button class="btn-action" @click="handleModify(scope.row)" type="text">编辑</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -76,7 +74,8 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { selTaskPageList } from "@/api/common.js";
+import {relative} from "@/common/js/mixins.js";
+import { selTaskPageList, taskRelease } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -85,75 +84,15 @@ export default {
     props: {
 
     },
+    mixins: [relative],
     data() {
         return {
-            Params: {
-
-            },
             selTaskPageListParams: {
-                id: 0,
+                id: null,
                 taskName: '',
-                taskType: '',
-                projectId: 4,
-                pageIndex: 1,
-                pageSize: 10,
+                projectId: null,
             },
             selTaskPageListData: [],
-            businessValue: '',
-            businessStatus: '',
-            businessTime: '',
-            options: [{
-                value: 'TOP_NAVIGATION_BAR',
-                label: '顶部导航栏'
-                }, {
-                value: 'BOTTOM_NAVIGATION_BAR',
-                label: '底部导航栏'
-            }],
-            addtime: '',
-            tableData: [{
-                date: '01',
-                id: '2899',
-                name: '外墙安全手册',
-                type: '单选题 ',
-                remark:'安全类'
-                }, {
-                date: '02',
-                id: '2900',
-                name: '建筑风力学',
-                type: '单选题 ',
-                remark: '安全类'
-                }, {
-                date: '03',
-                id: '2901',
-                name: '砌墙守则安全',
-                type: '单选题 ',
-                remark: '安全类'
-                }, {
-                date: '04',
-                id: '2902',
-                name: '花岗岩选材指南',
-                type: '单选题 ',
-                remark: '安全类'
-                }, {
-                date: '05',
-                id: '2903',
-                name: '水泥倒水评估',
-                type: '单选题 ',
-                remark: '安全类'
-                }, {
-                date: '06',
-                id: '2904',
-                name: '人工心肺复苏',
-                type: '单选题 ',
-                remark: '医护类'
-                }, {
-                date: '07',
-                id: '2905',
-                name: '封顶风险手册',
-                type: '单选题 ',
-                remark: '安全类'
-            }],
-            multipleSelection: [],
             pagebox: {
                 totalrows: 10,
                 pageIndex: 1,
@@ -170,23 +109,34 @@ export default {
     methods: {
         ApiSelTaskPageList() {
             //任务列表
-            selTaskPageList(this.selTaskPageListParams).then((res) =>{
+            selTaskPageList(Object.assign(this.selTaskPageListParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.selTaskPageListData = res.data.data.list
                     this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },
-        handleAddExam() {
+        handleReleaseStatus(row) {
+            //发布任务
+            taskRelease({taskId: row.id}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.$message({
+                        message: '发布成功',
+                        type: 'success'
+                    });
+                    this.ApiSelTaskPageList()
+                } else {
+                    this.$message.error(res.data.message);
+                }
+            })        
+        },
+        handleEdit() {
             this.$router.push({path: `/taskDetail/addExam`})
         },
-        handleAddStudy() {
-            this.$router.push({path: `/taskDetail/addStudy`})
-        },
-        handleView(row) {
+        handleCompletion(row) {
             this.$router.push({path: `/examManageToEdit/${row.id}`})
         },
-        handleModify(row) {
+        handleView(row) {
             this.$router.push({path: `/examManageToEdit/detail/${row.id}`})
         }
     }

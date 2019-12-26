@@ -235,6 +235,61 @@
                         </el-table-column>
                     </el-table>
                 </el-tab-pane>
+                <el-tab-pane label="项目班组" name="fourth">
+                    <div class="btn">
+                        <el-button size="medium" type="primary" @click="dialogVisibleWork = true">新增班组</el-button>
+                    </div>
+                    <el-table
+                        ref="multipleTable"
+                        :data="queryProjectWorkData"
+                        tooltip-effect="dark"
+                        style="width: 100%"
+                        >
+                        <el-table-column
+                        label="序号"
+                        width="120"
+                        align="center">
+                            <template slot-scope="scope">
+                                <span>{{scope.$index+(pagebox.pageIndex - 1) * pagebox.pageSize + 1}} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                        prop="workName"
+                        label="班组名称"
+                        width="120"
+                        align="center">
+                        </el-table-column>
+                        <el-table-column
+                        prop="userType"
+                        label="班组长姓名"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="idCard"
+                        label="班组长电话"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="phone"
+                        label="班组人数"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                            label="操作"
+                            align="center">
+                            <template slot-scope="scope">
+                                <div>
+                                    <el-button class="btn-action" @click="handleViewWork(scope.row)" type="text">查看</el-button>
+                                    <el-button class="btn-action" @click="handleModifyWork(scope.row)" type="text">编辑</el-button>
+                                    <el-button class="btn-action" @click="handleDeleteWork(scope.row)" type="text">删除</el-button>
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
             </el-tabs>
             <el-dialog
                 class="add-staff"
@@ -321,6 +376,31 @@
                     <el-button size="medium" type="primary" @click="handleSubVisit('ruleFormVisit')">提 交</el-button>
                 </span>
             </el-dialog>
+            <el-dialog
+                class="add-staff"
+                title="添加班组"
+                :visible.sync="dialogVisibleWork"
+                width="35%"
+                >
+                <el-form :model="ruleFormWork" :rules="rulesWork" ref="ruleFormWork" label-width="140px" class="demo-ruleForm">
+                    <el-form-item label="班组名称" prop="workName">
+                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组名称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="班组介绍">
+                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组介绍"></el-input>
+                    </el-form-item>
+                    <el-form-item label="班组长姓名">
+                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组长姓名"></el-input>
+                    </el-form-item>
+                    <el-form-item label="班组长电话">
+                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组长电话"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="medium" @click="dialogVisibleWork = false">取 消</el-button>
+                    <el-button size="medium" type="primary" @click="handleSubWork('ruleFormWork')">提 交</el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -328,7 +408,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative} from "@/common/js/mixins.js";
-import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo } from "@/api/common.js";
+import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -345,6 +425,7 @@ export default {
             dialogVisibleStaff: false,
             dialogVisibleEquip: false,
             dialogVisibleVisit: false,
+            dialogVisibleWork: false,
             getProjectInfoData: {},
            
             ruleForm: {
@@ -413,6 +494,17 @@ export default {
                     { required: true, message: '请填写职位', trigger: 'blur' },
                 ],
             },
+            ruleFormWork: {
+                workName: ''
+            },
+            rulesWork: {
+                workName: [
+                    { required: true, message: '请填写员工姓名', trigger: 'blur' },
+                ],
+                phone: [
+                    { required: true, message: '请填写职位', trigger: 'blur' },
+                ],
+            },
             queryProjectPersonParams:{
                 pageIndex: 1,
                 pageSize: 10,
@@ -432,6 +524,12 @@ export default {
                 projectId: Number(this.$route.params.id),
             },
             queryProjectVisitInfoData: [],
+            queryProjectWorkParams: {
+                pageIndex: 1,
+                pageSize: 10,
+                projectId: Number(this.$route.params.id),
+            },
+            queryProjectWorkData: []
         }
     },
     created() {
@@ -445,6 +543,7 @@ export default {
         this.ApiQueryProjectPerson()
         this.ApiQueryDeviceInfo()
         this.ApiQueryProjectVisitInfo()
+        this.ApiQueryProjectWork()
     },
     mounted() {
 
@@ -488,6 +587,14 @@ export default {
             queryProjectVisitInfo(this.queryProjectVisitInfoParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryProjectVisitInfoData = res.data.data.list
+                }
+            })
+        },
+        ApiQueryProjectWork() {
+            //项目班组列表
+            queryProjectWork(this.queryProjectWorkParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryProjectWorkData = res.data.data.list
                 }
             })
         },
@@ -571,12 +678,52 @@ export default {
                 }
             });
         },
+        handleSubWork(formName) {
+            //新增班组
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    addProjectWork(this.ruleFormWork).then((res) =>{
+                        if (res.data.code === ERR_OK) {
+                            this.$message({
+                                message: '添加成功',
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+                    })
+                } else {
+                    return false;
+                }
+            });
+        },
         handleViewVisit(row) {
             this.$router.push({path: `/visitorInfo/${row.id}`})
         },
         handleModifyVisit() {
             this.$router.push({path: `/visitorInfo/detail/${row.id}`})
         },
+        handleViewWork(row) {
+            this.$router.push({path: `/attendance/detail/${row.id}`})
+        },
+        handleModifyWork(row) {
+            this.$router.push({path: `/attendance/detail/${row.id}`})
+        },
+        handleDeleteWork(row) {
+            //删除班组
+            delProjectWork({
+                id: row.id
+            }).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                } else {
+                    this.$message.error(res.data.message);
+                }
+            })
+        }
     }
 }
 </script>

@@ -372,7 +372,7 @@ export const auditProjectVisitInfo = (data) => {
         method: 'post'
     }, data)
 }
-/* 访问信息列表 */
+/* 访问信息列表（项目） */
 export const queryProjectVisitInfo = (data) => {
     return http({
         url: '/haogongdi/projectVisitInfo/queryProjectVisitInfo',
@@ -390,6 +390,13 @@ export const editProjectVisitInfo = (data) => {
 export const getProjectVisitInfo = (data) => {
     return http({
         url: '/haogongdi/projectVisitInfo/getProjectVisitInfo',
+        method: 'post'
+    }, data)
+}
+/* 访问信息列表（企业）未对接 */
+export const queryProjectVisitInfoByOrg = (data) => {
+    return http({
+        url: '/haogongdi/projectVisitInfo/queryProjectVisitInfoByOrg',
         method: 'post'
     }, data)
 }
@@ -483,6 +490,14 @@ export const selTaskPageList = (data) => {
         method: 'post'
     }, data)
 }
+/* 发布任务 */
+export const taskRelease = (data) => {
+    return http({
+        url: '/haogongdi/akst/taskRelease',
+        method: 'post'
+    }, data)
+}
+
 /* 新增任务 */
 export const addTask = (data) => {
     return http({
@@ -508,6 +523,43 @@ export const selectOneTask = (data) => {
 export const taskBindPersonPageList = (data) => {
     return http({
         url: '/haogongdi/task/taskBindPersonPageList',
+        method: 'post'
+    }, data)
+}
+
+
+/* 项目班组信息列表(项目) */
+export const queryProjectWork = (data) => {
+    return http({
+        url: '/haogongdi/Wcejkooprrt/queryProjectWork',
+        method: 'post'
+    }, data)
+}
+/* 新增项目班组信息 */
+export const addProjectWork = (data) => {
+    return http({
+        url: '/haogongdi/projectWork/addProjectWork',
+        method: 'post'
+    }, data)
+}
+/* 删除项目班组信息 */
+export const delProjectWork = (data) => {
+    return http({
+        url: '/haogongdi/projectWork/delProjectWork',
+        method: 'post'
+    }, data)
+}
+/* 项目班组信息详情 */
+export const getProjectWork = (data) => {
+    return http({
+        url: '/haogongdi/Wcejkooprrt/getProjectWork',
+        method: 'post'
+    }, data)
+}
+/* 编辑项目班组信息 */
+export const editProjectWork = (data) => {
+    return http({
+        url: '/haogongdi/projectWork/editProjectWork',
         method: 'post'
     }, data)
 }

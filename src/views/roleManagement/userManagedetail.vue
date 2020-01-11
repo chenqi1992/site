@@ -11,56 +11,54 @@
             </div>
         </div>
         <div class="detail">
-            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" :disabled="!btnshow" label-width="150px">
+            <el-form :model="ruleForm1" status-icon :rules="rules" ref="ruleForm1" :disabled="!btnshow" label-width="150px">
                 <div class="form1">
                     <h1>基本信息</h1>
                     <div class="detail1">
                         <el-form-item prop="userName" label="姓名：">
-                            <el-input size="medium" v-model="ruleForm.userName"></el-input>
+                            <el-input size="medium" v-model="ruleForm1.userName"></el-input>
                         </el-form-item>
                         <el-form-item prop="mobilePhone" label="手机号：">
-                            <el-input size="medium" v-model="ruleForm.mobilePhone"></el-input>
+                            <el-input size="medium" v-model="ruleForm1.mobilePhone"></el-input>
                         </el-form-item>
                     </div>
                     <div class="detail2">
                         <el-form-item label="身份证号：">
-                            <el-input size="medium" v-model="ruleForm.idCard"></el-input>
+                            <el-input size="medium" v-model="ruleForm1.idCard"></el-input>
                         </el-form-item>
                         <el-form-item label="籍贯：">
-                            <el-input size="medium" v-model="ruleForm.native"></el-input>
+                            <el-input size="medium" v-model="ruleForm1.native"></el-input>
                         </el-form-item>
-                    </div>
-                </div>
-                <div class="form2">
-                    <div class="add">
-                        <h1>平台角色</h1>
-                        <el-button size="medium" type="primary">添加</el-button>
-                    </div>
-                    <div class="detail1">
-                        <!-- <el-form class="clearfix" label-position="left" ref="platform" v-for="(platform, index) in platformdata" :key="index" :rules="platformrules" :model="platform" label-width="80px"> -->
-                            <el-form-item label="角色类型：" prop="roletype">
-                                <el-select size="medium" v-model="ruleForm.roletype" placeholder="请选择">
-                                    <el-option
-                                    v-for="item in roleArr"
-                                    :key="item.code"
-                                    :label="item.name"
-                                    :value="item.code">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="角色名称：" prop="rolename">
-                                <!-- <el-select v-model="platform.rolename" @change="changerolename($event, index)" :disabled="isshowdetail" class="widthauto">
-                                    <el-option v-for="(item, rnindex) in platform.rolenamelist" :key="rnindex" :label="item.roleName" :value="item.roleCode"></el-option>
-                                </el-select> -->
-                                <el-input size="medium" v-model="ruleForm.rolename"></el-input>
-                            </el-form-item>
-                            <el-form-item label="所属企业：" prop="name">
-                                <el-input size="medium" v-model="ruleForm.owned"></el-input>
-                            </el-form-item>
-                        <!-- </el-form> -->
                     </div>
                 </div>
             </el-form>
+            <div class="form2">
+                <div class="add">
+                    <h1>平台角色</h1>
+                    <el-button size="medium" type="primary" v-if="editORview" @click="handleAddrole">添加</el-button>
+                </div>
+                <el-form :model="item" v-for="(item, index) in ruleForm2" :key="index" status-icon :rules="rules" ref="ruleForm2" :disabled="!btnshow" label-width="150px">
+                    <div class="detail1">
+                        <el-form-item label="角色类型：" prop="roleType">
+                            <el-select size="medium" v-model="item.roleType" placeholder="请选择">
+                                <el-option
+                                v-for="item in roleArr"
+                                :key="item.code"
+                                :label="item.name"
+                                :value="item.code">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="角色名称：" prop="roleName">
+                            <el-input size="medium" v-model="item.roleName"></el-input>
+                        </el-form-item>
+                        <el-form-item label="所属企业：" prop="owned">
+                            <el-input size="medium" v-model="item.owned"></el-input>
+                        </el-form-item>
+                        <el-button class="delete-btn" type="primary" size="medium" v-show="index != 0 && editORview" icon="el-icon-delete" @click="handleDelplatform(index)">删除</el-button>               
+                    </div>
+                </el-form>
+            </div>
             <div>从业经历</div>             
             <el-table
                 :data="listBackstageOrganizationData"
@@ -111,6 +109,7 @@
 
 <script>
 import { insertBackstageUser, searchBackstageUser, updateBackstageUser, listBackstageOrganization } from "@/api/common.js";
+import { getStore } from '@/utils/utils.js'
 import { roleType } from "@/common/js/mixins.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -130,17 +129,25 @@ export default {
                 userId: this.$route.params.id
             },
             searchBackstageUserData: {},
-            ruleForm: {
-                userName: '测试2',
-                mobilePhone: '18605978075',
-                idCard: '330781198509075398',
+            ruleForm1: {
+                userName: '',
+                mobilePhone: '',
+                idCard: '',
                 native: '',
-                roletype: '',
-                rolename: '测试22',
-                owned: '万达',
-                userId: this.$route.params.id
+                userId: JSON.parse(getStore('loginInfouser')).userInfo.userId
             },
+            ruleForm2: [{
+                roleType: '',
+                roleName: '',
+                owned: '',
+            }],
             rules: {
+                userName: [
+                    { required: true, message: '请输入姓名', trigger: 'blur' }
+                ],
+                mobilePhone: [
+                    { required: true, message: '请输入手机号码', trigger: 'blur' }
+                ],
                 roleName: [
                     { required: true, message: '请输入角色名称', trigger: 'blur' }
                 ],
@@ -148,14 +155,17 @@ export default {
                     { required: true, message: '请输入角色代码', trigger: 'blur' }
                 ],
                 roleType: [
-                    { required: true, message: '请输入角色类型', trigger: 'blur' }
+                    { required: true, message: '请输入角色类型', trigger: 'change' }
+                ],
+                owned: [
+                    { required: true, message: '请输入所属企业', trigger: 'change' }
                 ],
             },
             listBackstageOrganizationParams: {
-                orgName: "string",
+                orgName: "",
                 pageIndex: 1,
                 pageSize: 10,
-                typeCode: "string"
+                typeCode: ""
             },
             listBackstageOrganizationData: [],
         }
@@ -199,21 +209,23 @@ export default {
             })
         },
         handleSave() {
-            // this.$refs['basicform'].validate((valid, obj) => {
-            //     console.log(obj);
-            //     if (!valid) {
-            //         valiflag = false;
-            //         return false;
-            //     }
-            // });
-            // this.$refs['basicform2'].validate((valid) => {
-            //     if (!valid) {
-            //         valiflag = false;
-            //         return false;
-            //     }
-            // });
-            if (this.btnshowcancle) {
-                updateBackstageUser(this.ruleForm).then((res) => {
+            let valiflag = true;
+            this.$refs['ruleForm1'].validate((valid) => {
+                if (!valid) {
+                    valiflag = false;
+                    return false;
+                }
+            });
+            this.ruleForm2.map((item, index)=>{
+                this.$refs['ruleForm2'][index].validate((valid) => {
+                    if (!valid) {
+                        valiflag = false;
+                        return false;
+                    }
+                });
+            })
+            if (this.btnshowcancle && valiflag) {
+                updateBackstageUser(Object.assign(this.ruleForm1, {userRoleRelation: this.ruleForm2})).then((res) => {
                     if (res.data.code === 1000) {
                         this.$message({
                             type: 'success',
@@ -232,25 +244,38 @@ export default {
 
                 });
             } else {
-                insertBackstageUser(this.ruleForm).then((res) => {
-                    if (res.data.code === 1000) {
-                        this.$message({
-                            type: 'success',
-                            message: '添加成功'
-                        });
-                        this.$router.push({
-                            path: '/userManage'
-                        });
-                    } else {
-                        this.$message({
-                            type: 'error',
-                            message: res.data.message
-                        });
-                    }
-                }, (err) => {
-
-                });
+                if(valiflag) {
+                    insertBackstageUser(Object.assign(this.ruleForm1, {userRoleRelation: this.ruleForm2})).then((res) => {
+                        if (res.data.code === 1000) {
+                            this.$message({
+                                type: 'success',
+                                message: '添加成功'
+                            });
+                            this.$router.push({
+                                path: '/userManage'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.message
+                            });
+                        }
+                    }, (err) => {
+    
+                    });
+                }
             }
+        },
+        handleAddrole() {
+            let ruleForm2child = {
+                roleType: '',
+                roleName: '',
+                owned: '',
+            };
+            this.ruleForm2.push(ruleForm2child);
+        },
+        handleDelplatform(index) {
+            this.ruleForm2.splice(index, 1);
         }
     }
 }
@@ -291,6 +316,10 @@ export default {
                 }
                 .detail1 {
                     display: flex;
+                    .delete-btn {
+                        height: 40px;
+                        margin-left: 50px;
+                    }
                 }
             }
             .add-table {

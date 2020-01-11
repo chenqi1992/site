@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 // import router from './router'
 import router from '@/router/index.js'
+import store from "./store";
 import ElementUI from 'element-ui'
 import '@/common/scss/element-variables.scss'
 import { getStore, setStore, getStoreSession } from '@/utils/utils.js'
@@ -57,5 +58,6 @@ router.beforeEach((to, from, next) => {
 
 new Vue({
     router,
+    store,
     render: h => h(App)
 }).$mount('#app')

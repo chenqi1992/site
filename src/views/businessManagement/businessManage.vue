@@ -226,10 +226,11 @@ export default {
         background-color: #ffffff;
         .business-header {
             display: flex;
+            justify-content: space-between;
             .bus-header--input {
                 margin-right: 24px;
                 .el-input {
-                    width: 200px;
+                    width: 224px;
                 }
                 .el-date-picker {
                     width: 240px;

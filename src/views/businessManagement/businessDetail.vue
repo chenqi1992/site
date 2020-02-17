@@ -41,7 +41,7 @@
         <div class="detail-img">
             <div class="item">
                 <div>营业执照</div>
-                <div class="detail-upload">
+                <div v-if="editORview" class="detail-upload">
                     <el-upload
                         :limit='5'
                         :action="fileUploads.actionUrl"
@@ -59,13 +59,15 @@
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
                 </div>
-                <div>
-                    <img src="" alt="">
+                <div v-if="!editORview">
+                    <div v-for="(item, index) in ruleForm.imgUrl" :key="index">
+                        <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
+                    </div>
                 </div>
             </div>
             <div class="item">
                 <div>法定代表人证件</div>
-                <div class="detail-upload">
+                <div v-if="editORview" class="detail-upload">
                     <el-upload
                         :limit='5'
                         :action="fileUploads.actionUrl"
@@ -82,6 +84,11 @@
                     <el-dialog :visible.sync="dialogVisible">
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
+                </div>
+                <div v-if="!editORview">
+                    <div v-for="(item, index) in ruleForm.contactImgUr" :key="index">
+                        <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,7 +141,7 @@
                     <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
                 </el-tab-pane>
                 <el-tab-pane label="员工信息" name="second">
-                    <elPages></elPages>
+                    <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -243,35 +250,7 @@ export default {
                 pageIndex: 1,
                 pageSize: 10
             },
-            tableData: [{
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-08',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-06',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-07',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }],
+            queryProjectInfoData: []
         }
     },
     created() {
@@ -307,6 +286,9 @@ export default {
                             }
                         }
                     }
+                    this.ruleForm.imgUrl = this.ruleForm.imgUrl.split(',')
+                    this.ruleForm.contactImgUr = this.ruleForm.contactImgUr.split(',')
+                    console.log(this.ruleForm.imgUrl, this.ruleForm.contactImgUr);
                 }
             })
         },

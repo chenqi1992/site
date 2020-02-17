@@ -19,28 +19,28 @@
                             <el-input size="medium" v-model="ruleForm1.userName"></el-input>
                         </el-form-item>
                         <el-form-item prop="mobilePhone" label="手机号：">
-                            <el-input size="medium" v-model="ruleForm1.mobilePhone"></el-input>
+                            <el-input size="medium" maxlength="11" v-model="ruleForm1.mobilePhone"></el-input>
                         </el-form-item>
                     </div>
                     <div class="detail2">
                         <el-form-item label="身份证号：">
                             <el-input size="medium" v-model="ruleForm1.idCard"></el-input>
                         </el-form-item>
-                        <el-form-item label="籍贯：">
+                        <!-- <el-form-item label="籍贯：">
                             <el-input size="medium" v-model="ruleForm1.native"></el-input>
-                        </el-form-item>
+                        </el-form-item> -->
                     </div>
                 </div>
             </el-form>
             <div class="form2">
                 <div class="add">
                     <h1>平台角色</h1>
-                    <el-button size="medium" type="primary" v-if="editORview" @click="handleAddrole">添加</el-button>
+                    <el-button size="medium" type="primary" v-if="editORview && btnshow" @click="handleAddrole">添加</el-button>
                 </div>
                 <el-form :model="item" v-for="(item, index) in ruleForm2" :key="index" status-icon :rules="rules" ref="ruleForm2" :disabled="!btnshow" label-width="150px">
                     <div class="detail1">
-                        <el-form-item label="角色类型：" prop="roleType">
-                            <el-select size="medium" v-model="item.roleType" placeholder="请选择">
+                        <el-form-item label="角色类型：" prop="roleCode">
+                            <el-select size="medium" v-model="item.roleCode" placeholder="请选择">
                                 <el-option
                                 v-for="item in roleArr"
                                 :key="item.code"
@@ -52,10 +52,10 @@
                         <el-form-item label="角色名称：" prop="roleName">
                             <el-input size="medium" v-model="item.roleName"></el-input>
                         </el-form-item>
-                        <el-form-item label="所属企业：" prop="owned">
-                            <el-input size="medium" v-model="item.owned"></el-input>
+                        <el-form-item label="所属企业：" prop="organizationName">
+                            <el-input size="medium" v-model="item.organizationName"></el-input>
                         </el-form-item>
-                        <el-button class="delete-btn" type="primary" size="medium" v-show="index != 0 && editORview" icon="el-icon-delete" @click="handleDelplatform(index)">删除</el-button>               
+                        <el-button class="delete-btn" :class="[index != 0 ? '': 'active']" type="primary" size="small" v-show="editORview" icon="el-icon-delete" @click="handleDelplatform(index)">删除</el-button>               
                     </div>
                 </el-form>
             </div>
@@ -128,18 +128,18 @@ export default {
             searchBackstageUserParams: {
                 userId: this.$route.params.id
             },
-            searchBackstageUserData: {},
             ruleForm1: {
                 userName: '',
                 mobilePhone: '',
                 idCard: '',
-                native: '',
-                userId: JSON.parse(getStore('loginInfouser')).userInfo.userId
+                // native: '',
+                userId: null
             },
             ruleForm2: [{
-                roleType: '',
+                roleCode: '',
                 roleName: '',
-                owned: '',
+                organizationId: null,
+                organizationName: ''
             }],
             rules: {
                 userName: [
@@ -157,7 +157,7 @@ export default {
                 roleType: [
                     { required: true, message: '请输入角色类型', trigger: 'change' }
                 ],
-                owned: [
+                organizationName: [
                     { required: true, message: '请输入所属企业', trigger: 'change' }
                 ],
             },
@@ -192,7 +192,9 @@ export default {
             //企业详情
             searchBackstageUser(this.searchBackstageUserParams).then((res) =>{
                 if (res.data.code === ERR_OK) {
-                    this.searchBackstageUserData = res.data.data
+                    let searchUserData = res.data.data
+                    Object.keys(this.ruleForm1).forEach(key=>{this.ruleForm1[key]=searchUserData[key]})
+                    this.ruleForm2 = searchUserData.userRole
                 } else {
                     this.$message.error(res.data.message);
                 }
@@ -268,9 +270,10 @@ export default {
         },
         handleAddrole() {
             let ruleForm2child = {
-                roleType: '',
+                roleCode: '',
                 roleName: '',
-                owned: '',
+                organizationId: null,
+                organizationName: ''
             };
             this.ruleForm2.push(ruleForm2child);
         },
@@ -319,6 +322,9 @@ export default {
                     .delete-btn {
                         height: 40px;
                         margin-left: 50px;
+                    }
+                    .active {
+                        visibility: hidden;
                     }
                 }
             }

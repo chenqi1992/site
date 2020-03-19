@@ -130,6 +130,12 @@ export default {
                 }
             })        
         },
+        handleAddExam() {
+            this.$router.push({path: `/taskDetail/addExam`})
+        },
+        handleAddStudy() {
+            this.$router.push({path: `/taskDetail/addStudy`})
+        },
         handleEdit() {
             this.$router.push({path: `/taskDetail/addExam`})
         },

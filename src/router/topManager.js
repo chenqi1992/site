@@ -101,11 +101,11 @@ export default {
             component: ExamManageList
         }, {
             name: '交底考试/编辑试题',
-            path: '/examManageToEdit/addExam', //编辑试题
+            path: '/examManageToEdit/addExam', //新增编辑试题
             component: ExamManageToEdit
         }, {
             name: '交底考试/编辑试题',
-            path: '/examManageToEdit/addStudy', //编辑学习材料
+            path: '/examManageToEdit/addStudy', //新增编辑学习材料
             component: ExamManageToEdit
         }, {
             name: '交底考试/编辑试题',
@@ -125,7 +125,7 @@ export default {
             component: ExamManageExerEdit
         }, {
             name: '试卷列表/试卷习题编辑',
-            path: '/exerciseEdit/detail/edit/:id', //试卷习题编辑
+            path: '/exerciseEdit/detail/edit/:id', //试卷习题编辑查看
             component: ExamManageExerEdit
         }, {
             name: '试卷列表/试卷习题编辑',
@@ -140,14 +140,15 @@ export default {
             path: '/examManagetask', //任务列表
             component: ExamManageTask
         },
+
         {
             name: '考试任务管理',
-            path: '/taskDetail/addExam', //任务描述
+            path: '/taskDetail/addExam', //考试任务管理
             component: taskDetail
         },
         {
             name: '学习任务管理',
-            path: '/taskDetail/addStudy', //任务描述
+            path: '/taskDetail/addStudy', //学习任务管理
             component: taskDetail
         },
         {

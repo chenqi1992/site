@@ -91,7 +91,7 @@ export default {
     data() {
         return {
             selExamPageListParams: {
-                companyId: 0,
+                // companyId: 0,
                 pageIndex: 1,
                 pageSize: 10,
                 name: '',

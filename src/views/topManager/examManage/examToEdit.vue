@@ -13,7 +13,7 @@
             </div>
             <div class="bus-header--input">
                 试题类型：
-                <el-select v-model="searchParams.questionType" placeholder="请选择试题类型">
+                <el-select size="medium" v-model="searchParams.questionType" placeholder="请选择试题类型">
                     <el-option label="单选" value="0"></el-option>
                     <el-option label="多选" value="1"></el-option>
                     <el-option label="学习资料" value="2"></el-option>
@@ -38,8 +38,8 @@
                         <el-input :rows="4" type="textarea" v-model="ruleForm.questionAnalysis"></el-input>
                     </el-form-item>
                     <template v-if="ruleForm.questionType === '0'">
-                        <el-radio-group class="el-radio-par" v-model="ruleForm.resource">
-                            <el-radio class="el-radio-flex" v-for="(item, index) in ruleForm.options" :label="item.id" :key="item.id">
+                        <el-radio-group class="el-radio-par" v-model="ruleForm.correctAnswer">
+                            <el-radio class="el-radio-flex" v-for="(item, index) in ruleForm.options" :label="item.choiceValue" :key="item.choiceValue">
                                 <div class="check-box">
                                     <div>选项{{item.choice}}</div>
                                     <i class="el-icon-delete" @click="handleDelete(index, item.id, item.questionId)"></i>
@@ -138,14 +138,15 @@ export default {
                 examQuestion: "string",
                 examQuestionText: "string",
                 name: "string",
+                // resource: '',
                 options: [
                     {
-                        choice: "string",
+                        choice: "",
                         choiceValue: "string",
                         choiceValueText: "string",
                         companyId: "string",
                         correct: false
-                    }
+                    },
                 ],
                 questionAnalysis: "string",
                 questionType: "0"
@@ -189,6 +190,7 @@ export default {
         }
     },
     mounted() {
+        console.log(this.ruleForm.correctAnswer);
     },
     methods: {
         ApiSelectOneQuestion() {
@@ -342,7 +344,10 @@ export default {
                         width: 90%;
                     }
                 }
-                .el-checkbox + .el-checkbox, .el-radio + .el-radio {
+                .el-form-item .el-radio + .el-radio {
+                    margin-left: 20px;
+                }
+                .el-checkbox + .el-checkbox {
                     margin-left: 0;
                 }
                 .el-radio-par {

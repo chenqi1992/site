@@ -38,7 +38,7 @@
             <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddExam">新增试题</el-button>
             <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddStudy">新增学习材料</el-button>
         </div>
-        <div>列表共XXX题，已选择关联XXX题</div>
+        <!-- <div>列表共XXX题，已选择关联XXX题</div> -->
         <div class="business-table">   
              <el-table
                 ref="multipleTable"

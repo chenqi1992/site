@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div class="business-add">
-                    <el-button size="medium" type="primary" @click="handleAddExam">保存</el-button>
+                    <el-button size="medium" type="primary">保存</el-button>
                 </div>
                 <div class="all-data">共搜索到 922 条数据</div>
                 <div class="table-title">
@@ -210,6 +210,7 @@ export default {
                 pageIndex: 1,
                 pageSize: 10
             },
+            businessValue: ''
         }
     },
     created() {

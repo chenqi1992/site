@@ -5,11 +5,12 @@ import businessManagement from './businessManagement'
 import equipmentManagement from './equipmentManagement'
 import roleManagement from './roleManagement';
 import topManager from './topManager';
+import agreement from './agreement';
 
 Vue.use(Router)
 let routeslist = []
     // 模块路由添到路由列表
-routeslist.push(home, businessManagement, equipmentManagement, roleManagement, topManager)
+routeslist.push(home, businessManagement, equipmentManagement, roleManagement, topManager, agreement)
 export default new Router({
     mode: 'history',
     routes: routeslist,

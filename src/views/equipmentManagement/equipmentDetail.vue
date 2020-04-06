@@ -21,11 +21,11 @@
                     </el-form-item>
                 </div>
                 <div class="form">
-                    <el-form-item prop="name" label="设备别名：">
+                    <el-form-item label="设备别名：">
                         <el-input size="medium" v-model="ruleForm.name" :disabled="!btnshow"></el-input>
                     </el-form-item>
-                    <el-form-item prop="companyName" label="设备归属公司：">
-                        <el-select size="medium" v-model="ruleForm.companyName" @change="handleChange" placeholder="请选择" :disabled="!btnshow">
+                    <el-form-item prop="companyId" label="设备归属公司：">
+                        <el-select size="medium" v-model="ruleForm.companyId" @change="handleChange" placeholder="请选择" :disabled="!btnshow">
                             <el-option
                             v-for="item in companyNameOptions"
                             :key="item.orgId"
@@ -40,7 +40,7 @@
                         <el-input size="medium" v-model="ruleForm.discern" :disabled="!btnshow"></el-input>
                     </el-form-item>
                     <el-form-item label="设备归属项目：">
-                        <el-select size="medium" v-model="ruleForm.projectName" placeholder="请选择" :disabled="!btnshow">
+                        <el-select size="medium" v-model="ruleForm.projectId" @change="handleProjectId" placeholder="请选择" :disabled="!btnshow">
                             <el-option
                             v-for="item in companyProjectName"
                             :key="item.id"
@@ -134,8 +134,10 @@ export default {
                 id: this.$route.params.id,
                 code: '',
                 name: '',
+                companyId: '',
                 companyName: '',
                 deviceStatus: '',
+                projectId: '',
                 projectName: '',
                 model: '',
                 // bindTime: '',
@@ -150,13 +152,13 @@ export default {
                 name: [
                     { required: true, message: '请填写设备别名', trigger: 'blur' },
                 ],
-                companyName: [
+                companyId: [
                     { required: true, message: '请填写设备归属公司', trigger: 'blur' },
                 ],
                 discern: [
                     { required: true, message: '请填识别度', trigger: 'blur' },
                 ],
-                projectName: [
+                projectId: [
                     { required: true, message: '请填写设备归属项目', trigger: 'blur' },
                 ],
                 model: [
@@ -237,7 +239,7 @@ export default {
         },
         ApiQueryProjectInfoByOrgId() {
             //根据企业列表获取项目
-            queryProjectInfoByOrgId({orgId: this.ruleForm.companyName}).then((res) =>{
+            queryProjectInfoByOrgId({orgId: this.ruleForm.companyId}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.companyProjectName = res.data.data
                 }
@@ -253,7 +255,21 @@ export default {
             })
         },
         handleChange(val) {
+            this.companyNameOptions.forEach(item=> {
+                if(item.orgId == val) {
+                    this.ruleForm.companyName = item.orgName
+                }
+            })
             this.ApiQueryProjectInfoByOrgId()
+        },
+        handleProjectId(val) {
+            console.log(val);
+            this.companyProjectName.forEach(item=> {
+                if(item.id == val) {
+                    this.ruleForm.projectName = item.projectName
+                }
+            })
+            console.log(val);
         },
         handleSubSave(formName) {
             this.$refs[formName].validate((valid) => {
@@ -264,6 +280,7 @@ export default {
                                 message: '保存成功',
                                 type: 'success'
                             });
+                            this.btnshow = false
                             this.ApiSelectOneDevice()
                         } else {
                             this.$message.error(res.data.message);

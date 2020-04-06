@@ -58,17 +58,24 @@
             :before-close="handleClose">
             <el-form ref="form" :model="sizeForm" :rules="rules" label-width="130px" size="mini">
                 <el-form-item label="设备归属企业ID" prop="companyId">
-                    <el-input v-model="sizeForm.companyId"></el-input>
+                    <el-select v-model="sizeForm.companyId" @change="handleChange" placeholder="请选择">
+                        <el-option
+                        v-for="item in getOrganizationListData"
+                        :key="item.orgId"
+                        :label="item.orgName"
+                        :value="item.orgId">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="设备别名" prop="name">
+                <!-- <el-form-item label="设备别名" prop="name">
                     <el-input v-model="sizeForm.name"></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="设备唯一标识码" prop="code">
-                    <el-input v-model="sizeForm.code"></el-input>
+                    <el-input v-model="sizeForm.discern"></el-input>
                 </el-form-item>
-                <el-form-item label="设备型号" prop="model">
+                <!-- <el-form-item label="设备型号" prop="model">
                     <el-input v-model="sizeForm.model"></el-input>
-                </el-form-item>
+                </el-form-item> -->
             </el-form>
             <div>
                 <el-button size="medium" @click="handleClose">取消</el-button>
@@ -184,7 +191,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative, totalNum} from "@/common/js/mixins.js";
-import { selDevicePageList, addDevice } from "@/api/common.js";
+import { selDevicePageList, editDevice, getOrganizationList } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -207,10 +214,14 @@ export default {
             selDevicePageListData: [],
             dialogVisible: false,
             sizeForm: {
-                code: null,
                 companyId: '',
-                model: null,
-                name: null
+                companyName: '',
+                discern: '',
+                // model: null,
+                name: null,
+                // projectId: 0,
+                // projectName: '',
+                id: 0
             },
             rules: {
                 code: [
@@ -246,6 +257,7 @@ export default {
                 pageIndex: 1,
                 pageSize: 10
             },
+            getOrganizationListData: [] //企业列表
         }
     },
     created() {
@@ -266,6 +278,22 @@ export default {
                 }
             })
         },
+        ApiGetOrganizationList() {
+            //企业列表
+            getOrganizationList({
+                orgName: null,
+                startDate: null,
+                endDate: null,
+                status: '',
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 100
+            }).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.getOrganizationListData = res.data.data.list
+                }
+            })
+        },
         handleBtn() {
             this.ApiSearchWorkUserRole()
         },
@@ -275,6 +303,7 @@ export default {
         handleDistribution() {
             //归属分配
             this.dialogVisible = true
+            this.ApiGetOrganizationList()
         },
         handleUpdate() {
             //更新设备
@@ -292,19 +321,32 @@ export default {
             this.dialogVisibleEquip = false
         },
         handleSub() {
-            addDevice(this.sizeForm).then((res) =>{
+            editDevice(this.sizeForm).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.$message({
                         type: 'success',
-                        message: '添加成功'
+                        message: '归属成功'
                     });
                     this.ApiSearchWorkUserRole()
                     this.dialogVisible = false
+                } else {
+                    this.$message.error(res.data.message);
                 }
             })
         },
         handleSelectionChange(val) {
             this.multipleSelection = val
+            this.sizeForm.id = this.multipleSelection[0].id
+            this.sizeForm.discern = this.multipleSelection[0].discern
+            this.sizeForm.name = this.multipleSelection[0].model
+            console.log(this.multipleSelection);
+        },
+        handleChange(val) {
+            this.getOrganizationListData.forEach(item=> {
+                if(item.orgId == val) {
+                    this.sizeForm.companyName = item.orgName
+                }
+            })
         },
         handleClear() {
             this.$refs.multipleTable.clearSelection();

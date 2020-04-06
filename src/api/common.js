@@ -531,7 +531,7 @@ export const taskBindPersonPageList = (data) => {
 /* 项目班组信息列表(项目) */
 export const queryProjectWork = (data) => {
     return http({
-        url: '/haogongdi/Wcejkooprrt/queryProjectWork',
+        url: '/haogongdi/projectWork/queryProjectWork',
         method: 'post'
     }, data)
 }
@@ -552,7 +552,7 @@ export const delProjectWork = (data) => {
 /* 项目班组信息详情 */
 export const getProjectWork = (data) => {
     return http({
-        url: '/haogongdi/Wcejkooprrt/getProjectWork',
+        url: '/haogongdi/projectWork/getProjectWork',
         method: 'post'
     }, data)
 }
@@ -560,6 +560,14 @@ export const getProjectWork = (data) => {
 export const editProjectWork = (data) => {
     return http({
         url: '/haogongdi/projectWork/editProjectWork',
+        method: 'post'
+    }, data)
+}
+
+/* 根据企业列表获取项目 */
+export const queryProjectInfoByOrgId = (data) => {
+    return http({
+        url: '/haogongdi/projectInfo/queryProjectInfoByOrgId',
         method: 'post'
     }, data)
 }

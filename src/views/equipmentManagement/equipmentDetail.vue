@@ -25,22 +25,36 @@
                         <el-input size="medium" v-model="ruleForm.name" :disabled="!btnshow"></el-input>
                     </el-form-item>
                     <el-form-item prop="companyName" label="设备归属公司：">
-                        <el-input size="medium" v-model="ruleForm.companyName" :disabled="!btnshow"></el-input>
+                        <el-select size="medium" v-model="ruleForm.companyName" @change="handleChange" placeholder="请选择" :disabled="!btnshow">
+                            <el-option
+                            v-for="item in companyNameOptions"
+                            :key="item.orgId"
+                            :label="item.orgName"
+                            :value="item.orgId">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                 </div>
                 <div class="form">
-                    <el-form-item prop="discern" label="识别度：">
-                        <el-input size="medium" v-model="ruleForm.discern" :disabled="true"></el-input>
+                    <el-form-item label="识别度：">
+                        <el-input size="medium" v-model="ruleForm.discern" :disabled="!btnshow"></el-input>
                     </el-form-item>
                     <el-form-item label="设备归属项目：">
-                        <el-input size="medium" v-model="ruleForm.projectName" :disabled="!btnshow"></el-input>
+                        <el-select size="medium" v-model="ruleForm.projectName" placeholder="请选择" :disabled="!btnshow">
+                            <el-option
+                            v-for="item in companyProjectName"
+                            :key="item.id"
+                            :label="item.projectName"
+                            :value="item.id">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                 </div>
                 <div class="form">
                     <el-form-item prop="model" label="设备型号：">
                         <el-input  size="medium" v-model="ruleForm.model" :disabled="true"></el-input>
                     </el-form-item>
-                    <el-form-item prop="bindTime" label="设备接入时间：">
+                    <el-form-item label="设备接入时间：">
                         <el-input size="medium" v-model="ruleForm.bindTime" :disabled="true"></el-input>
                     </el-form-item>
                 </div>
@@ -91,7 +105,7 @@
                     <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryDevicePerson"></elPages>
                 </el-tab-pane>
                 <el-tab-pane label="读取数据记录" name="second">
-                    <elPages></elPages>
+                    <!-- <elPages></elPages> -->
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -99,8 +113,10 @@
 </template>
 
 <script>
+import { dateformat } from "@/utils/utils.js";
 import elPages from "@/components/elPages.vue";
-import { selectOneDevice, editDevice, queryDevicePerson } from "@/api/common.js";
+import { selectOneDevice, editDevice, queryDevicePerson, queryProjectInfoByOrgId } from "@/api/common.js";
+import { getOrganizationList } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -122,7 +138,7 @@ export default {
                 deviceStatus: '',
                 projectName: '',
                 model: '',
-                bindTime: '',
+                // bindTime: '',
             },
             rules: {
                 id: [
@@ -155,40 +171,22 @@ export default {
                 deviceId: this.$route.params.id,
             },
             queryDevicePersonData: [],
-            tableData: [{
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-08',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-06',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-            date: '2016-05-07',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-            }],
             pagebox: {
                 totalrows: 0,
                 pageIndex: 1,
                 pageSize: 10
-            }
+            },
+            getOrganizationListParams: {
+                orgName: null,
+                startDate: null,
+                endDate: null,
+                status: '',
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 100
+            },
+            companyNameOptions: [],
+            companyProjectName: []
         }
     },
     created() {
@@ -199,9 +197,16 @@ export default {
         } 
         this.ApiSelectOneDevice()
         this.ApiQueryDevicePerson()
+        this.ApiGetOrganizationList()
     },
     mounted() {
 
+    },
+    computed: {
+        'ruleForm.bindTime'() {		//注意,这里设置的计算规则的命名是页面v-modal绑定的值
+            console.log(this.selectOneDeviceData.bindTime);
+            return dateformat(new Date(this.selectOneDeviceData.bindTime), 'yyyy-MM-dd hh:mm');
+        }
     },
     methods: {
         ApiSelectOneDevice() {
@@ -222,6 +227,22 @@ export default {
                 }
             })
         },
+        ApiGetOrganizationList() {
+            //企业列表
+            getOrganizationList(this.getOrganizationListParams).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.companyNameOptions = res.data.data.list
+                }
+            })
+        },
+        ApiQueryProjectInfoByOrgId() {
+            //根据企业列表获取项目
+            queryProjectInfoByOrgId({orgId: this.ruleForm.companyName}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.companyProjectName = res.data.data
+                }
+            })
+        },
         ApiQueryDevicePerson() {
             //设备预留名单
             queryDevicePerson(Object.assign(this.queryDevicePersonParams, this.pagebox)).then((res) =>{
@@ -230,6 +251,9 @@ export default {
                     this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
+        },
+        handleChange(val) {
+            this.ApiQueryProjectInfoByOrgId()
         },
         handleSubSave(formName) {
             this.$refs[formName].validate((valid) => {
@@ -252,6 +276,9 @@ export default {
         },
         handleClick(tab, event) {
             console.log(tab, event);
+        },
+        formatDate(key) {
+            return dateformat(new Date(key), 'yyyy-MM-dd hh:mm');
         }
     }
 }
@@ -275,6 +302,9 @@ export default {
                     display: flex;
                     .el-form-item {
                         margin-right: 90px;
+                    }
+                    .el-select {
+                        width: 100%;
                     }
                     .el-form-item:nth-child(1) {
                         .el-form-item__label {

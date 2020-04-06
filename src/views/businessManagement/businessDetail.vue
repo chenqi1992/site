@@ -92,7 +92,7 @@
                 </div>
             </div>
         </div>
-        <div class="detail-infobus">
+        <div class="detail-infobus" v-if="isAdd">
             <h1>业务信息</h1>
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="项目信息" name="first">
@@ -250,20 +250,24 @@ export default {
                 pageIndex: 1,
                 pageSize: 10
             },
-            queryProjectInfoData: []
+            queryProjectInfoData: [],
+            isAdd: false
         }
     },
     created() {
         if(this.$route.path.indexOf('detail') > 0) {
             this.editORview = true
             this.btnshowcancle = true
+            this.isAdd = true
             this.ApiSearchBackstageOrganization()
         } else if (this.$route.path.indexOf('add') > 0) {
             this.editORview = true
             this.btnshow = true
             this.btnshowcancle = false
+            this.isAdd = false
         } else {
             this.editORview = false
+            this.isAdd = true
             this.ApiSearchBackstageOrganization()
         }
         this.ApiGeneralToken()

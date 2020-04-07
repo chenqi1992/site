@@ -137,6 +137,13 @@ export const selDevicePageList = (data) => {
         method: 'post'
     }, data)
 }
+/* 查询全部设备信息 */
+export const selDeviceListByOrgId = (data) => {
+    return http({
+        url: '/haogongdi/device/selDeviceListByOrgId',
+        method: 'post'
+    }, data)
+}
 /* 查询单个设备信息 */
 export const selectOneDevice = (data) => {
     return http({
@@ -303,6 +310,14 @@ export const addProjectPerson = (data) => {
         method: 'post'
     }, data)
 }
+/* 删除项目人员 */
+export const delProjectPerson = (data) => {
+    return http({
+        url: '/haogongdi/projectPerson/delProjectPerson',
+        method: 'post'
+    }, data)
+}
+
 /* 编辑项目人员详情 */
 export const editProjectPerson = (data) => {
     return http({

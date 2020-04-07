@@ -56,10 +56,12 @@
                         align="center">
                         </el-table-column>
                         <el-table-column
-                        prop="userType"
                         label="职位"
                         align="center"
                         show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                {{scope.row.userType | formatUserType}}
+                            </template>
                         </el-table-column>
                         <el-table-column
                         prop="idCard"
@@ -100,7 +102,7 @@
                 </el-tab-pane>
                 <el-tab-pane label="设备管理" name="second">
                     <div class="btn">
-                        <el-button size="medium" type="primary" @click="dialogVisibleEquip = true">添加设备</el-button>
+                        <el-button size="medium" type="primary" @click="dialogVisibleEquip = true">关联设备</el-button>
                     </div>
                     <el-table
                         ref="multipleTable"
@@ -161,7 +163,7 @@
                             <template slot-scope="scope">
                                 <div>
                                     <el-button class="btn-action" @click="handleModify(scope.row)" type="text">查看</el-button>
-                                    <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">删除</el-button>
+                                    <!-- <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">删除</el-button> -->
                                 </div>
                             </template>
                         </el-table-column>
@@ -297,23 +299,30 @@
                 :visible.sync="dialogVisibleStaff"
                 width="30%"
                 >
-                <div class="title">
+                <!-- <div class="title">
                     <h2>批量添加</h2>
                     <div class="handle">
                         <el-button size="medium" type="primary" @click="handleSubExcel('ruleFormStaff')">上传excel文档</el-button>
                         <div>下载示例文档<i class="el-icon-download"></i></div>
                     </div>
-                </div>
+                </div> -->
                 <h2>单个添加</h2>
                 <el-form :model="ruleFormStaff" :rules="rulesStaff" ref="ruleFormStaff" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="员工姓名" prop="userName">
                         <el-input v-model="ruleFormStaff.userName" placeholder="请填写员工姓名"></el-input>
                     </el-form-item>
                     <el-form-item label="员工手机号" prop="phone">
-                        <el-input v-model="ruleFormStaff.phone" placeholder="请填写职位"></el-input>
+                        <el-input v-model="ruleFormStaff.phone" maxlength="11" placeholder="请填写职位"></el-input>
                     </el-form-item>
                     <el-form-item label="职位">
-                        <el-input v-model="ruleFormStaff.userType" placeholder="请选择职位"></el-input>
+                        <el-select size="medium" v-model="ruleFormStaff.userType" placeholder="请选择职位">
+                            <el-option
+                            v-for="item in queryDictionaryInfoData"
+                            :key="item.code"
+                            :label="item.value"
+                            :value="item.code">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -323,20 +332,28 @@
             </el-dialog>
             <el-dialog
                 class="add-staff"
-                title="添加设备"
+                title="关联设备"
                 :visible.sync="dialogVisibleEquip"
                 width="30%"
                 >
                 <el-form :model="ruleFormEquip" :rules="rulesEquip" ref="ruleFormEquip" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="选择设备">
-                        <el-input v-model="ruleFormEquip.userName" placeholder="请选择设备"></el-input>
+                        <!-- <el-input v-model="ruleFormEquip.userName" placeholder="请选择设备"></el-input> -->
+                        <el-select size="medium" v-model="ruleFormEquip.userName" placeholder="选择设备">
+                            <el-option
+                                v-for="item in queryselDeviceListData"
+                                :key="item.id"
+                                :label="item.model"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="公司名称" prop="phone">
+                    <!-- <el-form-item label="公司名称" prop="phone">
                         <el-input v-model="ruleFormEquip.phone" placeholder="请填写公司名称"></el-input>
                     </el-form-item>
                     <el-form-item label="设备名称">
                         <el-input v-model="ruleFormEquip.userType" placeholder="请填写设备名称"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                     <el-button size="medium" @click="dialogVisibleEquip = false">取 消</el-button>
@@ -408,8 +425,9 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative} from "@/common/js/mixins.js";
-import { getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork } from "@/api/common.js";
+import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
+let _this
 export default {
     components: {
         elPages
@@ -455,7 +473,7 @@ export default {
                 phone: '',
                 projectId: this.$route.params.id,
                 userName: "",
-                userType: "MANAGER(项目负责人),MASTER(项目经理),DEPUTY(项目协管),LEADER(班组组长), WORKER(员工)"
+                userType: ''
             },
             rulesStaff: {
                 userName: [
@@ -529,7 +547,9 @@ export default {
                 pageSize: 10,
                 projectId: Number(this.$route.params.id),
             },
-            queryProjectWorkData: []
+            queryProjectWorkData: [],
+            queryDictionaryInfoData: [],
+            queryselDeviceListData: []
         }
     },
     created() {
@@ -544,10 +564,25 @@ export default {
         this.ApiQueryDeviceInfo()
         this.ApiQueryProjectVisitInfo()
         this.ApiQueryProjectWork()
+        this.ApiSearchDictionaryInfo()
+        this.ApiSelDeviceListByOrgId()
     },
     mounted() {
 
     },
+    beforeCreate: function () {
+        _this = this;
+    },
+    filters: {
+        formatUserType(key) {
+            let infoData = _this.queryDictionaryInfoData.filter(item=>{
+                return item.code == key
+            })
+            if(infoData.length > 0) {
+                return infoData[0].value
+            }
+        }
+	},
     methods: {
         ApiQueryProjectPerson() {
             //项目人员列表
@@ -598,6 +633,23 @@ export default {
                 }
             })
         },
+        ApiSearchDictionaryInfo() {
+            //新增员工职位字典
+            searchDictionaryInfo({parentCode: 'EMPLOYEE_TYPE'}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryDictionaryInfoData = res.data.data
+                }
+            })
+        },
+        ApiSelDeviceListByOrgId() {
+            //查询全部设备
+            selDeviceListByOrgId({id: ''}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryselDeviceListData = res.data.data
+                }
+            })
+        },
+        
         handleCancle() {
             this.btnshow = false
         },
@@ -632,11 +684,44 @@ export default {
         handleModify(row) {
             this.$router.push({path: `/attendance/detail/${row.id}`})
         },
-        handleDelete() {
-            this.$router.push({path: `/projectIndexOr/detail/${row.id}`})
+        handleDelete(row) {
+            this.$confirm('是否删除该条员工信息?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+            }).then(() => {
+                delProjectPerson({id: row.id}).then((res) =>{
+                    if (res.data.code === ERR_OK) {
+                        this.$message({
+                            message: '删除成功',
+                            type: 'success'
+                        });
+                        this.ApiQueryProjectPerson()
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
         handleSubExcel() {
-
+            // editDevice(this.sizeForm).then((res) =>{
+            //     if (res.data.code === ERR_OK) {
+            //         this.$message({
+            //             type: 'success',
+            //             message: '归属成功'
+            //         });
+            //         this.ApiSearchWorkUserRole()
+            //         this.dialogVisible = false
+            //     } else {
+            //         this.$message.error(res.data.message);
+            //     }
+            // })
         },
         handleSubStaff(formName) {
             //添加员工
@@ -653,11 +738,15 @@ export default {
                         } else {
                             this.$message.error(res.data.message);
                         }
+                            this.$refs[formName].resetFields();
                     })
                 } else {
                     return false;
                 }
             });
+        },
+        handleSubEquip(formName) {
+            //
         },
         handleSubVisit(formName) {
             //新增访客

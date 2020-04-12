@@ -39,11 +39,6 @@ export default {
     },
     data() {
         return {
-            // pagebox: {
-            //     totalrows: 10,
-            //     currentpage: 1,
-            //     pageSize: 10
-            // }
         }
     },
     created() {

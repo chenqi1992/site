@@ -1,20 +1,15 @@
 <template>
   	<div class="header-top">
-    	<!-- <el-breadcrumb class="breadcrumb-title" separator="/">
-			<el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-			<el-breadcrumb-item>活动管理</el-breadcrumb-item>
-			<el-breadcrumb-item>活动列表</el-breadcrumb-item>
-			<el-breadcrumb-item>活动详情</el-breadcrumb-item>
-    	</el-breadcrumb> -->
 		<el-breadcrumb class="breadcrumb-title" separator="/">
-			<el-breadcrumb-item :to="{ path: '/' }">{{$route.name}}</el-breadcrumb-item>
+			<el-breadcrumb-item>{{$route.name}}</el-breadcrumb-item>
     	</el-breadcrumb>
 		<div class="hearder-userinfo">
-			<el-tooltip content="Left Center" placement="left" effect="light">
+			<!-- <el-tooltip content="Left Center" placement="left" effect="light">
 				<img class="tip" src="../assets/question-circle-o@2x.png" alt="">
-			</el-tooltip>
+			</el-tooltip> -->
 			<img class="avater" src="../assets/logo.png" alt="">
 			<div class="username">{{userName}}</div>
+			<div class="loginout" @click="logOut">退出</div>
 		</div>
   	</div>
 </template>
@@ -29,17 +24,16 @@ export default {
   },
   methods: {
     logOut() {
-      loginOut().then((res) => {
+    //   loginOut().then((res) => {
         console.log('退出成功')
         removeStore('authToken');
         removeStore('refreshToken');
-        removeStore('loginInfouser');
-        removeStore('menuAdmin');
-        removeStoreSession('haslogin');
-        this.islogin = false;
-        this.$router.push({path: '/login'});
-      }, (err) => {
-      })
+		removeStore('loginInfouser');
+		removeStore('qiniuauthToken');
+		removeStoreSession('haslogin');
+        this.$router.push({path: '/home'});
+    //   }, (err) => {
+    //   })
     }
   },
   mounted() {
@@ -88,7 +82,9 @@ export default {
 			color: #000000;
 		}
     .loginout {
+		padding-left: 30px;
       	cursor: pointer;
+		color: #666666;
     }
   }
 }

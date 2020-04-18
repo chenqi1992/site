@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'development') {
         hostName = 'devhaogongdiwww.shilongmaoyi.com/'
     } else if (process.env.VUE_APP_TYPE === 'prod') {
         // hostName = '119.3.216.22:18100/'
-        hostName = 'devhaogongdiwww.shilongmaoyi.com/'
+        hostName = 'haogongdiwww.shilongmaoyi.com/'
     } else {
         // hostName = '119.3.216.22:18100/'
         hostName = 'devhaogongdiwww.shilongmaoyi.com/'

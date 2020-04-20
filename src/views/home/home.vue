@@ -19,7 +19,7 @@
                         <el-input maxlength="11" v-model="ruleForm.mobilePhone" placeholder="请输入手机号"></el-input>
                     </el-form-item>
                     <el-form-item prop="password">
-                        <el-input v-model="ruleForm.password" placeholder="请输入密码" show-password></el-input>
+                        <el-input v-model="ruleForm.password" placeholder="请输入密码"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-button type="primary" class="btn" @click="handleLogin('ruleForm')">登录</el-button>
@@ -98,8 +98,8 @@ export default {
         return {
             ruleForm: {
                 loginType: "WORK_USER_LOGIN_TYPE",
-                mobilePhone: "18046286389",
-                password: "88888888",
+                mobilePhone: "", //18046286389
+                password: "",   //88888888
             },
             rules: {
                 mobilePhone: [

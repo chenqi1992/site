@@ -34,6 +34,16 @@
                         clearable>
                     </el-input>
                 </div>
+                <div class="bus-header--input">
+                    请输入手机号搜索：
+                    <el-input
+                        size="medium"
+                        class="search-input"
+                        v-model="listBackstageUserParams.mobilePhone"
+                        placeholder="请输入"
+                        clearable>
+                    </el-input>
+                </div>
             </div>
             <div>
                 <el-button size="medium" type="primary" @click="handleSearch">查询</el-button>
@@ -58,6 +68,11 @@
             <el-table-column
             prop="userName"
             label="姓名"
+            align="center">
+            </el-table-column>
+            <el-table-column
+            prop="mobilePhone"
+            label="手机号"
             align="center">
             </el-table-column>
             <el-table-column
@@ -125,7 +140,8 @@ export default {
                 pageSize: 10,
                 roleType: null,
                 status: null,
-                userName: null
+                userName: null,
+                mobilePhone: null
             },
             listBackstageUserData:[],
             statusArr: [{

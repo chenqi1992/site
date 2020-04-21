@@ -161,7 +161,7 @@
                                 message: '密码重置成功, 3秒后跳转到登录页',
                                 type: 'success'
                             });
-                            let redicturl = '/useraction/login';
+                            let redicturl = '/home';
                             if (this.usertype === 'staff') {
                                 setStore('loginCurrTab', 1);
                             }
@@ -184,27 +184,27 @@
                 }
             },
             gosecond() {
-                getPublicKey().then((res) => {
-                    if (res.data.code === 1000) {
-                        let publicKey = res.data.data
-                        let encryptor = new JSEncrypt();
-                        encryptor.setPublicKey(publicKey)
-                        let rsaPassWord = encryptor.encrypt(this.secondform.pwd)
+                // getPublicKey().then((res) => {
+                //     if (res.data.code === 1000) {
+                //         let publicKey = res.data.data
+                //         let encryptor = new JSEncrypt();
+                //         encryptor.setPublicKey(publicKey)
+                //         let rsaPassWord = encryptor.encrypt(this.secondform.pwd)
                         let params = {
                             mobilePhone: this.firstform.phonenum,
                             validateCode:  this.firstform.notecode,
-                            password:rsaPassWord,
-                            publicKey:publicKey,
+                            password: this.secondform.pwd,
+                            publicKey: '',
                         };
                         if (this.isstaff) {
                             params.personTypeEnum = 'STAFF';
                         }
                         this.resetUserPassword(params)
-                    }
+                    // }
 
-                },erro=>{
+                // },erro=>{
 
-                })
+                // })
             },
             checkphone() {
                 if (!this.firstform.phonenum.trim() ) {

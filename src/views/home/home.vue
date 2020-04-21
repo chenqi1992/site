@@ -19,7 +19,7 @@
                         <el-input maxlength="11" v-model="ruleForm.mobilePhone" placeholder="请输入手机号"></el-input>
                     </el-form-item>
                     <el-form-item prop="password">
-                        <el-input v-model="ruleForm.password" placeholder="请输入密码"></el-input>
+                        <el-input v-model="ruleForm.password" placeholder="请输入密码" show-password></el-input>
                     </el-form-item>
                 </el-form>
                 <el-button type="primary" class="btn" @click="handleLogin('ruleForm')">登录</el-button>
@@ -130,7 +130,13 @@ export default {
                             setStore('authToken', data.authToken);
                             setStore('refreshToken', data.refreshToken);
                             setStore('loginInfouser', data.loginInfo);
-                            this.$router.push({path: './businessManage'})
+                            let isProjectManage = false
+                            data.loginInfo.userRoles.forEach(item=> {
+                                if(item.roleCode === 'PROJECT_MANAGE' || item.roleCode === 'ORG_MANAGE') {
+                                    isProjectManage = true
+                                }
+                            });
+                            isProjectManage ? this.$router.push({path: './projectIndex'}) : this.$router.push({path: './businessManage'})
                         }
                     })
                 } else {

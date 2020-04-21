@@ -343,7 +343,7 @@
                             <el-option
                                 v-for="item in queryselDeviceListData"
                                 :key="item.id"
-                                :label="item.model"
+                                :label="item.name"
                                 :value="item.id">
                             </el-option>
                         </el-select>
@@ -643,7 +643,7 @@ export default {
         },
         ApiSelDeviceListByOrgId() {
             //查询全部设备
-            selDeviceListByOrgId({id: ''}).then((res) =>{
+            selDeviceListByOrgId({id: this.$route.params.id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryselDeviceListData = res.data.data
                 }

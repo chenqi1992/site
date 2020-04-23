@@ -59,11 +59,11 @@
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
                 </div>
-                <div v-if="!editORview">
+                <!-- <div v-if="!editORview"> -->
                     <div v-for="(item, index) in ruleForm.imgUrl" :key="index">
                         <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
                     </div>
-                </div>
+                <!-- </div> -->
             </div>
             <div class="item">
                 <div>法定代表人证件</div>
@@ -100,45 +100,53 @@
                         class="table-site"
                         ref="multipleTable"
                         :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
-                        :data="queryProjectInfoData"
+                        :data="companyProjectName"
                         tooltip-effect="dark"
                         style="width: 100%">
                         <el-table-column
                         prop="id"
                         label="项目ID"
+                        align="center"
                         >
                         </el-table-column>
                         <el-table-column
                         prop="projectName"
                         label="项目名称"
-                        width="120">
+                        align="center">
                         </el-table-column>
                         <el-table-column
+                        prop="userName"
                         label="负责人"
+                        align="center"
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="address"
                         label="项目地址"
+                        align="center"
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="deviceCount"
                         label="设备数量"
+                        align="center"
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="userCount"
                         label="项目员工数"
+                        align="center"
                         show-overflow-tooltip>
                         </el-table-column>
                         <el-table-column
                         prop="startTime"
+                        :formatter="formatterTime"
                         label="项目开始时间"
+                        align="center"
                         show-overflow-tooltip>
                         </el-table-column>
                     </el-table>
-                    <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
+                    <!-- <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages> -->
                 </el-tab-pane>
                 <el-tab-pane label="员工信息" name="second">
                     <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
@@ -150,9 +158,9 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken, queryProjectInfo } from "@/api/common.js";
+import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken, queryProjectInfo, queryProjectInfoByOrgId } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
-import {setStore, getStore} from '@/utils/utils.js'
+import {setStore, getStore, dateformat} from '@/utils/utils.js'
 export default {
     components: {
         elPages
@@ -251,7 +259,8 @@ export default {
                 pageSize: 10
             },
             queryProjectInfoData: [],
-            isAdd: false
+            isAdd: false,
+            companyProjectName: []
         }
     },
     created() {
@@ -271,6 +280,7 @@ export default {
             this.ApiSearchBackstageOrganization()
         }
         this.ApiGeneralToken()
+        this.ApiQueryProjectInfoByOrgId()
     },
     mounted() {
 
@@ -290,6 +300,7 @@ export default {
                             }
                         }
                     }
+                    console.log(this.ruleForm.imgUrl);
                     this.ruleForm.imgUrl = this.ruleForm.imgUrl.split(',')
                     this.ruleForm.contactImgUr = this.ruleForm.contactImgUr.split(',')
                     console.log(this.ruleForm.imgUrl, this.ruleForm.contactImgUr);
@@ -312,6 +323,24 @@ export default {
                     this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
+        },
+        ApiQueryProjectInfoByOrgId() {
+            //项目信息
+            queryProjectInfoByOrgId({orgId: this.$route.params.id}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.companyProjectName = res.data.data
+                }
+            })
+        },
+        formatterTime(row, column, cellValue, index) {
+            if(cellValue === null) {
+                return cellValue
+            } else {
+                let date = new Date(cellValue);
+                let getTimeResult
+                cellValue == '--' ? getTimeResult = '--' : getTimeResult = dateformat(date, 'yyyy-MM-dd hh:mm:ss')
+                return getTimeResult;
+            }  
         },
         handleSubBusiness(formName) {
             if(!this.btnshowcancle) {

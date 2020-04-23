@@ -206,7 +206,6 @@ export default {
     },
     computed: {
         'ruleForm.bindTime'() {		//注意,这里设置的计算规则的命名是页面v-modal绑定的值
-            console.log(this.selectOneDeviceData.bindTime);
             return dateformat(new Date(this.selectOneDeviceData.bindTime), 'yyyy-MM-dd hh:mm');
         }
     },
@@ -263,13 +262,11 @@ export default {
             this.ApiQueryProjectInfoByOrgId()
         },
         handleProjectId(val) {
-            console.log(val);
             this.companyProjectName.forEach(item=> {
                 if(item.id == val) {
                     this.ruleForm.projectName = item.projectName
                 }
             })
-            console.log(val);
         },
         handleSubSave(formName) {
             this.$refs[formName].validate((valid) => {

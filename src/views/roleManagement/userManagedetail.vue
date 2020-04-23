@@ -49,11 +49,18 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="角色名称：" prop="roleName">
+                        <!-- <el-form-item label="角色名称：" prop="roleName">
                             <el-input size="medium" v-model="item.roleName"></el-input>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="所属企业：" prop="organizationName">
-                            <el-input size="medium" v-model="item.organizationName"></el-input>
+                            <el-select size="medium" v-model="item.organizationId" filterable placeholder="请选择" @change="handleChangeOrg(...arguments, index)">
+                                <el-option
+                                v-for="item in getOrganizationListData"
+                                :key="item.orgId"
+                                :label="item.orgName"
+                                :value="item.orgId">
+                                </el-option>
+                            </el-select>
                         </el-form-item>
                         <el-button class="delete-btn" :class="[index != 0 ? '': 'active']" type="primary" size="small" v-show="editORview" icon="el-icon-delete" @click="handleDelplatform(index)">删除</el-button>               
                     </div>
@@ -108,7 +115,7 @@
 </template>
 
 <script>
-import { insertBackstageUser, searchBackstageUser, updateBackstageUser, listBackstageOrganization } from "@/api/common.js";
+import { insertBackstageUser, searchBackstageUser, updateBackstageUser, listBackstageOrganization, getOrganizationList } from "@/api/common.js";
 import { getStore } from '@/utils/utils.js'
 import { roleType } from "@/common/js/mixins.js";
 import { ERR_OK } from "@/api/reConfig.js";
@@ -168,6 +175,18 @@ export default {
                 typeCode: ""
             },
             listBackstageOrganizationData: [],
+            getOrganizationListParams: {
+                orgName: null,
+                startDate: null,
+                endDate: null,
+                status: ''
+            },
+            pagebox: {
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 500
+            },
+            getOrganizationListData: []
         }
     },
     created() {
@@ -183,11 +202,22 @@ export default {
             this.editORview = false
             this.ApiSearchBackstageUser()
         }
+        this.ApiGetOrganizationList()
     },
     mounted() {
 
     },
     methods: {
+        ApiGetOrganizationList() {
+            //企业列表
+            this.getOrganizationListParams.startDate = this.businessTime ? this.businessTime[0] : ''
+            this.getOrganizationListParams.endDate = this.businessTime ? this.businessTime[1] : ''
+            getOrganizationList(Object.assign(this.getOrganizationListParams, this.pagebox)).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.getOrganizationListData = res.data.data.list
+                }
+            })
+        },
         ApiSearchBackstageUser() {
             //企业详情
             searchBackstageUser(this.searchBackstageUserParams).then((res) =>{
@@ -219,6 +249,7 @@ export default {
                 }
             });
             this.ruleForm2.map((item, index)=>{
+                item.roleName = item.roleCode
                 this.$refs['ruleForm2'][index].validate((valid) => {
                     if (!valid) {
                         valiflag = false;
@@ -279,6 +310,14 @@ export default {
         },
         handleDelplatform(index) {
             this.ruleForm2.splice(index, 1);
+        },
+        handleChangeOrg(val, index) {
+            this.getOrganizationListData.forEach(item=>{
+                if(item.orgId === val) {
+                    this.ruleForm2[index].organizationId = item.orgId
+                    this.ruleForm2[index].organizationName = item.orgName
+                }
+            })
         }
     }
 }

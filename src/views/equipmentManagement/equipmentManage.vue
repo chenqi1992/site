@@ -54,9 +54,9 @@
         <el-dialog
             title="分配设备"
             :visible.sync="dialogVisible"
-            width="35%"
+            width="350px"
             :before-close="handleClose">
-            <el-form ref="form" :model="sizeForm" :rules="rules" label-width="130px" size="mini">
+            <el-form ref="formSub" :model="sizeForm" :rules="rules" label-width="130px" size="mini">
                 <el-form-item label="设备归属企业ID" prop="companyId">
                     <el-select v-model="sizeForm.companyId" @change="handleChange" placeholder="请选择">
                         <el-option
@@ -70,7 +70,7 @@
                 <!-- <el-form-item label="设备别名" prop="name">
                     <el-input v-model="sizeForm.name"></el-input>
                 </el-form-item> -->
-                <el-form-item label="设备唯一标识码" prop="code">
+                <el-form-item label="设备唯一标识码" prop="discern">
                     <el-input v-model="sizeForm.discern"></el-input>
                 </el-form-item>
                 <!-- <el-form-item label="设备型号" prop="model">
@@ -224,7 +224,7 @@ export default {
                 id: 0
             },
             rules: {
-                code: [
+                discern: [
                     { required: true, message: '请输入设备唯一标识码', trigger: 'blur' },
                 ],
                 companyId: [
@@ -321,18 +321,31 @@ export default {
             this.dialogVisibleEquip = false
         },
         handleSub() {
-            editDevice(this.sizeForm).then((res) =>{
-                if (res.data.code === ERR_OK) {
-                    this.$message({
-                        type: 'success',
-                        message: '归属成功'
-                    });
-                    this.ApiSearchWorkUserRole()
-                    this.dialogVisible = false
+            if(this.multipleSelection.length === 0) {
+                this.$message({
+                    type: 'error',
+                    message: '请先选择一个归属设备'
+                });
+                return
+            }
+            this.$refs['formSub'].validate((valid) => {
+                if (valid) {
+                    editDevice(this.sizeForm).then((res) =>{
+                        if (res.data.code === ERR_OK) {
+                            this.$message({
+                                type: 'success',
+                                message: '归属成功'
+                            });
+                            this.ApiSearchWorkUserRole()
+                            this.dialogVisible = false
+                        } else {
+                            this.$message.error(res.data.message);
+                        }
+                    })
                 } else {
-                    this.$message.error(res.data.message);
+                    return false;
                 }
-            })
+            });
         },
         handleSelectionChange(val) {
             this.multipleSelection = val

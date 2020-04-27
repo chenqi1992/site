@@ -593,3 +593,11 @@ export const queryCompanyPerson = (data) => {
         method: 'post'
     }, data)
 }
+
+/* 根据企业-同步设备人员 */
+export const syncDevicePerson = (data) => {
+    return http({
+        url: '/haogongdi/devicePerson/syncDevicePerson',
+        method: 'post'
+    }, data)
+}

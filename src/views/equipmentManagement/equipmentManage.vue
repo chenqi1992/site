@@ -70,7 +70,7 @@
                 <!-- <el-form-item label="设备别名" prop="name">
                     <el-input v-model="sizeForm.name"></el-input>
                 </el-form-item> -->
-                <el-form-item label="设备唯一标识码" prop="discern">
+                <el-form-item label="设备识别度" prop="discern">
                     <el-input v-model="sizeForm.discern"></el-input>
                 </el-form-item>
                 <!-- <el-form-item label="设备型号" prop="model">
@@ -225,7 +225,7 @@ export default {
             },
             rules: {
                 discern: [
-                    { required: true, message: '请输入设备唯一标识码', trigger: 'blur' },
+                    { required: true, message: '请输入设备识别度', trigger: 'blur' },
                 ],
                 companyId: [
                     { required: true, message: '请输入设备归属企业ID', trigger: 'blur' },

@@ -145,16 +145,16 @@
             :before-close="handleClose">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                 <el-form-item label="项目名称" prop="projectName">
-                    <el-input v-model="ruleForm.projectName" placeholder="请填写公司名称"></el-input>
+                    <el-input v-model="ruleForm.projectName" placeholder="请填写项目名称"></el-input>
                 </el-form-item>
                 <el-form-item label="项目地址" prop="address">
-                    <el-input v-model="ruleForm.address" placeholder="请选择行业类别"></el-input>
+                    <el-input v-model="ruleForm.address" placeholder="请填写项目地址"></el-input>
                 </el-form-item>
                 <el-form-item label="负责人" prop="userName">
-                    <el-input v-model="ruleForm.userName" placeholder="请填写联系人"></el-input>
+                    <el-input v-model="ruleForm.userName" placeholder="请填写负责人"></el-input>
                 </el-form-item>
                 <el-form-item label="负责人电话" prop="phone">
-                    <el-input v-model="ruleForm.phone" placeholder="请选择所在区域"></el-input>
+                    <el-input v-model="ruleForm.phone" placeholder="请填写负责人电话"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -183,7 +183,7 @@ export default {
             dialogVisible: false,
             queryProjectInfoParams: {
                 manageStatus: null,
-                roleType: "ORG_MANAGE",
+                roleType: "PROJECT_MANAGE",
                 oderBy: null,
                 projectName: "",
                 projectStatus: "",
@@ -194,7 +194,7 @@ export default {
                 address: '',
                 userName: '',
                 phone: '',
-                roleType: "ORG_MANAGE"
+                roleType: "PROJECT_MANAGE"
             },
             rules: {
                 projectName: [
@@ -240,7 +240,7 @@ export default {
         this.ApiQueryProjectInfo()
     },
     mounted() {
-
+        
     },
     methods: {
         ApiQueryProjectInfo() {

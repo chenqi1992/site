@@ -266,15 +266,15 @@ export default {
             },
             searchBackstageOrganizationData:{}, 
             ruleForm: {
-                orgId: this.$route.params.id,
+                orgId: this.$route.params.id === 'add' ? null:this.$route.params.id,
                 name: null,
                 socialCreditCode: null,
                 contactName: null,
                 contactPhone: null,
                 legalPersonName: null,
                 legalPersonIdCard: null,
-                contactImgUr: [],
-                imgUrl: []
+                contactImgUr: '',
+                imgUrl: ''
             },
             rules: {
                 name: [
@@ -307,7 +307,7 @@ export default {
                 oderBy: null,
                 projectName: "",
                 projectStatus: "",
-                startTime: null,
+                startTime: null
             },
             pagebox: {
                 totalrows: 0,

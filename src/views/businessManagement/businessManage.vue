@@ -100,9 +100,8 @@
                 align="center"
                 show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <div v-if="scope.row.status === 0">暂停</div>
-                        <div v-if="scope.row.status === 1">完结</div>
-                        <div v-if="scope.row.status === 2">运行</div>
+                        <div v-if="scope.row.status === 0">停止运行</div>
+                        <div v-if="scope.row.status === 1">运行中</div>
                     </template>
                 </el-table-column>
                 <el-table-column

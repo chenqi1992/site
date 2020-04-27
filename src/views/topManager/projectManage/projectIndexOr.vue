@@ -35,6 +35,7 @@
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="员工信息" name="first">
                     <div class="btn">
+                        <el-button size="medium" type="primary" @click="handleDevicesyn">同步到设备</el-button>
                         <el-button size="medium" type="primary" @click="dialogVisibleStaff = true">新增员工</el-button>
                     </div>
                     <el-table
@@ -425,7 +426,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative} from "@/common/js/mixins.js";
-import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId, editDevice } from "@/api/common.js";
+import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId, editDevice, syncDevicePerson } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 import {setStore, getStore} from '@/utils/utils.js'
 
@@ -556,7 +557,8 @@ export default {
             },
             queryProjectWorkData: [],
             queryDictionaryInfoData: [],
-            queryselDeviceListData: []
+            queryselDeviceListData: [],
+            deviceCode: ''
         }
     },
     created() {
@@ -653,6 +655,7 @@ export default {
             selDeviceListByOrgId({id: this.$route.params.id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryselDeviceListData = res.data.data
+                    this.deviceCode = this.queryselDeviceListData[0].code
                 }
             })
         },
@@ -716,41 +719,6 @@ export default {
             });
         },
         handleDedeviceStatus(row) {
-            console.log(row);
-            // this.$confirm('是否删除该设备?', '提示', {
-            //     confirmButtonText: '取消',
-            //     cancelButtonText: '确定',
-            //     type: 'warning',
-            //     center: true
-            // }).then(() => {
-            //     console.log(111);
-            //     editDevice({
-            //         companyId: row.companyId,
-            //         companyName: row.companyName,
-            //         deviceStatus: row.deviceStatus,
-            //         discern: row.discern,
-            //         id: row.id,
-            //         name: row.name,
-            //         projectId: null,
-            //         projectName: row.projectName
-            //     }).then((res) =>{
-            //         if (res.data.code === ERR_OK) {
-            //             this.$message({
-            //                 type: 'success',
-            //                 message: '删除成功'
-            //             });
-            //             this.ApiSelDeviceListByOrgId()
-            //         } else {
-            //             this.$message.error(res.data.message);
-            //         }
-            //     })
-            // }).catch(() => {
-            //     console.log(222);
-            //     this.$message({
-            //         type: 'info',
-            //         message: '已取消删除'
-            //     });
-            // });
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -758,7 +726,7 @@ export default {
                 center: true
             }).then(() => {
                 editDevice({
-                    companyId: null,
+                    companyId: row.companyId,
                     companyName: row.companyName,
                     deviceStatus: row.deviceStatus,
                     discern: row.discern,
@@ -772,7 +740,7 @@ export default {
                             type: 'success',
                             message: '删除成功'
                         });
-                        this.ApiSelDeviceListByOrgId()
+                        this.ApiQueryDeviceInfo()
                     } else {
                         this.$message.error(res.data.message);
                     }
@@ -884,6 +852,23 @@ export default {
                 if (res.data.code === ERR_OK) {
                     this.$message({
                         message: '删除成功',
+                        type: 'success'
+                    });
+                } else {
+                    this.$message.error(res.data.message);
+                }
+            })
+        },
+        handleDevicesyn() {
+            //同步员工信息到设备
+            syncDevicePerson({
+                deviceCode: this.deviceCode,
+                deviceId: null,
+                projectId: Number(this.$route.params.id)
+            }).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.$message({
+                        message: '同步成功',
                         type: 'success'
                     });
                 } else {

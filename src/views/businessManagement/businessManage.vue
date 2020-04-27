@@ -100,8 +100,8 @@
                 align="center"
                 show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <div v-if="scope.row.status === 0">停止运行</div>
-                        <div v-if="scope.row.status === 1">运行中</div>
+                        <div v-if="scope.row.status === 0">运行中</div>
+                        <div v-if="scope.row.status === 1">停止运行</div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -118,8 +118,8 @@
                         <div>
                             <el-button class="btn-action" @click="handleView(scope.row)" type="text">查看</el-button>
                             <el-button class="btn-action" @click="handleModify(scope.row)" type="text">编辑</el-button>
-                            <el-button class="btn-action" v-if="scope.row.status === 0" @click="handleSwitchOpen(scope.row)" type="text">开启</el-button>
-                            <el-button class="btn-action" v-if="scope.row.status === 1" @click="handleSwitchStop(scope.row)" type="text">停用</el-button>
+                            <el-button class="btn-action" v-if="scope.row.status === 1" @click="handleSwitchOpen(scope.row)" type="text">开启</el-button>
+                            <el-button class="btn-action" v-if="scope.row.status === 0" @click="handleSwitchStop(scope.row)" type="text">停用</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -201,14 +201,14 @@ export default {
             this.ApiGetOrganizationList()
         },
         handleSwitchOpen(row) {
-            closeOrg({orgId: row.orgId}).then((res) =>{
+            openOrg({orgId: row.orgId}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.ApiGetOrganizationList()
                 }
             })
         },
         handleSwitchStop(row) {
-            openOrg({orgId: row.orgId}).then((res) =>{
+            closeOrg({orgId: row.orgId}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.ApiGetOrganizationList()
                 }

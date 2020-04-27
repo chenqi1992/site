@@ -404,13 +404,13 @@
                         <el-input v-model="ruleFormWork.workName" placeholder="请填写班组名称"></el-input>
                     </el-form-item>
                     <el-form-item label="班组介绍">
-                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组介绍"></el-input>
+                        <el-input v-model="ruleFormWork.remark" placeholder="请填写班组介绍"></el-input>
                     </el-form-item>
                     <el-form-item label="班组长姓名">
-                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组长姓名"></el-input>
+                        <el-input v-model="ruleFormWork.userName" placeholder="请填写班组长姓名"></el-input>
                     </el-form-item>
                     <el-form-item label="班组长电话">
-                        <el-input v-model="ruleFormWork.workName" placeholder="请填写班组长电话"></el-input>
+                        <el-input v-model="ruleFormWork.phone" placeholder="请填写班组长电话"></el-input>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -427,6 +427,8 @@ import elPages from "@/components/elPages.vue";
 import {relative} from "@/common/js/mixins.js";
 import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
+import {setStore, getStore} from '@/utils/utils.js'
+
 let _this
 export default {
     components: {
@@ -513,6 +515,11 @@ export default {
                 ],
             },
             ruleFormWork: {
+                phone: '',
+                projectId: Number(this.$route.params.id),
+                remark: '',
+                userId: '',
+                userName: '',
                 workName: ''
             },
             rulesWork: {
@@ -649,7 +656,6 @@ export default {
                 }
             })
         },
-        
         handleCancle() {
             this.btnshow = false
         },
@@ -771,8 +777,11 @@ export default {
             //新增班组
             this.$refs[formName].validate((valid) => {
                 if (valid) {
+                    const loginUser = JSON.parse(getStore('loginInfouser'))
+                    this.ruleFormWork.userId = loginUser.userInfo.userId
                     addProjectWork(this.ruleFormWork).then((res) =>{
                         if (res.data.code === ERR_OK) {
+                            this.ApiQueryProjectWork()
                             this.$message({
                                 message: '添加成功',
                                 type: 'success'

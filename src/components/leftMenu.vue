@@ -37,7 +37,7 @@ import { getStore, getStoreSession } from '@/utils/utils.js'
 const menuico = { 10199: require('../assets/leftmenu/平台管理@2x.png'),
 				10000: require('../assets/leftmenu/账户管理@2x.png'), 
 				10196: require('../assets/leftmenu/设备管理@2x.png'), 
-				10195: require('../assets/leftmenu/企业管理@2x.png'), 
+				10222: require('../assets/leftmenu/企业管理@2x.png'), 
 				10214: require('../assets/leftmenu/交底考试@2x.png'), 
 				10202: require('../assets/leftmenu/员工管理@2x.png'),
 				10206:require('../assets/leftmenu/考勤管理@2x.png'),

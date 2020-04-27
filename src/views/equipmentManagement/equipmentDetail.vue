@@ -140,6 +140,7 @@ export default {
                 projectId: '',
                 projectName: '',
                 model: '',
+                discern: ''
                 // bindTime: '',
             },
             rules: {

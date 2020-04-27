@@ -163,7 +163,7 @@
                             <template slot-scope="scope">
                                 <div>
                                     <el-button class="btn-action" @click="handleModify(scope.row)" type="text">查看</el-button>
-                                    <!-- <el-button class="btn-action" @click="handleDelete(scope.row)" type="text">删除</el-button> -->
+                                    <el-button class="btn-action" @click="handleDedeviceStatus(scope.row)" type="text">删除</el-button>
                                 </div>
                             </template>
                         </el-table-column>
@@ -425,7 +425,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative} from "@/common/js/mixins.js";
-import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId } from "@/api/common.js";
+import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId, editDevice } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 import {setStore, getStore} from '@/utils/utils.js'
 
@@ -704,6 +704,75 @@ export default {
                             type: 'success'
                         });
                         this.ApiQueryProjectPerson()
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+        },
+        handleDedeviceStatus(row) {
+            console.log(row);
+            // this.$confirm('是否删除该设备?', '提示', {
+            //     confirmButtonText: '取消',
+            //     cancelButtonText: '确定',
+            //     type: 'warning',
+            //     center: true
+            // }).then(() => {
+            //     console.log(111);
+            //     editDevice({
+            //         companyId: row.companyId,
+            //         companyName: row.companyName,
+            //         deviceStatus: row.deviceStatus,
+            //         discern: row.discern,
+            //         id: row.id,
+            //         name: row.name,
+            //         projectId: null,
+            //         projectName: row.projectName
+            //     }).then((res) =>{
+            //         if (res.data.code === ERR_OK) {
+            //             this.$message({
+            //                 type: 'success',
+            //                 message: '删除成功'
+            //             });
+            //             this.ApiSelDeviceListByOrgId()
+            //         } else {
+            //             this.$message.error(res.data.message);
+            //         }
+            //     })
+            // }).catch(() => {
+            //     console.log(222);
+            //     this.$message({
+            //         type: 'info',
+            //         message: '已取消删除'
+            //     });
+            // });
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+            }).then(() => {
+                editDevice({
+                    companyId: null,
+                    companyName: row.companyName,
+                    deviceStatus: row.deviceStatus,
+                    discern: row.discern,
+                    id: row.id,
+                    name: row.name,
+                    projectId: null,
+                    projectName: row.projectName
+                }).then((res) =>{
+                    if (res.data.code === ERR_OK) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功'
+                        });
+                        this.ApiSelDeviceListByOrgId()
                     } else {
                         this.$message.error(res.data.message);
                     }

@@ -59,11 +59,11 @@
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
                 </div>
-                <!-- <div v-if="!editORview"> -->
+                <!-- <template v-if="isAdd">
                     <div v-for="(item, index) in ruleForm.imgUrl" :key="index">
                         <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
                     </div>
-                <!-- </div> -->
+                </template> -->
             </div>
             <div class="item">
                 <div>法定代表人证件</div>
@@ -85,11 +85,11 @@
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
                 </div>
-                <div v-if="!editORview">
+                <template v-if="isAdd">
                     <div v-for="(item, index) in ruleForm.contactImgUr" :key="index">
                         <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
                     </div>
-                </div>
+                </template>
             </div>
         </div>
         <div class="detail-infobus" v-if="isAdd">
@@ -149,6 +149,62 @@
                     <!-- <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages> -->
                 </el-tab-pane>
                 <el-tab-pane label="员工信息" name="second">
+                    <el-table
+                        class="table-site"
+                        ref="multipleTable"
+                        :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
+                        :data="queryCompanyPersonData"
+                        tooltip-effect="dark"
+                        style="width: 100%">
+                        <el-table-column
+                        prop="id"
+                        label="员工ID"
+                        align="center"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                        prop="name"
+                        label="姓名"
+                        align="center">
+                        </el-table-column>
+                        <el-table-column
+                        prop="idCard"
+                        label="身份证号"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="phone"
+                        label="手机号"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="userOrigin"
+                        label="籍贯"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="userType"
+                        label="职业类型"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="serveStatus"
+                        label="在职状态"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="createTime"
+                        :formatter="formatterTime"
+                        label="在职时间"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                    </el-table>
                     <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiQueryProjectInfo"></elPages>
                 </el-tab-pane>
             </el-tabs>
@@ -158,7 +214,7 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken, queryProjectInfo, queryProjectInfoByOrgId } from "@/api/common.js";
+import { addBackstageOrganization, searchBackstageOrganization, updateBackstageOrganization, generalToken, queryProjectInfo, queryProjectInfoByOrgId, queryCompanyPerson } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 import {setStore, getStore, dateformat} from '@/utils/utils.js'
 export default {
@@ -260,7 +316,8 @@ export default {
             },
             queryProjectInfoData: [],
             isAdd: false,
-            companyProjectName: []
+            companyProjectName: [],
+            queryCompanyPersonData: []
         }
     },
     created() {
@@ -281,6 +338,7 @@ export default {
         }
         this.ApiGeneralToken()
         this.ApiQueryProjectInfoByOrgId()
+        this.ApiQueryCompanyPerson()
     },
     mounted() {
 
@@ -329,6 +387,14 @@ export default {
             queryProjectInfoByOrgId({orgId: this.$route.params.id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.companyProjectName = res.data.data
+                }
+            })
+        },
+        ApiQueryCompanyPerson() {
+            //员工信息
+            queryCompanyPerson({orgId: this.$route.params.id,pageIndex: 1, pageSize: 10}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryCompanyPersonData = res.data.data.list
                 }
             })
         },
@@ -413,14 +479,14 @@ export default {
             if(type === 'contactImgUr') {
                 this.ruleForm.contactImgUr = []
                 fileList.map(item=>{
-                    this.ruleForm.contactImgUr.push(`devhaogongdi.shilongmaoyi.com/${item.response.key}`)
+                    this.ruleForm.contactImgUr.push(`https://devhaogongdi.shilongmaoyi.com/${item.response.key}`)
                 })
                 // this.ruleForm.contactImgUr = JSON.stringify(this.ruleForm.contactImgUr)
                 this.ruleForm.contactImgUr = String(this.ruleForm.contactImgUr.join(","))
             } else {
                 this.ruleForm.imgUrl = []
                 fileList.map(item=>{
-                    this.ruleForm.imgUrl.push(`devhaogongdi.shilongmaoyi.com/${item.response.key}`)
+                    this.ruleForm.imgUrl.push(`https://devhaogongdi.shilongmaoyi.com/${item.response.key}`)
                 })
                 // this.ruleForm.imgUrl = JSON.stringify(this.ruleForm.imgUrl)
                 this.ruleForm.imgUrl = String(this.ruleForm.imgUrl.join(","))

@@ -586,3 +586,10 @@ export const queryProjectInfoByOrgId = (data) => {
         method: 'post'
     }, data)
 }
+/* 根据企业-查询员工信息 */
+export const queryCompanyPerson = (data) => {
+    return http({
+        url: '/haogongdi/companyPerson/queryCompanyPerson',
+        method: 'post'
+    }, data)
+}

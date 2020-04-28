@@ -104,7 +104,7 @@
                         tooltip-effect="dark"
                         style="width: 100%">
                         <el-table-column
-                        prop="id"
+                        prop="userId"
                         label="项目ID"
                         align="center"
                         >

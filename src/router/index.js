@@ -10,7 +10,10 @@ import agreement from './agreement';
 Vue.use(Router)
 let routeslist = []
     // 模块路由添到路由列表
-routeslist.push(home, businessManagement, equipmentManagement, roleManagement, topManager, agreement)
+routeslist.push({
+    path: '/',
+    redirect: '/home',
+}, home, businessManagement, equipmentManagement, roleManagement, topManager, agreement)
 export default new Router({
     mode: 'history',
     routes: routeslist,

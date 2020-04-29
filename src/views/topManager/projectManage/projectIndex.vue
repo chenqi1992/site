@@ -51,7 +51,7 @@
             </div>
         </div>
         <div class="business-add">
-            <el-button size="medium" type="primary" icon="el-icon-plus" @click="handleAddPro">添加项目</el-button>
+            <el-button size="medium" type="primary" icon="el-icon-plus" v-if="queryProjectInfoParams.roleType !== 'PROJECT_MANAGE'" @click="handleAddPro">添加项目</el-button>
             <div class="all-data">共搜索到 {{pagebox.totalrows}} 条数据</div>
         </div>
         <div class="business-table">   
@@ -203,7 +203,7 @@ export default {
                 address: '',
                 userName: '',
                 phone: '',
-                roleType: "PROJECT_MANAGE"
+                roleType: "ORG_MANAGE"
             },
             rules: {
                 projectName: [
@@ -249,26 +249,25 @@ export default {
         this.ApiQueryProjectInfo()
     },
     mounted() {
-        
+        const loginInfouser = JSON.parse(getStore('loginInfouser'))
+        let coArr = []
+        loginInfouser.userRoles.forEach(item=>{
+            if(item.roleType === 'PROJECT_MANAGE') {
+                coArr.push(0)
+            }
+            if(item.roleType === 'ORG_MANAGE') {
+                coArr.push(1)
+                
+            }
+        })
+        let roleTypesum = coArr.reduce(function(prev,cur,index,array){
+            return prev + cur
+        })      //判断多角色时只有PROJECT_MANAGE传PROJECT_MANAGE，PROJECT_MANAGE和ORG_MANAGE同时存在传ORG_MANAGE
+        roleTypesum === 0 ? this.queryProjectInfoParams.roleType = 'PROJECT_MANAGE':this.queryProjectInfoParams.roleType = 'ORG_MANAGE'
     },
     methods: {
         ApiQueryProjectInfo() {
             //项目列表
-            const loginInfouser = JSON.parse(getStore('loginInfouser'))
-            let coArr = []
-            loginInfouser.userRoles.forEach(item=>{
-                if(item.roleType === 'PROJECT_MANAGE') {
-                    coArr.push(0)
-                }
-                if(item.roleType === 'ORG_MANAGE') {
-                    coArr.push(1)
-                    
-                }
-            })
-            let roleTypesum = coArr.reduce(function(prev,cur,index,array){
-                return prev + cur
-            })      //判断多角色时只有PROJECT_MANAGE传PROJECT_MANAGE，PROJECT_MANAGE和ORG_MANAGE同时存在传ORG_MANAGE
-            roleTypesum === 0 ? this.queryProjectInfoParams.roleType = 'PROJECT_MANAGE':this.queryProjectInfoParams.roleType = 'ORG_MANAGE'
         
             queryProjectInfo(Object.assign(this.queryProjectInfoParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
@@ -292,12 +291,14 @@ export default {
         handleSubPro(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
+                    this.ruleForm.roleType = this.queryProjectInfoParams.roleType
                     addProjectInfo(this.ruleForm).then((res) =>{
                         if (res.data.code === ERR_OK) {
                             this.$message({
                                 message: '添加成功',
                                 type: 'success'
                             });
+                            this.ApiQueryProjectInfo()
                             this.dialogVisible = false
                         } else {
                             this.$message.error(res.data.message);

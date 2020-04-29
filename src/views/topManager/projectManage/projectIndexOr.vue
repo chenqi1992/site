@@ -313,7 +313,7 @@
                         <el-input v-model="ruleFormStaff.userName" placeholder="请填写员工姓名"></el-input>
                     </el-form-item>
                     <el-form-item label="员工手机号" prop="phone">
-                        <el-input v-model="ruleFormStaff.phone" maxlength="11" placeholder="请填写职位"></el-input>
+                        <el-input v-model="ruleFormStaff.phone" maxlength="11" placeholder="请填写手机号"></el-input>
                     </el-form-item>
                     <el-form-item label="职位">
                         <el-select size="medium" v-model="ruleFormStaff.userType" placeholder="请选择职位">

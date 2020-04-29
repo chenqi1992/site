@@ -654,10 +654,12 @@ export default {
         },
         ApiSelDeviceListByOrgId() {
             //查询全部设备
-            selDeviceListByOrgId({id: this.ruleForm.orgId}).then((res) =>{
+            selDeviceListByOrgId({companyId: this.ruleForm.orgId}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryselDeviceListData = res.data.data
-                    this.deviceCode = this.queryselDeviceListData[0].code
+                    if(this.queryselDeviceListData.length > 0) {
+                        this.deviceCode = this.queryselDeviceListData[0].code
+                    }
                 }
             })
         },

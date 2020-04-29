@@ -75,9 +75,14 @@
                 width="55">
                 </el-table-column>
                 <el-table-column
+                prop="companyName"
+                label="企业名称"
+                align="center">
+                </el-table-column>
+                <el-table-column
                 prop="id"
                 label="项目ID"
-                width="120"
+                width="80"
                 align="center">
                 </el-table-column>
                 <el-table-column
@@ -97,6 +102,7 @@
                 prop="deviceCount"
                 label="设备数量"
                 align="center"
+                width="100"
                 sortable
                 show-overflow-tooltip>
                 </el-table-column>
@@ -104,12 +110,14 @@
                 prop="address"
                 label="项目位置"
                 align="center"
+                width="100"
                 sortable
                 show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
                 prop="projectStatus"
                 label="项目状态"
+                width="80"
                 align="center"
                 show-overflow-tooltip>
                     <template slot-scope="scope">

@@ -168,6 +168,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative, totalNum} from "@/common/js/mixins.js";
+import { getStore } from '@/utils/utils.js'
 import { queryProjectInfo, addProjectInfo } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
@@ -245,6 +246,22 @@ export default {
     methods: {
         ApiQueryProjectInfo() {
             //项目列表
+            const loginInfouser = JSON.parse(getStore('loginInfouser'))
+            let coArr = []
+            loginInfouser.userRoles.forEach(item=>{
+                if(item.roleType === 'PROJECT_MANAGE') {
+                    coArr.push(0)
+                }
+                if(item.roleType === 'ORG_MANAGE') {
+                    coArr.push(1)
+                    
+                }
+            })
+            let roleTypesum = coArr.reduce(function(prev,cur,index,array){
+                return prev + cur
+            })      //判断多角色时只有PROJECT_MANAGE传PROJECT_MANAGE，PROJECT_MANAGE和ORG_MANAGE同时存在传ORG_MANAGE
+            roleTypesum === 0 ? this.queryProjectInfoParams.roleType = 'PROJECT_MANAGE':this.queryProjectInfoParams.roleType = 'ORG_MANAGE'
+        
             queryProjectInfo(Object.assign(this.queryProjectInfoParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryProjectInfoData = res.data.data.list

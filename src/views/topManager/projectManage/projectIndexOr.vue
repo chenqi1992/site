@@ -454,6 +454,7 @@ export default {
                 address: '',
                 userName: '',
                 phone: '',
+                orgId: '',
                 id: this.$route.params.id,
                 userId: 10086,
                 roleType: "ORG_MANAGE"
@@ -574,7 +575,7 @@ export default {
         this.ApiQueryProjectVisitInfo()
         this.ApiQueryProjectWork()
         this.ApiSearchDictionaryInfo()
-        this.ApiSelDeviceListByOrgId()
+        
     },
     mounted() {
 
@@ -623,6 +624,7 @@ export default {
                             }
                         }
                     }
+                    this.ApiSelDeviceListByOrgId()
                 }
             })
         },
@@ -652,7 +654,7 @@ export default {
         },
         ApiSelDeviceListByOrgId() {
             //查询全部设备
-            selDeviceListByOrgId({id: this.$route.params.id}).then((res) =>{
+            selDeviceListByOrgId({id: this.ruleForm.orgId}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryselDeviceListData = res.data.data
                     this.deviceCode = this.queryselDeviceListData[0].code
@@ -861,20 +863,27 @@ export default {
         },
         handleDevicesyn() {
             //同步员工信息到设备
-            syncDevicePerson({
-                deviceCode: this.deviceCode,
-                deviceId: null,
-                projectId: Number(this.$route.params.id)
-            }).then((res) =>{
-                if (res.data.code === ERR_OK) {
-                    this.$message({
-                        message: '同步成功',
-                        type: 'success'
-                    });
-                } else {
-                    this.$message.error(res.data.message);
-                }
-            })
+            if(this.queryDeviceInfoData.length > 0) {
+                syncDevicePerson({
+                    deviceCode: this.deviceCode,
+                    deviceId: null,
+                    projectId: Number(this.$route.params.id)
+                }).then((res) =>{
+                    if (res.data.code === ERR_OK) {
+                        this.$message({
+                            message: '同步成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                })
+            } else {
+                this.$message({
+                    message: '暂无设备可以同步',
+                    type: 'error'
+                });
+            }
         }
     }
 }

@@ -19,7 +19,7 @@
                         <el-input maxlength="11" v-model="ruleForm.mobilePhone" placeholder="请输入手机号"></el-input>
                     </el-form-item>
                     <el-form-item prop="password">
-                        <el-input v-model="ruleForm.password" placeholder="请输入密码" show-password></el-input>
+                        <el-input type="password" v-model="ruleForm.password" placeholder="请输入密码" show-password></el-input>
                     </el-form-item>
                 </el-form>
                 <el-button type="primary" class="btn" @click="handleLogin('ruleForm')">登录</el-button>

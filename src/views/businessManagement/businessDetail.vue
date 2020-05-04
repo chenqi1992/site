@@ -40,9 +40,10 @@
         </div>
         <div class="detail-img">
             <div class="item">
-                <div>营业执照</div>
-                <div v-if="editORview" class="detail-upload">
+                <div class="title1">营业执照</div>
+                <div class="detail-upload">
                     <el-upload
+                        v-if="editORview"
                         :limit='5'
                         :action="fileUploads.actionUrl"
                         :data="fileUploads.authToken"
@@ -55,20 +56,21 @@
                         :on-remove="handleRemove">
                         <i class="el-icon-plus"></i>
                     </el-upload>
-                    <el-dialog :visible.sync="dialogVisible">
+                    <el-dialog v-if="editORview" :visible.sync="dialogVisible">
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
+                    <template v-if="isAdd">
+                        <div v-for="(item, index) in ruleForm.imgUrl" :key="index" @click="handleIMG(item)">
+                            <img style="display: block; margin-left:10px; width: 148px; height:148px;" :src="item" alt="">
+                        </div>
+                    </template>
                 </div>
-                <!-- <template v-if="isAdd">
-                    <div v-for="(item, index) in ruleForm.imgUrl" :key="index">
-                        <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
-                    </div>
-                </template> -->
             </div>
             <div class="item">
-                <div>法定代表人证件</div>
-                <div v-if="editORview" class="detail-upload">
+                <div class="title1">法定代表人证件</div>
+                <div class="detail-upload">
                     <el-upload
+                        v-if="editORview"
                         :limit='5'
                         :action="fileUploads.actionUrl"
                         :data="fileUploads.authToken"
@@ -81,16 +83,23 @@
                         :on-remove="handleRemove">
                         <i class="el-icon-plus"></i>
                     </el-upload>
-                    <el-dialog :visible.sync="dialogVisible">
+                    <el-dialog v-if="editORview" :visible.sync="dialogVisible">
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
+                    <template v-if="isAdd">
+                        <div v-for="(item, index) in ruleForm.contactImgUr" :key="index" @click="handleIMG(item)">
+                            <img style="display: block; margin-left:10px; width: 148px; height:148px;" :src="item" alt="">
+                        </div>
+                    </template>
                 </div>
-                <template v-if="isAdd">
-                    <div v-for="(item, index) in ruleForm.contactImgUr" :key="index">
-                        <img style="display: block; width: 40px; height:40px;" :src="item" alt="">
-                    </div>
-                </template>
             </div>
+            <el-dialog
+                title="图片"
+                :visible.sync="dialogVisibleIMG"
+                width="30%"
+                :before-close="handleCloseIMG">
+                <img style="display: block; margin: 0 auto; width: 400px; height:400px;" :src="thisIMG" alt="">
+            </el-dialog>
         </div>
         <div class="detail-infobus" v-if="isAdd">
             <h1>业务信息</h1>
@@ -317,7 +326,9 @@ export default {
             queryProjectInfoData: [],
             isAdd: false,
             companyProjectName: [],
-            queryCompanyPersonData: []
+            queryCompanyPersonData: [],
+            dialogVisibleIMG: false,
+            thisIMG: ''
         }
     },
     created() {
@@ -494,6 +505,13 @@ export default {
         },
         handleClick(tab, event) {
             console.log(tab, event);
+        },
+        handleIMG(url) {
+            this.dialogVisibleIMG = true
+            this.thisIMG = url
+        },
+        handleCloseIMG() {
+            this.dialogVisibleIMG = false
         }
     }
 }
@@ -536,9 +554,13 @@ export default {
             display: flex;
             .item {
                 width: 100%;
+                .title1 {
+                    margin-bottom: 25px;
+                }
             }
         }
         .detail-upload {
+            display: flex;
             padding: 0 0 32px 0;
         }
         .detail-infobus {

@@ -1,16 +1,14 @@
 <template>
     <div class="home-index">
         <div class="topbar">
-            <div class="login">登录</div>
-            <div class="register">注册</div>
             <div class="mini">小程序</div>
             <div class="app">APP</div>
         </div>
         <div class="banner">
-            <el-carousel height="400px" arrow="never">
-                <el-carousel-item class="slide-01"><img :src="require('@/assets/home/banner_01.jpg')" alt=""></el-carousel-item>
-                <el-carousel-item class="slide-02"><img :src="require('@/assets/home/banner_02.png')" alt="'在线纠纷调解_'+saasconfig.easywebsitename"></el-carousel-item>
-                <el-carousel-item class="slide-03"><img :src="require('@/assets/home/banner_03.jpg')" alt="'矛盾纠纷多元化解平台_'+saasconfig.easywebsitename"></el-carousel-item>
+            <el-carousel height="500px" arrow="never">
+                <!-- <el-carousel-item class="slide-01"><img :src="require('@/assets/home/banner_05.jpeg')" alt=""></el-carousel-item> -->
+                <!-- <el-carousel-item class="slide-02"><img :src="require('@/assets/home/banner_04.jpeg')" alt="'在线纠纷调解_'+saasconfig.easywebsitename"></el-carousel-item> -->
+                <el-carousel-item class="slide-02"><img :src="require('@/assets/home/banner_05.jpeg')" alt="'在线纠纷调解_'+saasconfig.easywebsitename"></el-carousel-item>
             </el-carousel>
             <div class="login">
                 <h2>登录</h2>
@@ -26,36 +24,28 @@
                 <div class="find-password" @click="findpwd">找回密码</div>
             </div>
         </div>
-        <div class="content">原型产品待定</div>
+        <!-- <div class="content">原型产品待定</div> -->
         <div class="footer">
             <div class="footer-nav">
                 <div class="nav-left">
                     <div>用户中心</div>
-                    <ul>
-                        <li><a href="/help.html#/question?key=3&keypath=3-1&num=3-1-1">如何申请调解</a></li>
-                        <li><a href="/help.html#/question?key=3&keypath=3-2&num=3-2-1">如何快速咨询</a></li>
-                        <li><a href="/help.html#/question?key=3&keypath=3-4&num=3-4-1">如何查看结果</a></li>
+                    <!-- <ul>
                         <li><a href="/meeting.html#/invite" target="_blank">调解中心</a></li>
-                    </ul>
+                    </ul> -->
                 </div>
                 <div class="nav-left">
                     <div>平台服务</div>
-                    <ul>
-                        <li><a href="/mediation.html">纠纷调解</a></li>
-                        <li><a href="/advice.html">法律咨询</a></li>
-                        <li><a href>诉讼服务</a></li>
-                    </ul>
+                    <!-- <ul>
+                        <li><a href>工地咨询</a></li>
+                    </ul> -->
                 </div>
                 <div class="nav-left">
                     <div>关于我们</div>
-                    <ul>
-                        <li><a href="/site-map.html">网站地图</a></li>
-                        <li><a href="/agreement-register.html">服务协议</a></li>
+                    <!-- <ul>
                         <li><span>客服电话：</span><span></span></li>
-                        <li><a></a></li>
-                    </ul>
+                    </ul> -->
                 </div>
-                <div class="nav-right">
+                <!-- <div class="nav-right">
                     <span class="code">
                         <img src="require('@/publicResource/saas/' + saasconfig.imgpath + '/img/Lcode.png')" alt="'APP_'+saasconfig.easywebsitename">
                         <p>APP</p>
@@ -64,21 +54,21 @@
                         <img src="require('@/publicResource/saas/' + saasconfig.imgpath + '/img/qrcode.png')" alt="'小程序_'+saasconfig.easywebsitename">
                         <p>小程序</p>
                     </span>
-                </div>
+                </div> -->
             </div>
-            <div class="footer-info">
+            <!-- <div class="footer-info">
                 <div class="row clearfix">
                     <div class="left">
                         <span></span>
                         <a href="saasconfig.footer.beiancodelink" class="beian" target="_blank">
-                            <!-- <img src="@/module/index/assets/common/beian.png" alt="'备案_'+saasconfig.easywebsitename"/>  -->
+                            <img src="@/module/index/assets/common/beian.png" alt="'备案_'+saasconfig.easywebsitename"/> 
                         </a>
                     </div>
                     <div class="right">
                         &copy; 版权所有
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -153,9 +143,11 @@ export default {
         .topbar {
             display: flex;
             justify-content: flex-end;
-            background-color: #ececec;
+            // background-color: #ececec;
             height: 30px;
             line-height: 30px;
+            padding: 20px 100px 20px 0;
+            font-size: 16px;
             div {
                 padding: 0 10px;
             }
@@ -205,12 +197,16 @@ export default {
         }
         .footer {
             background-color: #212529;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             .footer-nav {
                 font-size: 0;
                 margin: 0 auto;
                 width: 1100px;
-                height: 200px;
-                padding-top: 30px;
+                height: 40px;
+                padding-top: 8px;
                 .nav-left {
                     color: #fff;
                     width: 160px;

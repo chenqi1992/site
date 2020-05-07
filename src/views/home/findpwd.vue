@@ -2,7 +2,7 @@
     <div class="find-pwds">
         <div class="simple-header shadow">
             <div class="row clearfix">
-                <a href="/home.html"><img class="logo" src="require('@/publicResource/saas/' + saasconfig.imgpath + '/img/logo.png')" alt="'logo_'+saasconfig.easywebsitename"/></a>
+                <!-- <a href="/home.html"><img class="logo" src="require('@/publicResource/saas/' + saasconfig.imgpath + '/img/logo.png')" alt="'logo_'+saasconfig.easywebsitename"/></a> -->
                 <span class="head-tit">找回密码</span>
                 <p class="login"><a href @click.prevent="back()">返回登录></a></p>
             </div>

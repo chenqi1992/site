@@ -1,5 +1,6 @@
 <template>
     <div class="home-index">
+		<div class="title"><img src="../../assets/logo.png" alt="" class="logo">好工地管理系统</div>
         <div class="topbar">
             <div class="mini">小程序</div>
             <div class="app">APP</div>
@@ -140,6 +141,17 @@ export default {
 
 <style lang="scss">
     .home-index {
+        .title {
+            display: flex;
+            align-items: center;
+            line-height: 74px;
+            font-size: 26px;
+            .logo {
+                padding: 0 13px 0 18px;
+                width: 50px;
+                height: 50px;
+            }
+        }
         .topbar {
             display: flex;
             justify-content: flex-end;

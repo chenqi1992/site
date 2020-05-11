@@ -1,6 +1,8 @@
 const App = () => import('@/layout/AppSite.vue')
 const BusinessManage = () => import('@/views/businessManagement/businessManage.vue')
 const BusinessDetail = () => import('@/views/businessManagement/businessDetail.vue')
+const BusinessApply = () => import('@/views/businessManagement/businessApply.vue')
+
 
 export default {
     path: '/businessManagement',
@@ -29,6 +31,11 @@ export default {
             name: '企业管理/企业详情',
             path: '/businessDetail/detail/:id',
             component: BusinessDetail
+        },
+        {
+            name: '企业管理/申请加入企业',
+            path: '/businessApply',
+            component: BusinessApply
         },
     ]
 }

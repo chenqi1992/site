@@ -80,7 +80,7 @@
                 align="center">
                 </el-table-column>
                 <el-table-column
-                prop="id"
+                prop="projectNo"
                 label="项目ID"
                 width="80"
                 align="center">
@@ -310,10 +310,10 @@ export default {
             });
         },
         handleModify(row) {
-            this.$router.push({path: `/projectIndexOr/detail/${row.id}`})
+            this.$router.push({path: `/projectIndexOr/detail/${row.id}/${row.companyId}`})
         },
         handleEdit(row) {
-            this.$router.push({path: `/projectIndexOr/${row.id}`})
+            this.$router.push({path: `/projectIndexOr/${row.id}/${row.companyId}`})
         }
     }
 }

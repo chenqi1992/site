@@ -183,33 +183,36 @@
                         <el-table-column
                         prop="id"
                         label="访客ID"
-                        width="120">
+                        align="center">
                         </el-table-column>
                         <el-table-column
                         prop="createTime"
                         label="登记时间"
                         :formatter="formatime"
-                        width="120">
+                        align="center">
                         </el-table-column>
                         <el-table-column
                         prop="visitTime"
                         label="到访时间"
                         :formatter="formatime"
-                        width="120">
+                        align="center">
                         </el-table-column>
                         <el-table-column
                         prop="visitName"
                         label="访客名称"
+                        align="center"
                         >
                         </el-table-column>
                         <el-table-column
                         prop="visitPersonCount"
                         label="访客人数"
+                        align="center"
                         >
                         </el-table-column>
                         <el-table-column
                         prop="imageInfoStatus"
                         label="是否录入人脸"
+                        align="center"
                         >
                             <template slot-scope="scope">
                                 <div v-if="scope.row.auditStatus === '1'">是</div>
@@ -219,6 +222,7 @@
                         <el-table-column
                         prop="auditStatus"
                         label="审核"
+                        align="center"
                         >
                             <template slot-scope="scope">
                                 <div v-if="scope.row.auditStatus === 'PASS'">已通过</div>
@@ -288,6 +292,54 @@
                                     <el-button class="btn-action" @click="handleViewWork(scope.row)" type="text">查看</el-button>
                                     <el-button class="btn-action" @click="handleModifyWork(scope.row)" type="text">编辑</el-button>
                                     <el-button class="btn-action" @click="handleDeleteWork(scope.row)" type="text">删除</el-button>
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+                <el-tab-pane label="入项目审批" name="fiveth">
+                    <el-table
+                        ref="multipleTable"
+                        :data="queryApplyJoinProjectListData"
+                        tooltip-effect="dark"
+                        style="width: 100%">
+                        <el-table-column
+                        prop="orgId"
+                        label="序号"
+                        align="center">
+                        </el-table-column>
+                        <el-table-column
+                        prop="userName"
+                        label="申请人姓名"
+                        align="center">
+                        </el-table-column>
+                        <!-- <el-table-column
+                        prop="idCard"
+                        label="联系电话"
+                        align="center"
+                        sortable
+                        show-overflow-tooltip>
+                        </el-table-column> -->
+                        <el-table-column
+                        prop="idCard"
+                        label="身份证号码"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                        prop="createTime"
+                        label="提交时间"
+                        :formatter="formatime"
+                        align="center"
+                        show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column
+                            label="操作"
+                            align="center">
+                            <template slot-scope="scope">
+                                <div>
+                                    <el-button class="btn-action" @click="handlePass(scope.row)" type="text">同意</el-button>
+                                    <el-button class="btn-action" @click="handleDeny(scope.row)" type="text">拒绝</el-button>
                                 </div>
                             </template>
                         </el-table-column>
@@ -382,7 +434,7 @@
                         <el-input v-model="ruleFormVisit.visitPersonCount" placeholder="请填写成员数量"></el-input>
                     </el-form-item>
                     <el-form-item label="审核状态">
-                        <el-select v-model="ruleForm.auditStatus" placeholder="请选择活动区域">
+                        <el-select v-model="ruleFormVisit.auditStatus" placeholder="请选择审核状态" :disabled="true">
                             <el-option label="已通过" value="PASS"></el-option>
                             <el-option label="未通过" value="FAIL"></el-option>
                             <el-option label="待审核" value="WAIT"></el-option>
@@ -426,7 +478,7 @@
 <script>
 import elPages from "@/components/elPages.vue";
 import {relative} from "@/common/js/mixins.js";
-import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId, editDevice, syncDevicePerson } from "@/api/common.js";
+import { searchDictionaryInfo, getProjectInfo, queryProjectPerson, editProjectInfo, addProjectPerson, delProjectPerson, queryDeviceInfo, addProjectVisitInfo, queryProjectVisitInfo, queryProjectWork, addProjectWork, delProjectWork, selDeviceListByOrgId, editDevice, syncDevicePerson, queryApplyJoinProjectList, applyJoinProjectDeny, applyJoinProjectPass } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 import {setStore, getStore} from '@/utils/utils.js'
 
@@ -559,6 +611,7 @@ export default {
             queryProjectWorkData: [],
             queryDictionaryInfoData: [],
             queryselDeviceListData: [],
+            queryApplyJoinProjectListData: [],
             deviceCode: ''
         }
     },
@@ -575,7 +628,7 @@ export default {
         this.ApiQueryProjectVisitInfo()
         this.ApiQueryProjectWork()
         this.ApiSearchDictionaryInfo()
-        
+        this.ApiqueryApplyJoinProjectList()
     },
     mounted() {
 
@@ -660,6 +713,19 @@ export default {
                     if(this.queryselDeviceListData.length > 0) {
                         this.deviceCode = this.queryselDeviceListData[0].code
                     }
+                }
+            })
+        },
+        ApiqueryApplyJoinProjectList() {
+            //入项目审批
+            const loginUser = JSON.parse(getStore('loginInfouser'))
+            queryApplyJoinProjectList({
+                orgId: this.$route.params.id,
+                projectId: this.$route.params.companyid,
+                userId: loginUser.userInfo.userId
+            }).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.queryApplyJoinProjectListData = res.data.data.list
                 }
             })
         },
@@ -805,6 +871,7 @@ export default {
                                 message: '添加成功',
                                 type: 'success'
                             });
+                            this.dialogVisibleVisit = false
                         } else {
                             this.$message.error(res.data.message);
                         }
@@ -839,7 +906,7 @@ export default {
         handleViewVisit(row) {
             this.$router.push({path: `/visitorInfo/${row.id}`})
         },
-        handleModifyVisit() {
+        handleModifyVisit(row) {
             this.$router.push({path: `/visitorInfo/detail/${row.id}`})
         },
         handleViewWork(row) {
@@ -886,6 +953,20 @@ export default {
                     type: 'error'
                 });
             }
+        },
+        handlePass(row) {
+            applyJoinProjectPass({id: row.id}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.ApiqueryApplyJoinProjectList()
+                }
+            })
+        },
+        handleDeny(row) {
+            applyJoinProjectDeny({id: row.id}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.ApiqueryApplyJoinProjectList()
+                }
+            })
         }
     }
 }

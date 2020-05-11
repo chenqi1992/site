@@ -601,3 +601,37 @@ export const syncDevicePerson = (data) => {
         method: 'post'
     }, data)
 }
+
+
+//项目申请管理
+/* 申请进入项目 */
+export const applyJoinProject = (data) => {
+    return http({
+        url: '/haogongdi/projectApply/applyJoinProject',
+        method: 'post'
+    }, data)
+}
+
+/* 申请进入项目拒绝 */
+export const applyJoinProjectDeny = (data) => {
+    return http({
+        url: '/haogongdi/projectApply/applyJoinProjectDeny',
+        method: 'post'
+    }, data)
+}
+
+/* 申请进入项目通过 */
+export const applyJoinProjectPass = (data) => {
+    return http({
+        url: '/haogongdi/projectApply/applyJoinProjectPass',
+        method: 'post'
+    }, data)
+}
+
+/* 申请进入项目列表查询 */
+export const queryApplyJoinProjectList = (data) => {
+    return http({
+        url: '/haogongdi/projectApply/queryApplyJoinProjectList',
+        method: 'post'
+    }, data)
+}

@@ -43,12 +43,12 @@ export default {
         },
         {
             name: '项目管理',
-            path: '/projectIndexOr/:id', 
+            path: '/projectIndexOr/:id/:companyid', 
             component: ProjectIndexOr
         },
         {
             name: '项目管理',
-            path: '/projectIndexOr/detail/:id',
+            path: '/projectIndexOr/detail/:id/:companyid',
             component: ProjectIndexOr
         },
         {

@@ -8,6 +8,8 @@ const EmployeeDetail = () => import('@/views/topManager/projectManage/employeeDe
 const VisitorInfo = () => import('@/views/topManager/projectManage/visitorInfo.vue')
 const StaffManageIndex = () => import('@/views/topManager/staffManage/index.vue')
 const StaffManageTabs = () => import('@/views/topManager/staffManage/manage.vue')
+const AgreeList = () => import('@/views/topManager/examManage/agreeList.vue')
+const StudyList = () => import('@/views/topManager/examManage/studyList.vue')
 const ExamManageIndex = () => import('@/views/topManager/examManage/index.vue')
 const ExamManageTask = () => import('@/views/topManager/examManage/task.vue')
 const taskDetail = () => import('@/views/topManager/examManage/taskDetail.vue')
@@ -90,6 +92,16 @@ export default {
             name: '员工管理',
             path: "/StaffManage", //员工管理
             component: StaffManageTabs
+        },
+        {
+            name: '合同列表',
+            path: '/agreementList', //合同列表
+            component: AgreeList
+        },
+        {
+            name: '安全学习',
+            path: '/studyList', //学习内容列表
+            component: StudyList
         },
         {
             name: '题库列表',

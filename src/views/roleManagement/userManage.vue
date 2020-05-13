@@ -218,8 +218,10 @@ export default {
             justify-content: space-between;
             .left {
                 display: flex;
+                flex-wrap: wrap;
                 .bus-header--input {
                     margin-right: 24px;
+                    margin-bottom: 20px;
                     .el-input {
                         width: 200px;
                     }

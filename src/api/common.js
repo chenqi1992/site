@@ -635,3 +635,18 @@ export const queryApplyJoinProjectList = (data) => {
         method: 'post'
     }, data)
 }
+
+/* 合同列表 */
+export const queryContractInfo = (data) => {
+    return http({
+        url: '/haogongdi/contractInfo/queryContractInfo',
+        method: 'post'
+    }, data)
+}
+/* 通过id查看合同图片 */
+export const queryContractImage = (data) => {
+    return http({
+        url: '/haogongdi/contractInfo/queryContractImage',
+        method: 'post'
+    }, data)
+}

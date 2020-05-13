@@ -307,19 +307,26 @@
                         prop="orgId"
                         label="序号"
                         align="center">
+                            <template slot-scope="scope">
+                                <span>{{scope.$index+(pagebox.pageIndex - 1) * pagebox.pageSize + 1}} </span>
+                            </template>
                         </el-table-column>
                         <el-table-column
                         prop="userName"
                         label="申请人姓名"
                         align="center">
                         </el-table-column>
-                        <!-- <el-table-column
-                        prop="idCard"
-                        label="联系电话"
+                        <el-table-column
+                        prop="applyStatus"
+                        label="状态"
                         align="center"
-                        sortable
                         show-overflow-tooltip>
-                        </el-table-column> -->
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.applyStatus === 'PASS'">已同意</div>
+                                <div v-if="scope.row.applyStatus === 'WAIT_AUDIT'">审核中</div>
+                                <!-- <div v-if="scope.row.applyStatus === 'WAIT'">待审核</div> -->
+                            </template>
+                        </el-table-column>
                         <el-table-column
                         prop="idCard"
                         label="身份证号码"
@@ -337,9 +344,15 @@
                             label="操作"
                             align="center">
                             <template slot-scope="scope">
-                                <div>
+                                <div v-if="scope.row.applyStatus === 'WAIT_AUDIT'">
                                     <el-button class="btn-action" @click="handlePass(scope.row)" type="text">同意</el-button>
                                     <el-button class="btn-action" @click="handleDeny(scope.row)" type="text">拒绝</el-button>
+                                </div>
+                                <div v-if="scope.row.applyStatus === 'PASS'">
+                                    <el-button class="btn-action" type="text">已同意</el-button>
+                                </div>    
+                                <div v-if="scope.row.applyStatus === 'DENY'">
+                                    <el-button class="btn-action" type="text">已拒绝</el-button>
                                 </div>
                             </template>
                         </el-table-column>
@@ -612,7 +625,12 @@ export default {
             queryDictionaryInfoData: [],
             queryselDeviceListData: [],
             queryApplyJoinProjectListData: [],
-            deviceCode: ''
+            deviceCode: '',
+            pagebox: {
+                totalrows: 0,
+                pageIndex: 1,
+                pageSize: 10
+            },
         }
     },
     created() {
@@ -718,11 +736,10 @@ export default {
         },
         ApiqueryApplyJoinProjectList() {
             //入项目审批
-            const loginUser = JSON.parse(getStore('loginInfouser'))
             queryApplyJoinProjectList({
-                orgId: this.$route.params.id,
-                projectId: this.$route.params.companyid,
-                userId: loginUser.userInfo.userId
+                pageIndex: 1,
+                pageSize: 10,
+                projectId: this.$route.params.id
             }).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryApplyJoinProjectListData = res.data.data.list
@@ -957,14 +974,32 @@ export default {
         handlePass(row) {
             applyJoinProjectPass({id: row.id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
+                    this.$message({
+                        message: '审批成功',
+                        type: 'success'
+                    });
                     this.ApiqueryApplyJoinProjectList()
+                } else {
+                    this.$message({
+                        message: res.data.message,
+                        type: 'warning'
+                    });
                 }
             })
         },
         handleDeny(row) {
             applyJoinProjectDeny({id: row.id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
+                    this.$message({
+                        message: '审批成功',
+                        type: 'success'
+                    });
                     this.ApiqueryApplyJoinProjectList()
+                } else {
+                    this.$message({
+                        message: res.data.message,
+                        type: 'warning'
+                    });
                 }
             })
         }

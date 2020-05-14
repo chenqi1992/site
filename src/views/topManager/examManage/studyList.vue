@@ -7,7 +7,7 @@
                     <el-input
                         size="medium"
                         class="search-input"
-                        v-model="queryContractInfoDtoListParams.contractName"
+                        v-model="queryContractInfoDtoListParams.examName"
                         placeholder="请输入"
                         clearable>
                     </el-input>
@@ -16,7 +16,7 @@
                     记录时间：
                     <el-date-picker
                         size="medium"
-                        v-model="queryContractInfoDtoListParams.createTime"
+                        v-model="queryContractInfoDtoListParams.startTime"
                         type="daterange"
                         value-format="yyyy-MM-dd"
                         range-separator="至"
@@ -99,7 +99,8 @@
 
 <script>
 import elPages from "@/components/elPages.vue";
-import { queryContractInfoDtoList } from "@/api/common.js";
+import {relative} from "@/common/js/mixins.js";
+import { queryExamReport, queryExamReportImage } from "@/api/common.js";
 import { ERR_OK } from "@/api/reConfig.js";
 export default {
     components: {
@@ -108,14 +109,16 @@ export default {
     props: {
 
     },
+    mixins: [relative],
     data() {
         return {
-            queryContractInfoDtoListParams: {
-                contractName: "",
-                contractUser: "",
-                createTime: "",
+            queryExamReportParams: {
+                examName: "",
+                projectName: "",
+                startTime: "",
+                endTime: ""
             },
-            queryContractInfoDtoListData: [],
+            queryExamReportData: [],
             pagebox: {
                 totalrows: 0,
                 pageIndex: 1,
@@ -126,31 +129,38 @@ export default {
         }
     },
     created() {
-        this.ApiqueryContractInfoDtoList()
+        this.ApiqueryExamReport()
     },
     mounted() {
 
     },
     methods: {
-        ApiqueryContractInfoDtoList() {
+        ApiqueryExamReport() {
             //试题列表
-            queryContractInfoDtoList(Object.assign(this.queryContractInfoDtoListParams, this.pagebox)).then((res) =>{
+            queryExamReport(Object.assign(this.queryExamReportParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryContractInfoDtoListData = res.data.data.list
                     this.pagebox.totalrows = res.data.data.totalRows
                 }
             })
         },
+        ApiqueryExamReportImage(id) {
+            //查看图片
+            queryExamReportImage({id: id}).then((res) =>{
+                if (res.data.code === ERR_OK) {
+                    this.dialogVisibleIMG = true
+                    this.thisIMG = row.id
+                }
+            })
+        },
         handleSearch() {
-            this.ApiqueryContractInfoDtoList()
+            this.ApiqueryExamReport()
         },
         handleCloseIMG() {
             this.dialogVisibleIMG = false
         },
         handleView(row) {
-            console.log(row);
-            this.dialogVisibleIMG = true
-            this.thisIMG = row.url
+            this.ApiqueryContractImage(row.id)
         }
     }
 }

@@ -650,3 +650,19 @@ export const queryContractImage = (data) => {
         method: 'post'
     }, data)
 }
+
+
+/* 搜索考试信息列表 */
+export const queryExamReport = (data) => {
+    return http({
+        url: '/haogongdi/ExamReport/queryExamReport',
+        method: 'post'
+    }, data)
+}
+/* 通过id查询考试图片 */
+export const queryExamReportImage = (data) => {
+    return http({
+        url: '/haogongdi/ExamReport/queryExamReportImage',
+        method: 'post'
+    }, data)
+}

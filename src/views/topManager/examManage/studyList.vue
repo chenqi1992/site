@@ -7,7 +7,7 @@
                     <el-input
                         size="medium"
                         class="search-input"
-                        v-model="queryContractInfoDtoListParams.examName"
+                        v-model="queryExamReportParams.examName"
                         placeholder="请输入"
                         clearable>
                     </el-input>
@@ -16,7 +16,7 @@
                     记录时间：
                     <el-date-picker
                         size="medium"
-                        v-model="queryContractInfoDtoListParams.startTime"
+                        v-model="queryExamReportParams.startTime"
                         type="daterange"
                         value-format="yyyy-MM-dd"
                         range-separator="至"
@@ -29,7 +29,7 @@
                     <el-input
                         size="medium"
                         class="search-input"
-                        v-model="queryContractInfoDtoListParams.contractUser"
+                        v-model="queryExamReportParams.projectName"
                         placeholder="请输入"
                         clearable>
                     </el-input>
@@ -42,7 +42,7 @@
         <div class="business-table">   
             <el-table
                 ref="multipleTable"
-                :data="queryContractInfoDtoListData"
+                :data="queryExamReportData"
                 :header-cell-style="{background:'#FAFAFA',color:'#000000'}"
                 tooltip-effect="dark"
                 style="width: 100%"
@@ -61,18 +61,18 @@
                 align="center">
                 </el-table-column>
                 <el-table-column
-                prop="contractUser"
+                prop="examUser"
                 label="用户"
                 align="center">
                 </el-table-column>
                 <el-table-column
-                prop="contractName"
+                prop="examName"
                 label="学习内容"
                 align="center">
                 </el-table-column>
                  <el-table-column
-                prop="remark"
-                label="上传状态"
+                prop="examResult"
+                label="状态"
                 align="center">
                 </el-table-column>
                 <el-table-column
@@ -92,7 +92,7 @@
                 :before-close="handleCloseIMG">
                 <img style="display: block; margin: 0 auto; width: 400px; height:400px;" :src="thisIMG" alt="">
             </el-dialog>
-            <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiqueryContractInfoDtoList"></elPages>
+            <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiqueryExamReport"></elPages>
         </div>
     </div>
 </template>
@@ -139,7 +139,7 @@ export default {
             //试题列表
             queryExamReport(Object.assign(this.queryExamReportParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
-                    this.queryContractInfoDtoListData = res.data.data.list
+                    this.queryExamReportData = res.data.data.list
                     this.pagebox.totalrows = res.data.data.totalRows
                 }
             })

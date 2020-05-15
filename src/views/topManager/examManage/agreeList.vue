@@ -16,10 +16,12 @@
                     签署时间：
                     <el-date-picker
                         size="medium"
-                        v-model="queryContractInfoParams.createTime"
-                        type="date"
+                        v-model="businessTime"
+                        type="daterange"
                         value-format="yyyy-MM-dd"
-                        placeholder="选择日期">
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期">
                     </el-date-picker>
                 </div>
                 <div class="bus-header--input">
@@ -113,8 +115,10 @@ export default {
             queryContractInfoParams: {
                 contractName: "",
                 contractUser: "",
-                createTime: "",
+                startTime: "",
+                endTime: ""
             },
+            businessTime: '',
             queryContractInfoData: [],
             pagebox: {
                 totalrows: 0,
@@ -134,6 +138,8 @@ export default {
     methods: {
         ApiqueryContractInfo() {
             //合同列表
+            this.queryContractInfoParams.startTime = this.businessTime ? this.businessTime[0] : ''
+            this.queryContractInfoParams.endTime = this.businessTime ? this.businessTime[1] : ''
             queryContractInfo(Object.assign(this.queryContractInfoParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryContractInfoData = res.data.data.list

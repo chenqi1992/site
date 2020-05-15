@@ -16,7 +16,7 @@
                     记录时间：
                     <el-date-picker
                         size="medium"
-                        v-model="queryExamReportParams.startTime"
+                        v-model="businessTime"
                         type="daterange"
                         value-format="yyyy-MM-dd"
                         range-separator="至"
@@ -118,6 +118,7 @@ export default {
                 startTime: "",
                 endTime: ""
             },
+            businessTime: '',
             queryExamReportData: [],
             pagebox: {
                 totalrows: 0,
@@ -137,6 +138,8 @@ export default {
     methods: {
         ApiqueryExamReport() {
             //试题列表
+            this.queryExamReportParams.startTime = this.businessTime ? this.businessTime[0] : ''
+            this.queryExamReportParams.endTime = this.businessTime ? this.businessTime[1] : ''
             queryExamReport(Object.assign(this.queryExamReportParams, this.pagebox)).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.queryExamReportData = res.data.data.list

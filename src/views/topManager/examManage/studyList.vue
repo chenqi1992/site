@@ -90,7 +90,7 @@
                 :visible.sync="dialogVisibleIMG"
                 width="30%"
                 :before-close="handleCloseIMG">
-                <img style="display: block; margin: 0 auto; width: 400px; height:400px;" :src="thisIMG" alt="">
+                <img v-for="(item, index) in thisIMG" :key="index" style="display: block; margin: 0 auto; width: 400px; height:400px;" :src="item" alt="">
             </el-dialog>
             <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiqueryExamReport"></elPages>
         </div>
@@ -152,7 +152,8 @@ export default {
             queryExamReportImage({id: id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.dialogVisibleIMG = true
-                    this.thisIMG = row.id
+                    console.log(res.data.data);
+                    this.thisIMG = JSON.parse(res.data.data.imageInfo)
                 }
             })
         },
@@ -163,7 +164,7 @@ export default {
             this.dialogVisibleIMG = false
         },
         handleView(row) {
-            this.ApiqueryContractImage(row.id)
+            this.ApiqueryExamReportImage(row.id)
         }
     }
 }

@@ -90,7 +90,7 @@
                 :visible.sync="dialogVisibleIMG"
                 width="30%"
                 :before-close="handleCloseIMG">
-                <img style="display: block; margin: 0 auto; width: 400px; height:400px;" :src="thisIMG" alt="">
+                <img v-for="(item, index) in thisIMG" :key="index" style="display: block; margin: 0 auto; width: 400px; height:400px;" :src="item" alt="">
             </el-dialog>
             <elPages v-if="pagebox" :pagebox="pagebox" :Api="ApiqueryContractInfo"></elPages>
         </div>
@@ -152,7 +152,7 @@ export default {
             queryContractImage({id: id}).then((res) =>{
                 if (res.data.code === ERR_OK) {
                     this.dialogVisibleIMG = true
-                    this.thisIMG = row.id
+                    this.thisIMG = JSON.parse(res.data.data.imageInfo)
                 }
             })
         },
